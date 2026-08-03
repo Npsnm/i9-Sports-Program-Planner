@@ -1381,86 +1381,67 @@ window.applyBrandingUI = applyBrandingUI;
             });
         }
 function promptGenerateYear() {
-            // 1. Ensure there is at least one group to assign seasons to
-            const authorizedGroups = getAuthorizedGroups();
-            if (authorizedGroups.length === 0) {
-                alert("You don't have access to any groups. Please create a Group/Territory first.");
-                return;
-            }
+    const authorizedGroups = getAuthorizedGroups();
+    if (authorizedGroups.length === 0) {
+        alert("You don't have access to any groups. Please create a Group/Territory first.");
+        return;
+    }
 
-            // 2. Ask for the Year
-            const yearInput = prompt("What year would you like to generate seasons for?", new Date().getFullYear());
-            if (!yearInput) return; // User canceled
-            
-            const year = parseInt(yearInput);
-            if (isNaN(year)) {
-                alert("Please enter a valid numeric year.");
-                return;
-            }
+    const yearInput = prompt("What year would you like to generate seasons for?", new Date().getFullYear());
+    if (!yearInput) return; 
+    
+    const year = parseInt(yearInput);
+    if (isNaN(year)) return alert("Please enter a valid numeric year.");
 
-            // 3. Ask for the Group (using a numbered list to prevent typos)
-            const groupList = authorizedGroups.map((g, i) => `${i + 1}: ${g}`).join('\n');
-            const groupIndexInput = prompt(`Enter the NUMBER of the Territory to generate seasons for:\n\n${groupList}`);
-            if (!groupIndexInput) return; // User canceled
-            
-            const groupIndex = parseInt(groupIndexInput) - 1;
-            if (isNaN(groupIndex) || groupIndex < 0 || groupIndex >= authorizedGroups.length) {
-                alert("Invalid selection. Year generation canceled.");
-                return;
-            }
-            const selectedGroup = authorizedGroups[groupIndex];
+    const groupList = authorizedGroups.map((g, i) => `${i + 1}: ${g}`).join('\n');
+    const groupIndexInput = prompt(`Enter the NUMBER of the Territory to generate seasons for:\n\n${groupList}`);
+    if (!groupIndexInput) return; 
+    
+    const groupIndex = parseInt(groupIndexInput) - 1;
+    if (isNaN(groupIndex) || groupIndex < 0 || groupIndex >= authorizedGroups.length) return alert("Invalid selection.");
+    const selectedGroup = authorizedGroups[groupIndex];
 
-            // 4. Confirm action
-            if (!confirm(`Generate Spring, Summer, Fall, and Winter seasons for ${selectedGroup} in ${year}?`)) {
-                return;
-            }
+    if (!confirm(`Generate 8 Programs (Pre-Season & In-Season) for ${selectedGroup} in ${year}?`)) return;
 
-            // 5. Build the Seasons
-            const yy = year.toString().slice(-2); // Gets "26" from 2026
-            const seasonTemplates = [
-                { prefix: "SP", name: "Spring", startMonth: "03", startDay: "02" }, 
-                { prefix: "SU", name: "Summer", startMonth: "06", startDay: "01" }, 
-                { prefix: "FA", name: "Fall", startMonth: "08", startDay: "17" },   
-                { prefix: "WI", name: "Winter", startMonth: "12", startDay: "07" }  
-            ];
+    // 8 distinct programs
+    const seasonTemplates = [
+        { name: "Spring Pre-Season", session: "Pre-Season", startMonth: "01", startDay: "15" }, 
+        { name: "Spring In-Season", session: "In-Season", startMonth: "03", startDay: "02" }, 
+        { name: "Summer Pre-Season", session: "Pre-Season", startMonth: "04", startDay: "15" }, 
+        { name: "Summer In-Season", session: "In-Season", startMonth: "06", startDay: "01" }, 
+        { name: "Fall Pre-Season", session: "Pre-Season", startMonth: "07", startDay: "01" }, 
+        { name: "Fall In-Season", session: "In-Season", startMonth: "08", startDay: "17" },   
+        { name: "Winter Pre-Season", session: "Pre-Season", startMonth: "10", startDay: "15" }, 
+        { name: "Winter In-Season", session: "In-Season", startMonth: "12", startDay: "07" }  
+    ];
 
-            let addedCount = 0;
+    let addedCount = 0;
 
-            seasonTemplates.forEach(template => {
-                const newKey = `${template.prefix}${yy}-S1`; // e.g., SP26-S1
+    seasonTemplates.forEach(template => {
+        const newSeason = {
+            group: selectedGroup,
+            key: generateUniqueId('SEA'), // Guarantee a unique DB key
+            year: year,
+            name: template.name,
+            session: template.session,
+            anchor: `${year}-${template.startMonth}-${template.startDay}`,
+            activeDays: "Sat, Sun",
+            venues: "TBD",
+            bye: ""
+        };
 
-                // Prevent creating duplicates if the season already exists
-                if (seasons.some(s => s.key === newKey && s.group === selectedGroup)) {
-                    return; 
-                }
+        seasons.push(newSeason);
+        if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
+        addedCount++;
+    });
 
-                const newSeason = {
-                    group: selectedGroup,
-                    key: newKey,
-                    year: year,
-                    name: `${template.name} ${year}`,
-                    session: "Session 1",
-                    anchor: `${year}-${template.startMonth}-${template.startDay}`, // Placeholder Monday anchor
-                    activeDays: "Sat, Sun",
-                    venues: "TBD",
-                    bye: ""
-                };
-
-                seasons.push(newSeason);
-                if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
-                addedCount++;
-            });
-
-            // 6. Save and refresh the UI
-            if (addedCount > 0) {
-                saveToLocalStorage();
-                populateFilterOptions();
-                renderControlCenter();
-                showToast("Year Generated", `Successfully added ${addedCount} seasons for ${selectedGroup}.`);
-            } else {
-                showToast("No Action Required", `All seasons for ${selectedGroup} ${year} already exist.`);
-            }
-        }
+    if (addedCount > 0) {
+        saveToLocalStorage();
+        populateFilterOptions();
+        renderControlCenter();
+        showToast("Year Generated", `Successfully added ${addedCount} programs for ${selectedGroup}.`);
+    }
+}
         // RENDER DASHBOARD
         function renderDashboard() {
             const seasonProgressContainer = document.getElementById('dashboard-season-progress');
@@ -1765,9 +1746,11 @@ function promptGenerateYear() {
             }
             document.getElementById('season-form').reset();
             document.getElementById('season-edit-id').value = '';
+            // Auto-generate the Season Key
+            document.getElementById('season-key-input').value = generateUniqueId('SEA');
             document.getElementById('season-modal-title').textContent = 'Add New Season';
             document.getElementById('season-modal').classList.remove('hidden');
-        }
+}
 
         function openEditSeasonModal(key) {
             const s = seasons.find(item => item.key === key);
@@ -1835,16 +1818,18 @@ function promptGenerateYear() {
         }
 
         // TASK MODAL LOGIC
-        function openAddTaskModal() {
+       function openAddTaskModal() {
             if (seasons.length === 0) {
                 alert("Please add at least one Season in the Control Center before adding tasks.");
                 return;
             }
             document.getElementById('task-form').reset();
             document.getElementById('task-edit-id').value = '';
+            // Auto-generate the Task ID
+            document.getElementById('task-id-input').value = generateUniqueId('TSK');
             document.getElementById('task-modal-title').textContent = 'Add Milestone Task';
             document.getElementById('task-modal').classList.remove('hidden');
-        }
+}
 
         function openEditTaskModal(id) {
             const t = masterTasks.find(item => item.id === id);
@@ -1975,3 +1960,48 @@ function promptGenerateYear() {
     </script>
 </body>
 </html>
+function generateUniqueId(prefix) {
+    // Generates an ID like "TSK-LM3K9X-A7B"
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substr(2, 3).toUpperCase();
+    return `${prefix}-${timestamp}-${random}`;
+}
+function cloneTask(id) {
+    const originalTask = masterTasks.find(item => item.id === id);
+    if (!originalTask) return;
+    
+    openAddTaskModal(); // Opens the modal and resets it
+    
+    // Fill in the cloned data
+    document.getElementById('task-season-input').value = originalTask.seasonKey;
+    document.getElementById('task-name-input').value = originalTask.name + " (Clone)";
+    document.getElementById('task-cat-input').value = originalTask.cat;
+    document.getElementById('task-owner-input').value = originalTask.owner;
+    document.getElementById('task-lead-input').value = originalTask.leadOffset;
+    document.getElementById('task-dayoffset-input').value = originalTask.dayOffset;
+    document.getElementById('task-notes-input').value = originalTask.notes || '';
+    
+    // Force a new unique ID for the clone
+    document.getElementById('task-id-input').value = generateUniqueId('TSK');
+    document.getElementById('task-modal-title').textContent = 'Clone Task';
+}
+
+function cloneSeason(key) {
+    const originalSeason = seasons.find(item => item.key === key);
+    if (!originalSeason) return;
+    
+    openAddSeasonModal();
+    
+    document.getElementById('season-group-input').value = originalSeason.group;
+    document.getElementById('season-year-input').value = originalSeason.year;
+    document.getElementById('season-name-input').value = originalSeason.name + " (Clone)";
+    document.getElementById('season-session-input').value = originalSeason.session;
+    document.getElementById('season-anchor-input').value = originalSeason.anchor;
+    document.getElementById('season-days-input').value = originalSeason.activeDays;
+    document.getElementById('season-venues-input').value = originalSeason.venues;
+    document.getElementById('season-bye-input').value = originalSeason.bye || '';
+    
+    // Force a new unique key for the clone
+    document.getElementById('season-key-input').value = generateUniqueId('SEA');
+    document.getElementById('season-modal-title').textContent = 'Clone Season';
+}
