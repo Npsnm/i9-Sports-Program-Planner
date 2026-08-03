@@ -941,6 +941,16 @@
         let masterTasks = [];
 
         // INITIALIZATION
+        // Map local functions to the window so the Firebase module can trigger them
+window.saveToLocalStorage = saveToLocalStorage;
+window.renderGroupPills = renderGroupPills;
+window.renderTerritoryCheckboxes = renderTerritoryCheckboxes;
+window.populateFilterOptions = populateFilterOptions;
+window.renderControlCenter = renderControlCenter;
+window.renderMasterTasks = renderMasterTasks;
+window.renderDashboard = renderDashboard;
+window.renderUsersTable = renderUsersTable;
+window.applyBrandingUI = applyBrandingUI;
         window.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
             applyBrandingUI();
