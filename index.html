@@ -1960,52 +1960,49 @@ function promptGenerateYear() {
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
-        </html>
-function generateUniqueId(prefix) {
-    // Generates an ID like "TSK-LM3K9X-A7B"
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substr(2, 3).toUpperCase();
-    return `${prefix}-${timestamp}-${random}`;
-}
-function cloneTask(id) {
-    const originalTask = masterTasks.find(item => item.id === id);
-    if (!originalTask) return;
-    
-    openAddTaskModal(); // Opens the modal and resets it
-    
-    // Fill in the cloned data
-    document.getElementById('task-season-input').value = originalTask.seasonKey;
-    document.getElementById('task-name-input').value = originalTask.name + " (Clone)";
-    document.getElementById('task-cat-input').value = originalTask.cat;
-    document.getElementById('task-owner-input').value = originalTask.owner;
-    document.getElementById('task-lead-input').value = originalTask.leadOffset;
-    document.getElementById('task-dayoffset-input').value = originalTask.dayOffset;
-    document.getElementById('task-notes-input').value = originalTask.notes || '';
-    
-    // Force a new unique ID for the clone
-    document.getElementById('task-id-input').value = generateUniqueId('TSK');
-    document.getElementById('task-modal-title').textContent = 'Clone Task';
-}
+      // CLONE & ID HELPERS
+        function generateUniqueId(prefix) {
+            const timestamp = Date.now().toString(36).toUpperCase();
+            const random = Math.random().toString(36).substr(2, 3).toUpperCase();
+            return `${prefix}-${timestamp}-${random}`;
+        }
+        
+        function cloneTask(id) {
+            const originalTask = masterTasks.find(item => item.id === id);
+            if (!originalTask) return;
+            
+            openAddTaskModal();
+            
+            document.getElementById('task-season-input').value = originalTask.seasonKey;
+            document.getElementById('task-name-input').value = originalTask.name + " (Clone)";
+            document.getElementById('task-cat-input').value = originalTask.cat;
+            document.getElementById('task-owner-input').value = originalTask.owner;
+            document.getElementById('task-lead-input').value = originalTask.leadOffset;
+            document.getElementById('task-dayoffset-input').value = originalTask.dayOffset;
+            document.getElementById('task-notes-input').value = originalTask.notes || '';
+            
+            document.getElementById('task-id-input').value = generateUniqueId('TSK');
+            document.getElementById('task-modal-title').textContent = 'Clone Task';
+        }
 
-function cloneSeason(key) {
-    const originalSeason = seasons.find(item => item.key === key);
-    if (!originalSeason) return;
-    
-    openAddSeasonModal();
-    
-    document.getElementById('season-group-input').value = originalSeason.group;
-    document.getElementById('season-year-input').value = originalSeason.year;
-    document.getElementById('season-name-input').value = originalSeason.name + " (Clone)";
-    document.getElementById('season-session-input').value = originalSeason.session;
-    document.getElementById('season-anchor-input').value = originalSeason.anchor;
-    document.getElementById('season-days-input').value = originalSeason.activeDays;
-    document.getElementById('season-venues-input').value = originalSeason.venues;
-    document.getElementById('season-bye-input').value = originalSeason.bye || '';
-    
-    // Force a new unique key for the clone
-    document.getElementById('season-key-input').value = generateUniqueId('SEA');
-    document.getElementById('season-modal-title').textContent = 'Clone Season';
-}
-
+        function cloneSeason(key) {
+            const originalSeason = seasons.find(item => item.key === key);
+            if (!originalSeason) return;
+            
+            openAddSeasonModal();
+            
+            document.getElementById('season-group-input').value = originalSeason.group;
+            document.getElementById('season-year-input').value = originalSeason.year;
+            document.getElementById('season-name-input').value = originalSeason.name + " (Clone)";
+            document.getElementById('season-session-input').value = originalSeason.session;
+            document.getElementById('season-anchor-input').value = originalSeason.anchor;
+            document.getElementById('season-days-input').value = originalSeason.activeDays;
+            document.getElementById('season-venues-input').value = originalSeason.venues;
+            document.getElementById('season-bye-input').value = originalSeason.bye || '';
+            
+            document.getElementById('season-key-input').value = generateUniqueId('SEA');
+            document.getElementById('season-modal-title').textContent = 'Clone Season';
+        }
     </script>
 </body>
+</html>
