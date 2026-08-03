@@ -1380,7 +1380,87 @@ window.applyBrandingUI = applyBrandingUI;
                 tbody.appendChild(tr);
             });
         }
+function promptGenerateYear() {
+            // 1. Ensure there is at least one group to assign seasons to
+            const authorizedGroups = getAuthorizedGroups();
+            if (authorizedGroups.length === 0) {
+                alert("You don't have access to any groups. Please create a Group/Territory first.");
+                return;
+            }
 
+            // 2. Ask for the Year
+            const yearInput = prompt("What year would you like to generate seasons for?", new Date().getFullYear());
+            if (!yearInput) return; // User canceled
+            
+            const year = parseInt(yearInput);
+            if (isNaN(year)) {
+                alert("Please enter a valid numeric year.");
+                return;
+            }
+
+            // 3. Ask for the Group (using a numbered list to prevent typos)
+            const groupList = authorizedGroups.map((g, i) => `${i + 1}: ${g}`).join('\n');
+            const groupIndexInput = prompt(`Enter the NUMBER of the Territory to generate seasons for:\n\n${groupList}`);
+            if (!groupIndexInput) return; // User canceled
+            
+            const groupIndex = parseInt(groupIndexInput) - 1;
+            if (isNaN(groupIndex) || groupIndex < 0 || groupIndex >= authorizedGroups.length) {
+                alert("Invalid selection. Year generation canceled.");
+                return;
+            }
+            const selectedGroup = authorizedGroups[groupIndex];
+
+            // 4. Confirm action
+            if (!confirm(`Generate Spring, Summer, Fall, and Winter seasons for ${selectedGroup} in ${year}?`)) {
+                return;
+            }
+
+            // 5. Build the Seasons
+            const yy = year.toString().slice(-2); // Gets "26" from 2026
+            const seasonTemplates = [
+                { prefix: "SP", name: "Spring", startMonth: "03", startDay: "02" }, 
+                { prefix: "SU", name: "Summer", startMonth: "06", startDay: "01" }, 
+                { prefix: "FA", name: "Fall", startMonth: "08", startDay: "17" },   
+                { prefix: "WI", name: "Winter", startMonth: "12", startDay: "07" }  
+            ];
+
+            let addedCount = 0;
+
+            seasonTemplates.forEach(template => {
+                const newKey = `${template.prefix}${yy}-S1`; // e.g., SP26-S1
+
+                // Prevent creating duplicates if the season already exists
+                if (seasons.some(s => s.key === newKey && s.group === selectedGroup)) {
+                    return; 
+                }
+
+                const newSeason = {
+                    group: selectedGroup,
+                    key: newKey,
+                    year: year,
+                    name: `${template.name} ${year}`,
+                    session: "Session 1",
+                    anchor: `${year}-${template.startMonth}-${template.startDay}`, // Placeholder Monday anchor
+                    activeDays: "Sat, Sun",
+                    venues: "TBD",
+                    bye: ""
+                };
+
+                seasons.push(newSeason);
+                if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
+                addedCount++;
+            });
+
+            // 6. Save and refresh the UI
+            if (addedCount > 0) {
+                saveToLocalStorage();
+                populateFilterOptions();
+                renderControlCenter();
+                showToast("Year Generated", `Successfully added ${addedCount} seasons for ${selectedGroup}.`);
+            } else {
+                showToast("No Action Required", `All seasons for ${selectedGroup} ${year} already exist.`);
+            }
+        }
         // RENDER DASHBOARD
         function renderDashboard() {
             const seasonProgressContainer = document.getElementById('dashboard-season-progress');
