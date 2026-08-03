@@ -553,7 +553,7 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block font-bold mb-1">Season Key (e.g. SP26-S1)</label>
-                        <input type="text" id="season-key-input" required placeholder="SP26-S1" class="w-full p-2 border rounded bg-gray-50 text-xs uppercase font-mono">
+                        <input type="text" id="season-key-input" required readonly placeholder="SP26-S1" class="w-full p-2 border rounded bg-gray-50 text-xs uppercase font-mono">
                     </div>
                     <div>
                         <label class="block font-bold mb-1">Year</label>
@@ -610,7 +610,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold mb-1">Task ID</label>
-                        <input type="text" id="task-id-input" required placeholder="TSK-111" class="w-full p-2 border rounded bg-gray-50 font-mono">
+                        <input type="text" id="task-id-input" required readonly placeholder="TSK-111" class="w-full p-2 border rounded bg-gray-50 font-mono">
                     </div>
                     <div>
                         <label class="block font-bold mb-1">Season</label>
@@ -1313,10 +1313,11 @@ window.applyBrandingUI = applyBrandingUI;
                     </td>
                     <td class="px-3 py-2.5 text-gray-500 whitespace-nowrap">${task.completedBy ? `${task.completedBy} (${task.dateCompleted})` : '-'}</td>
                     <td class="px-3 py-2.5 text-gray-500 italic max-w-xs truncate" title="${task.notes}">${task.notes || '-'}</td>
-                    <td class="px-3 py-2.5 text-center whitespace-nowrap">
+                   <td class="px-3 py-2.5 text-center whitespace-nowrap">
                         ${isEditable ? `
-                            <button onclick="openEditTaskModal('${task.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteTask('${task.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="cloneTask('${task.id}')" class="text-emerald-600 hover:text-emerald-800 mr-2" title="Clone Task"><i class="fa-solid fa-copy"></i></button>
+                            <button onclick="openEditTaskModal('${task.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Edit Task"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteTask('${task.id}')" class="text-rose-600 hover:text-rose-800" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
                         ` : '<span class="text-gray-400 text-[10px]">Read-Only</span>'}
                     </td>
                 `;
@@ -1370,10 +1371,11 @@ window.applyBrandingUI = applyBrandingUI;
                     <td class="px-4 py-3 text-gray-600">${s.activeDays || '-'}</td>
                     <td class="px-4 py-3 text-gray-600">${s.venues || '-'}</td>
                     <td class="px-4 py-3 text-rose-600 font-medium">${s.bye || 'None'}</td>
-                    <td class="px-4 py-3 text-center whitespace-nowrap">
+                  <td class="px-4 py-3 text-center whitespace-nowrap">
                         ${isManagerOrAdmin ? `
-                            <button onclick="openEditSeasonModal('${s.key}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteSeason('${s.key}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="cloneSeason('${s.key}')" class="text-emerald-600 hover:text-emerald-800 mr-3" title="Clone Season"><i class="fa-solid fa-copy"></i></button>
+                            <button onclick="openEditSeasonModal('${s.key}')" class="text-blue-600 hover:text-blue-800 mr-3" title="Edit Season"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteSeason('${s.key}')" class="text-rose-600 hover:text-rose-800" title="Delete Season"><i class="fa-solid fa-trash"></i></button>
                         ` : '<span class="text-gray-400 text-[10px]">View Only</span>'}
                     </td>
                 `;
