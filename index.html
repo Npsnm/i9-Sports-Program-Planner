@@ -3,86 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>i9 Sports Program Planning & Countdown Tracker</title>
+    <title>i9 Sports® Operations Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-family/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        i9blue: '#002D62',
-                        i9red: '#D11242',
-                        i9gold: '#FFB81C',
+                        i9blue: 'var(--i9blue, #002855)',
+                        i9red: 'var(--i9red, #E31837)',
+                        i9gold: 'var(--i9gold, #FDB827)',
                         i9gray: '#F4F6F8'
                     }
                 }
             }
         }
     </script>
+    <style>
+        :root {
+            --i9blue: #002855;
+            --i9red: #E31837;
+            --i9gold: #FDB827;
+        }
+        .badge-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .6; }
+        }
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
 
-    <!-- TOP HEADER -->
-    <header class="bg-i9blue text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-i9red text-white font-black text-xl px-3 py-1 rounded italic tracking-wider">i9</div>
+    <!-- APP HEADER -->
+    <header class="bg-i9blue text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+                <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg shadow-sm border border-blue-800/30 flex items-center justify-center min-w-[38px] h-10">
+                    <img id="brand-logo-img" src="https://placehold.co/120x40/002855/FDB827?text=i9+SPORTS" alt="Logo" class="max-h-8 object-contain">
+                </div>
                 <div>
-                    <h1 class="text-lg font-bold leading-tight">i9 Sports Program Planning Calendar</h1>
-                    <p class="text-xs text-blue-200">Countdown to Gametime Operational Tracker</p>
+                    <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">i9 Sports® Operations Portal</h1>
+                    <p class="text-[11px] text-blue-200">Program Planning & Multi-Territory Task Engine</p>
                 </div>
             </div>
-            
-            <div class="flex items-center space-x-3 text-sm">
-                <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded text-xs flex items-center gap-2 transition">
-                    <i class="fa-solid fa-file-excel"></i> Export to CSV
+
+            <div class="flex items-center flex-wrap gap-2 text-xs">
+                <!-- User Profile Badge -->
+                <div id="user-badge" class="bg-blue-950/60 border border-blue-700/60 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear text-i9gold"></i>
+                    <div>
+                        <p id="user-display-name" class="font-bold text-white leading-none">Not Logged In</p>
+                        <p id="user-display-scope" class="text-[10px] text-blue-200 leading-tight">Tier: Loading...</p>
+                    </div>
+                </div>
+
+                <button id="btn-manage-branding" onclick="openBrandingModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm hidden">
+                    <i class="fa-solid fa-palette text-i9gold"></i> Branding & Colors
                 </button>
-                <button onclick="resetToDefaults()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded text-xs transition">
-                    <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+                <button id="btn-manage-users" onclick="openUserManagementModal()" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-users-gear"></i> Admin & Group Controls
+                </button>
+                <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                </button>
+                <button onclick="logout()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
                 </button>
             </div>
         </div>
     </header>
 
     <!-- NAVIGATION TABS -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 flex space-x-8">
-            <button onclick="switchTab('master')" id="tab-master" class="tab-btn py-3 px-2 border-b-2 border-i9blue font-semibold text-i9blue text-sm flex items-center gap-2">
+    <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[60px] z-30">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-6 overflow-x-auto">
+            <button onclick="switchTab('master')" id="tab-master" class="tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-list-check"></i> Master Task Engine
             </button>
-            <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-semibold text-sm flex items-center gap-2">
-                <i class="fa-solid fa-sliders"></i> Control Center (Seasons)
+            <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-sliders"></i> Control Center (Seasons & Venues)
             </button>
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-semibold text-sm flex items-center gap-2">
-                <i class="fa-solid fa-chart-pie"></i> League Dashboard
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-chart-pie"></i> Executive Dashboard
             </button>
         </div>
     </div>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+    <!-- MAIN APP CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
 
-        <!-- STATS KPI BAR -->
-        <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-i9blue">
-                <p class="text-xs text-gray-500 font-medium uppercase">Total Tasks</p>
-                <p id="kpi-total" class="text-2xl font-bold text-gray-800">0</p>
+        <!-- KPI SUMMARY STATS -->
+        <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Total Tasks</p>
+                    <p id="kpi-total" class="text-2xl font-black text-gray-800">0</p>
+                </div>
+                <div class="p-3 bg-blue-50 text-i9blue rounded-lg"><i class="fa-solid fa-list-ul text-lg"></i></div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-emerald-500">
-                <p class="text-xs text-gray-500 font-medium uppercase">Completed</p>
-                <p id="kpi-completed" class="text-2xl font-bold text-emerald-600">0</p>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Completed</p>
+                    <p id="kpi-completed" class="text-2xl font-black text-emerald-600">0</p>
+                </div>
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-circle-check text-lg"></i></div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-amber-500">
-                <p class="text-xs text-gray-500 font-medium uppercase">Due This Week</p>
-                <p id="kpi-duethisweek" class="text-2xl font-bold text-amber-600">0</p>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500 border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Due This Week</p>
+                    <p id="kpi-duethisweek" class="text-2xl font-black text-amber-600">0</p>
+                </div>
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-clock text-lg"></i></div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-rose-500">
-                <p class="text-xs text-gray-500 font-medium uppercase">Overdue</p>
-                <p id="kpi-overdue" class="text-2xl font-bold text-rose-600">0</p>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-rose-500 border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Overdue</p>
+                    <p id="kpi-overdue" class="text-2xl font-black text-rose-600">0</p>
+                </div>
+                <div class="p-3 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-triangle-exclamation text-lg"></i></div>
             </div>
         </div>
 
@@ -90,39 +148,48 @@
         <section id="view-master" class="tab-view space-y-4">
             
             <!-- FILTERS & SEARCH BAR -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-3 items-center justify-between">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-3 items-center justify-between">
                 <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                    <!-- Territory / Group Filter -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Group / Territory</label>
+                        <select id="filter-group" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none font-semibold">
+                            <option value="ALL">All Authorized Groups</option>
+                        </select>
+                    </div>
+
                     <!-- Year Filter -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Year</label>
-                        <select id="filter-year" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-i9blue focus:border-i9blue">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Year</label>
+                        <select id="filter-year" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none">
                             <option value="ALL">All Years</option>
                         </select>
                     </div>
 
                     <!-- Season Filter -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Season & Session</label>
-                        <select id="filter-season" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-i9blue focus:border-i9blue">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Season & Session</label>
+                        <select id="filter-season" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none">
                             <option value="ALL">All Seasons</option>
                         </select>
                     </div>
 
-                    <!-- Category Phase Filter -->
+                    <!-- Phase Filter -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Phase</label>
-                        <select id="filter-category" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-i9blue focus:border-i9blue">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Phase</label>
+                        <select id="filter-category" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none">
                             <option value="ALL">All Phases</option>
                             <option value="Pre-Season Prep">Pre-Season Prep</option>
-                            <option value="In-Season Ops">In-Season Ops (Clinics & Game Days)</option>
-                            <option value="Next Session Prep">Next Session / Transition</option>
+                            <option value="Training Session Ops">Training Session Ops</option>
+                            <option value="Game-Day Ops">Game-Day Ops</option>
+                            <option value="Next Session Prep">Next Session Prep</option>
                         </select>
                     </div>
 
                     <!-- Owner Filter -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Assigned Owner</label>
-                        <select id="filter-owner" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-i9blue focus:border-i9blue">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Assigned Owner</label>
+                        <select id="filter-owner" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none">
                             <option value="ALL">All Owners</option>
                             <option value="League Director">League Director</option>
                             <option value="Ops Coordinator">Ops Coordinator</option>
@@ -131,10 +198,10 @@
                         </select>
                     </div>
 
-                    <!-- Status Filter -->
+                    <!-- Action Status Filter -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Action Status</label>
-                        <select id="filter-status" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-i9blue focus:border-i9blue">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Status Badge</label>
+                        <select id="filter-status" onchange="renderMasterTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none">
                             <option value="ALL">All Statuses</option>
                             <option value="🚨 OVERDUE">🚨 OVERDUE</option>
                             <option value="⚠️ DUE THIS WEEK">⚠️ DUE THIS WEEK</option>
@@ -144,74 +211,77 @@
                     </div>
                 </div>
 
-                <!-- Search & Add Task -->
+                <!-- Search & Add Task Button -->
                 <div class="flex items-center gap-2 w-full lg:w-auto">
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
-                        <input type="text" id="filter-search" oninput="renderMasterTasks()" placeholder="Search tasks or notes..." class="pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg w-full focus:ring-i9blue focus:border-i9blue">
+                        <input type="text" id="filter-search" oninput="renderMasterTasks()" placeholder="Search tasks, notes, or IDs..." class="pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg w-full focus:ring-2 focus:ring-i9blue outline-none">
                     </div>
-                    <button onclick="openAddTaskModal()" class="bg-i9blue text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-900 transition flex items-center gap-1 whitespace-nowrap">
-                        <i class="fa-solid fa-plus"></i> Add Task
+                    <button id="btn-add-task" onclick="openAddTaskModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                        <i class="fa-solid fa-plus text-i9gold"></i> Add Task
                     </button>
                 </div>
             </div>
 
-            <!-- TASK TABLE -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+            <!-- MASTER TASK TABLE -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+                    <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-3 py-3">Task ID</th>
-                            <th class="px-3 py-3">Category</th>
-                            <th class="px-3 py-3">Task Name</th>
-                            <th class="px-3 py-3">Owner</th>
-                            <th class="px-3 py-3">Season</th>
-                            <th class="px-3 py-3">Adj. Date</th>
-                            <th class="px-3 py-3">Action Status</th>
-                            <th class="px-3 py-3">Completion</th>
-                            <th class="px-3 py-3">Date Done</th>
-                            <th class="px-3 py-3">Completed By</th>
-                            <th class="px-3 py-3">Notes / Location</th>
-                            <th class="px-3 py-3 text-center">Actions</th>
+                            <th class="px-3 py-3 font-bold">Task ID</th>
+                            <th class="px-3 py-3 font-bold">Group / Territory</th>
+                            <th class="px-3 py-3 font-bold">Phase</th>
+                            <th class="px-3 py-3 font-bold">Task Description</th>
+                            <th class="px-3 py-3 font-bold">Owner</th>
+                            <th class="px-3 py-3 font-bold">Season</th>
+                            <th class="px-3 py-3 font-bold">Adj. Target Date</th>
+                            <th class="px-3 py-3 font-bold">Action Badge</th>
+                            <th class="px-3 py-3 font-bold">Status</th>
+                            <th class="px-3 py-3 font-bold">Completed By</th>
+                            <th class="px-3 py-3 font-bold">Notes / Location</th>
+                            <th class="px-3 py-3 text-center font-bold">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="master-task-table-body" class="divide-y divide-gray-200">
-                        <!-- Dynamic Rows -->
+                        <!-- Dynamic Rows Generated Here -->
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- TAB 2: CONTROL CENTER (SEASONS) -->
+        <!-- TAB 2: CONTROL CENTER (SEASONS & GROUPS) -->
         <section id="view-control" class="tab-view hidden space-y-4">
-            <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200 gap-3">
+            <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-3">
                 <div>
-                    <h2 class="text-base font-bold text-i9blue">Season & Venue Control Center</h2>
-                    <p class="text-xs text-gray-500">Configure continuous annual schedules, anchor kickoff Mondays, venues, and bye weeks.</p>
+                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-i9gold"></i> Season & Venue Control Center
+                    </h2>
+                    <p class="text-xs text-gray-500">Manage multi-territory 4-season calendars, kickoff Mondays, venues, and bye week shifts.</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="promptGenerateYear()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                <div id="manager-season-controls" class="flex items-center gap-2">
+                    <button onclick="promptGenerateYear()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-calendar-plus"></i> + Generate Full Year
                     </button>
-                    <button onclick="openAddSeasonModal()" class="bg-i9blue text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-900 transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> Add Single Season
+                    <button onclick="openAddSeasonModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-plus text-i9gold"></i> Add Single Season
                     </button>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+                    <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-4 py-3">Year</th>
-                            <th class="px-4 py-3">Season Key</th>
-                            <th class="px-4 py-3">Season Name</th>
-                            <th class="px-4 py-3">Session</th>
-                            <th class="px-4 py-3">Anchor Kickoff (Monday)</th>
-                            <th class="px-4 py-3">Active Days</th>
-                            <th class="px-4 py-3">Venues & Schedules</th>
-                            <th class="px-4 py-3">Bye Week Start</th>
-                            <th class="px-4 py-3 text-center">Actions</th>
+                            <th class="px-4 py-3 font-bold">Group / Territory</th>
+                            <th class="px-4 py-3 font-bold">Year</th>
+                            <th class="px-4 py-3 font-bold">Season Key</th>
+                            <th class="px-4 py-3 font-bold">Season Name</th>
+                            <th class="px-4 py-3 font-bold">Session</th>
+                            <th class="px-4 py-3 font-bold">Anchor Kickoff (Monday)</th>
+                            <th class="px-4 py-3 font-bold">Active Days</th>
+                            <th class="px-4 py-3 font-bold">Venues & Schedules</th>
+                            <th class="px-4 py-3 font-bold">Bye Week Start</th>
+                            <th class="px-4 py-3 text-center font-bold">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="control-center-table-body" class="divide-y divide-gray-200">
@@ -221,25 +291,25 @@
             </div>
         </section>
 
-        <!-- TAB 3: DASHBOARD & METRICS -->
+        <!-- TAB 3: EXECUTIVE DASHBOARD -->
         <section id="view-dashboard" class="tab-view hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Completion Breakdown by Season -->
-                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-                    <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-column text-i9red"></i> Completion Status by Season
+                <!-- Completion Progress by Season -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                        <i class="fa-solid fa-chart-column text-i9red"></i> Program Completion Progress by Season
                     </h3>
-                    <div id="dashboard-season-progress" class="space-y-4">
+                    <div id="dashboard-season-progress" class="space-y-4 max-h-96 overflow-y-auto pr-1">
                         <!-- Dynamic Progress Bars -->
                     </div>
                 </div>
 
-                <!-- Overdue Tasks Priority Watchlist -->
-                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-                    <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> High-Priority Overdue Tasks
+                <!-- Overdue Priority Watchlist -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> High-Priority Overdue Action Items
                     </h3>
-                    <div id="dashboard-overdue-list" class="space-y-2 max-h-80 overflow-y-auto">
+                    <div id="dashboard-overdue-list" class="space-y-2 max-h-96 overflow-y-auto pr-1">
                         <!-- Dynamic Overdue Cards -->
                     </div>
                 </div>
@@ -248,51 +318,265 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-gray-800 text-gray-400 text-xs py-4 px-4 mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
-            <p>© i9 Sports Program Planning Framework | Automated Countdown to Gametime Engine</p>
-            <p class="text-gray-500">Formulas dynamically synchronized with Control Center Anchor Dates</p>
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- AUTHENTICATION LOGIN MODAL OVERLAY -->
+    <div id="auth-overlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5 border border-gray-200">
+            <div class="text-center space-y-1">
+                <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1">
+                    <i class="fa-solid fa-shield-halved text-3xl"></i>
+                </div>
+                <h2 class="text-lg font-bold text-i9blue">Sign In to Operations Portal</h2>
+                <p class="text-xs text-gray-500">Enter your credentials to access territory schedules & tasks</p>
+            </div>
+
+            <form onsubmit="login(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Email / Username</label>
+                    <input type="text" id="login-username" required placeholder="Enter username" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
+                </div>
+                
+                <div id="login-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-xs flex items-center gap-2 font-medium">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="login-error-text">Invalid credentials.</span>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs transition shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket text-i9gold"></i> Authenticate & Enter Portal
+                </button>
+            </form>
         </div>
-    </footer>
+    </div>
+
+    <!-- USER & GROUP MANAGEMENT MODAL (MAIN ADMIN ONLY) -->
+    <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <div>
+                    <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> User Accounts & Group Controls</h3>
+                    <p class="text-[11px] text-gray-500">Manage 3-tier user accounts, roles, and allowed territories</p>
+                </div>
+                <button onclick="closeUserManagementModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Group Creation Box -->
+            <div class="bg-blue-50/60 p-3 rounded-lg border border-blue-200/60 space-y-2">
+                <h4 class="text-xs font-bold text-i9blue flex items-center gap-1">
+                    <i class="fa-solid fa-map-location-dot"></i> Add New Group / Territory
+                </h4>
+                <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                    <input type="text" id="new-group-name" required placeholder="e.g. NM - Albuquerque or FL - Tampa" class="flex-grow p-2 border rounded-lg bg-white">
+                    <button type="submit" class="bg-i9blue hover:bg-blue-900 text-white font-bold px-3 py-2 rounded-lg text-xs transition whitespace-nowrap">
+                        + Add Group
+                    </button>
+                </form>
+                <div id="group-pill-list" class="flex flex-wrap gap-1.5 pt-1">
+                    <!-- Dynamic Group Pills -->
+                </div>
+            </div>
+
+            <!-- User List -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <h4 class="text-xs font-bold text-gray-800">Existing System Users</h4>
+                    <button onclick="toggleAddUserForm()" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-2.5 py-1 rounded text-xs transition">
+                        + Create New User
+                    </button>
+                </div>
+
+                <!-- Add User Form (Collapsible) -->
+                <form id="add-user-form" onsubmit="saveUser(event)" class="hidden bg-gray-50 p-3 rounded-lg border space-y-3 text-xs">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block font-bold mb-1">Username / Email</label>
+                            <input type="text" id="new-user-username" required class="w-full p-2 border rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Full Name</label>
+                            <input type="text" id="new-user-name" required class="w-full p-2 border rounded bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Password</label>
+                            <input type="password" id="new-user-password" required class="w-full p-2 border rounded bg-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold mb-1">Role Hierarchy Tier</label>
+                            <select id="new-user-role" class="w-full p-2 border rounded bg-white font-semibold">
+                                <option value="Main Admin">Tier 1: Main Admin (Full Control)</option>
+                                <option value="Manager">Tier 2: Manager (Plan & Assign)</option>
+                                <option value="Staff" selected>Tier 3: Staff (Execution Only)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Allowed Territory Access</label>
+                            <div id="new-user-territory-checkboxes" class="p-2 border rounded bg-white max-h-24 overflow-y-auto space-y-1">
+                                <!-- Dynamic Territory Checkboxes -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="toggleAddUserForm()" class="px-2.5 py-1 bg-gray-200 text-gray-700 rounded font-semibold">Cancel</button>
+                        <button type="submit" class="px-3 py-1 bg-i9blue text-white rounded font-bold">Save User Account</button>
+                    </div>
+                </form>
+
+                <!-- Users Table -->
+                <div class="border rounded-lg overflow-hidden">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-gray-100 text-gray-700 uppercase font-bold border-b">
+                            <tr>
+                                <th class="p-2">User / Email</th>
+                                <th class="p-2">Name</th>
+                                <th class="p-2">Role Tier</th>
+                                <th class="p-2">Assigned Groups</th>
+                                <th class="p-2 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y">
+                            <!-- Dynamic User Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BRANDING & COLOR CUSTOMIZATION MODAL (MAIN ADMIN ONLY) -->
+    <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <div>
+                    <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-palette mr-1 text-i9gold"></i> Portal Customization & Branding Settings</h3>
+                    <p class="text-[11px] text-gray-500">Customize organization title, header logo, and portal color scheme</p>
+                </div>
+                <button onclick="closeBrandingModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form onsubmit="saveBranding(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold mb-1">Organization Title</label>
+                    <input type="text" id="branding-title-input" required placeholder="e.g. i9 Sports® Operations Portal" class="w-full p-2 border rounded-lg bg-gray-50 text-xs">
+                </div>
+
+                <div>
+                    <label class="block font-bold mb-1">Header Logo Image URL</label>
+                    <input type="text" id="branding-logo-input" placeholder="https://example.com/logo.png" class="w-full p-2 border rounded-lg bg-gray-50 text-xs font-mono">
+                    <p class="text-[10px] text-gray-400 mt-1">* Paste image web link or leave blank for default i9 Sports badge.</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block font-bold mb-1 text-[11px]">Primary Color (Blue)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="branding-color-primary" value="#002855" class="w-8 h-8 rounded border cursor-pointer">
+                            <span id="hex-primary" class="font-mono text-[10px]">#002855</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-[11px]">Accent Color (Gold)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="branding-color-accent" value="#FDB827" class="w-8 h-8 rounded border cursor-pointer">
+                            <span id="hex-accent" class="font-mono text-[10px]">#FDB827</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-[11px]">Secondary (Red)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="branding-color-secondary" value="#E31837" class="w-8 h-8 rounded border cursor-pointer">
+                            <span id="hex-secondary" class="font-mono text-[10px]">#E31837</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold mb-1">Quick Color Presets</label>
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <button type="button" onclick="applyColorPreset('#002855', '#FDB827', '#E31837')" class="p-2 border rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-between font-semibold">
+                            <span>i9 Official</span>
+                            <div class="flex gap-1"><span class="w-3 h-3 rounded-full bg-[#002855]"></span><span class="w-3 h-3 rounded-full bg-[#FDB827]"></span></div>
+                        </button>
+                        <button type="button" onclick="applyColorPreset('#0f172a', '#38bdf8', '#ef4444')" class="p-2 border rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-between font-semibold">
+                            <span>Modern Slate</span>
+                            <div class="flex gap-1"><span class="w-3 h-3 rounded-full bg-[#0f172a]"></span><span class="w-3 h-3 rounded-full bg-[#38bdf8]"></span></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <button type="button" onclick="resetBrandingToDefault()" class="text-rose-600 hover:text-rose-800 font-bold">Reset Default Theme</button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeBrandingModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg font-semibold">Cancel</button>
+                        <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Theme</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- ADD/EDIT SEASON MODAL -->
     <div id="season-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 id="season-modal-title" class="text-base font-bold text-i9blue">Add New Season</h3>
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 id="season-modal-title" class="text-sm font-bold text-i9blue">Add New Season</h3>
             <form id="season-form" onsubmit="saveSeason(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="season-edit-id">
+                
                 <div>
-                    <label class="block font-semibold mb-1">Season Key (e.g., SP26-S1)</label>
-                    <input type="text" id="season-key-input" required class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Group / Territory</label>
+                    <select id="season-group-input" required class="w-full p-2 border rounded bg-gray-50 text-xs font-semibold"></select>
                 </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold mb-1">Season Key (e.g. SP26-S1)</label>
+                        <input type="text" id="season-key-input" required placeholder="SP26-S1" class="w-full p-2 border rounded bg-gray-50 text-xs uppercase font-mono">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Year</label>
+                        <input type="number" id="season-year-input" required value="2026" class="w-full p-2 border rounded bg-gray-50 text-xs">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold mb-1">Season Name</label>
+                        <input type="text" id="season-name-input" required placeholder="Spring 2026" class="w-full p-2 border rounded bg-gray-50 text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Session</label>
+                        <input type="text" id="season-session-input" required placeholder="Session 1" class="w-full p-2 border rounded bg-gray-50 text-xs">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block font-semibold mb-1">Season Name (e.g., Spring 2026)</label>
-                    <input type="text" id="season-name-input" required class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Anchor Kickoff Date (Monday Start)</label>
+                    <input type="date" id="season-anchor-input" required class="w-full p-2 border rounded bg-gray-50 text-xs">
                 </div>
+
                 <div>
-                    <label class="block font-semibold mb-1">Session</label>
-                    <input type="text" id="season-session-input" required placeholder="Session 1" class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Active Days</label>
+                    <input type="text" id="season-days-input" placeholder="Tue, Sat, Sun" class="w-full p-2 border rounded bg-gray-50 text-xs">
                 </div>
+
                 <div>
-                    <label class="block font-semibold mb-1">Anchor Week Start (Monday Kickoff Date)</label>
-                    <input type="date" id="season-anchor-input" required class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Venues & Schedules</label>
+                    <input type="text" id="season-venues-input" placeholder="Sat/Sun: Central Park Field #1" class="w-full p-2 border rounded bg-gray-50 text-xs">
                 </div>
+
                 <div>
-                    <label class="block font-semibold mb-1">Active Days</label>
-                    <input type="text" id="season-days-input" placeholder="Tue, Sat, Sun" class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Bye Week Start (Optional / Blank if none)</label>
+                    <input type="date" id="season-bye-input" class="w-full p-2 border rounded bg-gray-50 text-xs">
                 </div>
-                <div>
-                    <label class="block font-semibold mb-1">Venues & Schedules</label>
-                    <input type="text" id="season-venues-input" placeholder="Sat/Sun: Main Complex" class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block font-semibold mb-1">Bye Week Start (Optional / Blank if none)</label>
-                    <input type="date" id="season-bye-input" class="w-full p-2 border rounded">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeSeasonModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-3 py-1.5 bg-i9blue text-white rounded font-semibold">Save Season</button>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeSeasonModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Season</button>
                 </div>
             </form>
         </div>
@@ -300,28 +584,31 @@
 
     <!-- ADD/EDIT TASK MODAL -->
     <div id="task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 id="task-modal-title" class="text-base font-bold text-i9blue">Add Milestone Task</h3>
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 id="task-modal-title" class="text-sm font-bold text-i9blue">Add Milestone Task</h3>
             <form id="task-form" onsubmit="saveTask(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="task-edit-id">
+                
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold mb-1">Task ID</label>
-                        <input type="text" id="task-id-input" required placeholder="TSK-111" class="w-full p-2 border rounded">
+                        <label class="block font-bold mb-1">Task ID</label>
+                        <input type="text" id="task-id-input" required placeholder="TSK-111" class="w-full p-2 border rounded bg-gray-50 font-mono">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-1">Season Key</label>
-                        <select id="task-season-input" required class="w-full p-2 border rounded"></select>
+                        <label class="block font-bold mb-1">Season</label>
+                        <select id="task-season-input" required class="w-full p-2 border rounded bg-gray-50"></select>
                     </div>
                 </div>
+
                 <div>
-                    <label class="block font-semibold mb-1">Task Name</label>
-                    <input type="text" id="task-name-input" required class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Task Description</label>
+                    <input type="text" id="task-name-input" required placeholder="Description..." class="w-full p-2 border rounded bg-gray-50">
                 </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold mb-1">Category</label>
-                        <select id="task-cat-input" required class="w-full p-2 border rounded">
+                        <label class="block font-bold mb-1">Phase Category</label>
+                        <select id="task-cat-input" required class="w-full p-2 border rounded bg-gray-50">
                             <option value="Pre-Season Prep">Pre-Season Prep</option>
                             <option value="Training Session Ops">Training Session Ops</option>
                             <option value="Game-Day Ops">Game-Day Ops</option>
@@ -329,8 +616,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold mb-1">Assigned Owner</label>
-                        <select id="task-owner-input" required class="w-full p-2 border rounded">
+                        <label class="block font-bold mb-1">Assigned Owner</label>
+                        <select id="task-owner-input" required class="w-full p-2 border rounded bg-gray-50">
                             <option value="League Director">League Director</option>
                             <option value="Ops Coordinator">Ops Coordinator</option>
                             <option value="Site Lead">Site Lead</option>
@@ -338,252 +625,526 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold mb-1">Lead Offset (Days from Kickoff)</label>
-                        <input type="number" id="task-lead-input" required placeholder="-60" class="w-full p-2 border rounded">
+                        <label class="block font-bold mb-1">Lead Offset (Days from Kickoff)</label>
+                        <input type="number" id="task-lead-input" required placeholder="-60" class="w-full p-2 border rounded bg-gray-50">
                     </div>
                     <div>
-                        <label class="block font-semibold mb-1">Day Offset (0=Mon, 5=Sat, 6=Sun)</label>
-                        <input type="number" id="task-dayoffset-input" required min="0" max="6" value="0" class="w-full p-2 border rounded">
+                        <label class="block font-bold mb-1">Day Offset (0=Mon, 5=Sat, 6=Sun)</label>
+                        <input type="number" id="task-dayoffset-input" required min="0" max="6" value="0" class="w-full p-2 border rounded bg-gray-50">
                     </div>
                 </div>
+
                 <div>
-                    <label class="block font-semibold mb-1">Notes / Field Location Override</label>
-                    <input type="text" id="task-notes-input" placeholder="Field #2, Concession Desk" class="w-full p-2 border rounded">
+                    <label class="block font-bold mb-1">Notes / Field Location Override</label>
+                    <input type="text" id="task-notes-input" placeholder="Field #2, Concession Desk" class="w-full p-2 border rounded bg-gray-50">
                 </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeTaskModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-3 py-1.5 bg-i9blue text-white rounded font-semibold">Save Task</button>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeTaskModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Task</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- JAVASCRIPT APP LOGIC -->
+    <!-- JAVASCRIPT APPLICATION ENGINE -->
     <script>
-        // INITIAL DEFAULT DATA (Spanning 2026 and 2027)
-        const DEFAULT_SEASONS = [
-            // 2026 Seasons
-            { year: 2026, key: 'SP26-S1', name: 'Spring 2026', session: 'Session 1', anchor: '2026-03-30', activeDays: 'Tue, Sat, Sun', venues: 'Central Community Park', bye: '2026-04-20' },
-            { year: 2026, key: 'SP26-S2', name: 'Spring 2026', session: 'Session 2', anchor: '2026-05-18', activeDays: 'Tue, Sat, Sun', venues: 'Central Community Park', bye: '' },
-            { year: 2026, key: 'SU26-S1', name: 'Summer 2026', session: 'Session 1', anchor: '2026-07-06', activeDays: 'Sat, Sun', venues: 'Westside Sports Complex', bye: '2026-07-04' },
-            { year: 2026, key: 'SU26-S2', name: 'Summer 2026', session: 'Session 2', anchor: '2026-08-24', activeDays: 'Sat, Sun', venues: 'Westside Sports Complex', bye: '' },
-            { year: 2026, key: 'FA26-S1', name: 'Fall 2026', session: 'Session 1', anchor: '2026-09-14', activeDays: 'Sat, Sun', venues: 'Central Community Park', bye: '2026-10-12' },
-            { year: 2026, key: 'FA26-S2', name: 'Fall 2026', session: 'Session 2', anchor: '2026-11-02', activeDays: 'Sat, Sun', venues: 'Central Community Park', bye: '2026-11-26' },
-            
-            // 2027 Seasons
-            { year: 2027, key: 'SP27-S1', name: 'Spring 2027', session: 'Session 1', anchor: '2027-03-29', activeDays: 'Tue, Sat, Sun', venues: 'Central Community Park', bye: '2027-04-19' },
-            { year: 2027, key: 'SP27-S2', name: 'Spring 2027', session: 'Session 2', anchor: '2027-05-17', activeDays: 'Tue, Sat, Sun', venues: 'Central Community Park', bye: '' }
+        // BRANDING & THEME DEFAULT STATE
+        const DEFAULT_BRANDING = {
+            title: "i9 Sports® Operations Portal",
+            logoUrl: "https://placehold.co/120x40/002855/FDB827?text=i9+SPORTS",
+            primaryColor: "#002855",
+            accentColor: "#FDB827",
+            secondaryColor: "#E31837"
+        };
+
+        let currentBranding = { ...DEFAULT_BRANDING };
+
+        // DEFAULT 3-TIER USER ACCOUNTS
+        const DEFAULT_USERS = [
+            { username: "nick@npsnm.com", password: "1234", name: "Nick", role: "Main Admin", territories: ["ALL"] },
+            { username: "manager", password: "managerpass2026", name: "Regional Manager", role: "Manager", territories: ["ALL"] },
+            { username: "staff", password: "staffpass2026", name: "Operations Staff", role: "Staff", territories: ["ALL"] }
         ];
 
-        const STANDARDIZED_TASKS = [
-            // Pre-Season Prep Phase
-            { id: "TSK-101", cat: "Pre-Season Prep", name: "Open System Registration & Set Up Pricing Tier 1", owner: "Marketing Lead", leadOffset: -60, dayOffset: 0 },
-            { id: "TSK-102", cat: "Pre-Season Prep", name: "Secure Venue Permits & Field Reservations", owner: "League Director", leadOffset: -45, dayOffset: 0 },
-            { id: "TSK-103", cat: "Pre-Season Prep", name: "Equipment, Cones, Balls & Whistles Inventory Audit", owner: "Ops Coordinator", leadOffset: -40, dayOffset: 0 },
-            { id: "TSK-104", cat: "Pre-Season Prep", name: "Order Uniforms, Coach Shirts & Custom Jerseys", owner: "Ops Coordinator", leadOffset: -35, dayOffset: 0 },
-            { id: "TSK-105", cat: "Pre-Season Prep", name: "Coach Recruitment Drive & Background Check Audits", owner: "League Director", leadOffset: -28, dayOffset: 0 },
-            { id: "TSK-106", cat: "Pre-Season Prep", name: "Complete SafeSport & Concussion Certification Audits", owner: "Site Lead", leadOffset: -21, dayOffset: 0 },
-            { id: "TSK-107", cat: "Pre-Season Prep", name: "Final Roster Lock & Team Balancing", owner: "League Director", leadOffset: -14, dayOffset: 0 },
-            { id: "TSK-108", cat: "Pre-Season Prep", name: "Publish Schedules & Practice Times to Parent Portal", owner: "Marketing Lead", leadOffset: -10, dayOffset: 0 },
-            { id: "TSK-109", cat: "Pre-Season Prep", name: "Hold Mandatory Parent & Coach Orientation Meeting", owner: "League Director", leadOffset: -7, dayOffset: 0 },
-            { id: "TSK-110", cat: "Pre-Season Prep", name: "Confirm Site Staff & Referee Schedules for Week 1", owner: "Site Lead", leadOffset: -5, dayOffset: 0 },
-
-            // In-Season Ops Phase (Clinics & Game Days)
-            { id: "TSK-201", cat: "In-Season Ops", name: "Opening Day / Session Kickoff & Uniform Distribution", owner: "Site Lead", leadOffset: 0, dayOffset: 5 },
-            { id: "TSK-202", cat: "In-Season Ops", name: "Week 1 Training Clinic Execution & Attendance Check", owner: "Site Lead", leadOffset: 0, dayOffset: 5 },
-            { id: "TSK-203", cat: "In-Season Ops", name: "Week 2 Skill Focus: Fundamentals & Sportsmanship Value 1", owner: "Site Lead", leadOffset: 7, dayOffset: 5 },
-            { id: "TSK-204", cat: "In-Season Ops", name: "Week 3 Skill Focus: Team Drills & Mid-Session Parent Survey", owner: "Ops Coordinator", leadOffset: 14, dayOffset: 5 },
-            { id: "TSK-205", cat: "In-Season Ops", name: "Team Picture Day & On-Site Photographer Coordination", owner: "Marketing Lead", leadOffset: 14, dayOffset: 5 },
-            { id: "TSK-206", cat: "In-Season Ops", name: "Week 4 Playoff Seeding / Advanced Training Drills", owner: "League Director", leadOffset: 21, dayOffset: 5 },
-            { id: "TSK-207", cat: "In-Season Ops", name: "Week 5 Skill Focus: Scrimmage Prep & Sportsmanship Medals", owner: "Site Lead", leadOffset: 28, dayOffset: 5 },
-            { id: "TSK-208", cat: "In-Season Ops", name: "Week 6 Final Clinic / Championship Games & Awards Ceremony", owner: "Site Lead", leadOffset: 35, dayOffset: 5 },
-
-            // Next Session Prep / Transitions
-            { id: "TSK-301", cat: "Next Session Prep", name: "Launch Early Registration Push for Next Session", owner: "Marketing Lead", leadOffset: 14, dayOffset: 0 },
-            { id: "TSK-302", cat: "Next Session Prep", name: "Order Next Session Medals, Trophies & Participant Pins", owner: "Ops Coordinator", leadOffset: 21, dayOffset: 0 },
-            { id: "TSK-303", cat: "Next Session Prep", name: "Finalize Next Session Roster Transfers & Coach Retention", owner: "League Director", leadOffset: 35, dayOffset: 0 },
-            { id: "TSK-304", cat: "Next Session Prep", name: "Post-Session Equipment Pack-up & Inventory Wrap-up", owner: "Ops Coordinator", leadOffset: 42, dayOffset: 0 }
-        ];
-
-        // STATE APP STORAGE
+        let users = [];
+        let currentUser = null;
+        let groups = [];
         let seasons = [];
         let masterTasks = [];
 
         // INITIALIZATION
         window.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
-            ensureYearProperties();
+            applyBrandingUI();
+            checkExistingSession();
+        });
+
+        function loadFromLocalStorage() {
+            // Load Branding
+            const savedBranding = localStorage.getItem('i9_portal_branding');
+            if (savedBranding) currentBranding = JSON.parse(savedBranding);
+
+            // Load Users
+            const savedUsers = localStorage.getItem('i9_portal_users');
+            users = savedUsers ? JSON.parse(savedUsers) : [...DEFAULT_USERS];
+
+            // Load Groups (Territories)
+            const savedGroups = localStorage.getItem('i9_portal_groups');
+            groups = savedGroups ? JSON.parse(savedGroups) : [];
+
+            // Load Seasons
+            const savedSeasons = localStorage.getItem('i9_portal_seasons');
+            seasons = savedSeasons ? JSON.parse(savedSeasons) : [];
+
+            // Load Master Tasks
+            const savedTasks = localStorage.getItem('i9_portal_tasks');
+            masterTasks = savedTasks ? JSON.parse(savedTasks) : [];
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('i9_portal_users', JSON.stringify(users));
+            localStorage.setItem('i9_portal_groups', JSON.stringify(groups));
+            localStorage.setItem('i9_portal_seasons', JSON.stringify(seasons));
+            localStorage.setItem('i9_portal_tasks', JSON.stringify(masterTasks));
+        }
+
+        function checkExistingSession() {
+            const savedSession = localStorage.getItem('i9_portal_session');
+            if (savedSession) {
+                const user = users.find(u => u.username === savedSession);
+                if (user) {
+                    currentUser = user;
+                    unlockPortal();
+                    return;
+                }
+            }
+            document.getElementById('auth-overlay').classList.remove('hidden');
+        }
+
+        function login(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+
+            const user = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('i9_portal_session', user.username);
+                document.getElementById('login-error').classList.add('hidden');
+                unlockPortal();
+                showToast("Welcome Back", `Logged in as ${user.name} (${user.role})`);
+            } else {
+                document.getElementById('login-error-text').textContent = "Invalid username or password.";
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('i9_portal_session');
+            document.getElementById('auth-overlay').classList.remove('hidden');
+            showToast("Signed Out", "You have been logged out of the portal.");
+        }
+
+        function unlockPortal() {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            
+            // Update User Badge in Header
+            document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
+            const scopeText = currentUser.territories.includes('ALL') ? 'All Groups / Network' : currentUser.territories.join(', ');
+            document.getElementById('user-display-scope').textContent = `Assigned Groups: ${scopeText || 'None'}`;
+
+            // Permissions UI Enforcements
+            const adminBtn = document.getElementById('btn-manage-users');
+            const brandingBtn = document.getElementById('btn-manage-branding');
+            const addTaskBtn = document.getElementById('btn-add-task');
+            const managerSeasonControls = document.getElementById('manager-season-controls');
+
+            // Tier 1: Main Admin
+            if (currentUser.role === 'Main Admin') {
+                adminBtn.classList.remove('hidden');
+                brandingBtn.classList.remove('hidden');
+                addTaskBtn.classList.remove('hidden');
+                managerSeasonControls.classList.remove('hidden');
+            } 
+            // Tier 2: Manager
+            else if (currentUser.role === 'Manager') {
+                adminBtn.classList.add('hidden');
+                brandingBtn.classList.add('hidden');
+                addTaskBtn.classList.remove('hidden');
+                managerSeasonControls.classList.remove('hidden');
+            } 
+            // Tier 3: Staff
+            else {
+                adminBtn.classList.add('hidden');
+                brandingBtn.classList.add('hidden');
+                addTaskBtn.classList.add('hidden');
+                managerSeasonControls.classList.add('hidden');
+            }
+
             populateFilterOptions();
             renderControlCenter();
             renderMasterTasks();
-            updateKPIs();
             renderDashboard();
-        });
+        }
 
-        function ensureYearProperties() {
-            seasons.forEach(s => {
-                if (!s.year && s.anchor) {
-                    s.year = parseInt(s.anchor.split('-')[0]) || 2026;
-                }
+        function applyBrandingUI() {
+            document.documentElement.style.setProperty('--i9blue', currentBranding.primaryColor);
+            document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
+            document.documentElement.style.setProperty('--i9red', currentBranding.secondaryColor);
+
+            document.getElementById('brand-title-display').textContent = currentBranding.title;
+            const logoImg = document.getElementById('brand-logo-img');
+            logoImg.src = currentBranding.logoUrl || DEFAULT_BRANDING.logoUrl;
+        }
+
+        function openBrandingModal() {
+            if (!currentUser || currentUser.role !== 'Main Admin') return;
+
+            document.getElementById('branding-title-input').value = currentBranding.title;
+            document.getElementById('branding-logo-input').value = currentBranding.logoUrl;
+            document.getElementById('branding-color-primary').value = currentBranding.primaryColor;
+            document.getElementById('branding-color-accent').value = currentBranding.accentColor;
+            document.getElementById('branding-color-secondary').value = currentBranding.secondaryColor;
+
+            updateHexLabels();
+
+            document.getElementById('branding-color-primary').oninput = updateHexLabels;
+            document.getElementById('branding-color-accent').oninput = updateHexLabels;
+            document.getElementById('branding-color-secondary').oninput = updateHexLabels;
+
+            document.getElementById('branding-modal').classList.remove('hidden');
+        }
+
+        function closeBrandingModal() {
+            document.getElementById('branding-modal').classList.add('hidden');
+        }
+
+        function updateHexLabels() {
+            document.getElementById('hex-primary').textContent = document.getElementById('branding-color-primary').value.toUpperCase();
+            document.getElementById('hex-accent').textContent = document.getElementById('branding-color-accent').value.toUpperCase();
+            document.getElementById('hex-secondary').textContent = document.getElementById('branding-color-secondary').value.toUpperCase();
+        }
+
+        function applyColorPreset(primary, accent, secondary) {
+            document.getElementById('branding-color-primary').value = primary;
+            document.getElementById('branding-color-accent').value = accent;
+            document.getElementById('branding-color-secondary').value = secondary;
+            updateHexLabels();
+        }
+
+        function saveBranding(e) {
+            e.preventDefault();
+            if (!currentUser || currentUser.role !== 'Main Admin') return;
+
+            currentBranding = {
+                title: document.getElementById('branding-title-input').value.trim() || DEFAULT_BRANDING.title,
+                logoUrl: document.getElementById('branding-logo-input').value.trim() || DEFAULT_BRANDING.logoUrl,
+                primaryColor: document.getElementById('branding-color-primary').value,
+                accentColor: document.getElementById('branding-color-accent').value,
+                secondaryColor: document.getElementById('branding-color-secondary').value
+            };
+
+            localStorage.setItem('i9_portal_branding', JSON.stringify(currentBranding));
+            applyBrandingUI();
+            closeBrandingModal();
+            showToast("Theme Updated", "Branding settings and color scheme saved.");
+        }
+
+        function resetBrandingToDefault() {
+            currentBranding = { ...DEFAULT_BRANDING };
+            localStorage.removeItem('i9_portal_branding');
+            applyBrandingUI();
+            openBrandingModal();
+            showToast("Branding Reset", "Restored official i9 Sports default theme and colors.");
+        }
+
+        function openUserManagementModal() {
+            if (!currentUser || currentUser.role !== 'Main Admin') return;
+            renderGroupPills();
+            renderUsersTable();
+            renderTerritoryCheckboxes();
+            document.getElementById('user-management-modal').classList.remove('hidden');
+        }
+
+        function closeUserManagementModal() {
+            document.getElementById('user-management-modal').classList.add('hidden');
+        }
+
+        function addGroup(e) {
+            e.preventDefault();
+            const groupName = document.getElementById('new-group-name').value.trim();
+            if (!groupName) return;
+
+            if (groups.includes(groupName)) {
+                showToast("Group Exists", "This group/territory already exists.", "warning");
+                return;
+            }
+
+            groups.push(groupName);
+            saveToLocalStorage();
+            document.getElementById('new-group-name').value = '';
+            renderGroupPills();
+            renderTerritoryCheckboxes();
+            populateFilterOptions();
+            showToast("Group Added", `Created territory group "${groupName}".`);
+        }
+
+        function deleteGroup(groupName) {
+            groups = groups.filter(g => g !== groupName);
+            saveToLocalStorage();
+            renderGroupPills();
+            renderTerritoryCheckboxes();
+            populateFilterOptions();
+            showToast("Group Removed", `Deleted territory group "${groupName}".`);
+        }
+
+        function renderGroupPills() {
+            const container = document.getElementById('group-pill-list');
+            container.innerHTML = '';
+
+            if (groups.length === 0) {
+                container.innerHTML = '<span class="text-[11px] text-gray-400 italic">No groups created yet. Add your first group above!</span>';
+                return;
+            }
+
+            groups.forEach(g => {
+                const pill = document.createElement('span');
+                pill.className = "bg-white border border-blue-300 text-i9blue font-bold px-2 py-0.5 rounded-md text-[11px] flex items-center gap-1.5 shadow-sm";
+                pill.innerHTML = `
+                    <span>${g}</span>
+                    <button type="button" onclick="deleteGroup('${g}')" class="text-rose-500 hover:text-rose-700 text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                container.appendChild(pill);
             });
         }
 
-        // POPULATE DROPDOWNS & YEARS
+        function renderTerritoryCheckboxes() {
+            const container = document.getElementById('new-user-territory-checkboxes');
+            container.innerHTML = `
+                <label class="flex items-center gap-1.5 font-bold text-i9blue">
+                    <input type="checkbox" value="ALL" class="rounded text-i9blue"> ALL GROUPS (Network Wide)
+                </label>
+            `;
+
+            groups.forEach(g => {
+                container.innerHTML += `
+                    <label class="flex items-center gap-1.5 text-gray-700">
+                        <input type="checkbox" value="${g}" class="user-group-checkbox rounded"> ${g}
+                    </label>
+                `;
+            });
+        }
+
+        function toggleAddUserForm() {
+            document.getElementById('add-user-form').classList.toggle('hidden');
+        }
+
+        function saveUser(e) {
+            e.preventDefault();
+            const username = document.getElementById('new-user-username').value.trim();
+            const name = document.getElementById('new-user-name').value.trim();
+            const password = document.getElementById('new-user-password').value.trim();
+            const role = document.getElementById('new-user-role').value;
+
+            const checkboxes = document.querySelectorAll('#new-user-territory-checkboxes input:checked');
+            const selectedTerritories = Array.from(checkboxes).map(cb => cb.value);
+
+            if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                showToast("Account Exists", "A user with this email/username already exists.", "warning");
+                return;
+            }
+
+            users.push({ username, password, name, role, territories: selectedTerritories.length > 0 ? selectedTerritories : ["ALL"] });
+            saveToLocalStorage();
+            renderUsersTable();
+            toggleAddUserForm();
+            showToast("User Created", `Added account for ${name} (${role})`);
+        }
+
+        function deleteUser(username) {
+            if (username === 'nick@npsnm.com') {
+                showToast("Action Restricted", "Cannot delete the primary Main Admin account.", "warning");
+                return;
+            }
+            users = users.filter(u => u.username !== username);
+            saveToLocalStorage();
+            renderUsersTable();
+            showToast("User Removed", "User account deleted successfully.");
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50";
+                tr.innerHTML = `
+                    <td class="p-2 font-bold text-gray-800">${u.username}</td>
+                    <td class="p-2 text-gray-700">${u.name}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded font-bold text-[10px] ${u.role === 'Main Admin' ? 'bg-purple-100 text-purple-700' : u.role === 'Manager' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-700'}">${u.role}</span></td>
+                    <td class="p-2 text-gray-600">${u.territories.join(', ')}</td>
+                    <td class="p-2 text-center">
+                        ${u.username !== 'nick@npsnm.com' ? `<button onclick="deleteUser('${u.username}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs"><i class="fa-solid fa-trash"></i></button>` : '<span class="text-[10px] text-gray-400 italic">Protected</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calculateTaskDates(task) {
+            const season = seasons.find(s => s.key === task.seasonKey);
+            if (!season || !season.anchor) {
+                return { calculatedDate: 'N/A', adjustedDate: 'N/A', actionStatus: '⏳ UPCOMING' };
+            }
+
+            const anchorDate = new Date(season.anchor + 'T00:00:00');
+            const totalOffsetDays = (parseInt(task.leadOffset) || 0) + (parseInt(task.dayOffset) || 0);
+            
+            const calculated = new Date(anchorDate);
+            calculated.setDate(calculated.getDate() + totalOffsetDays);
+
+            let adjusted = new Date(calculated);
+            if (season.bye) {
+                const byeDate = new Date(season.bye + 'T00:00:00');
+                if (calculated >= byeDate) {
+                    adjusted.setDate(adjusted.getDate() + 7);
+                }
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const diffDays = Math.ceil((adjusted.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+            let actionStatus = "⏳ UPCOMING";
+            if (task.status === "Complete") {
+                actionStatus = "✅ COMPLETE";
+            } else if (diffDays < 0) {
+                actionStatus = "🚨 OVERDUE";
+            } else if (diffDays <= 7) {
+                actionStatus = "⚠️ DUE THIS WEEK";
+            }
+
+            const formattedDate = adjusted.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            return {
+                calculatedDate: calculated.toISOString().split('T')[0],
+                adjustedDate: formattedDate,
+                actionStatus: actionStatus
+            };
+        }
+
         function populateFilterOptions() {
+            const groupFilter = document.getElementById('filter-group');
             const yearFilter = document.getElementById('filter-year');
             const seasonFilter = document.getElementById('filter-season');
+            const seasonGroupInput = document.getElementById('season-group-input');
             const taskSeasonInput = document.getElementById('task-season-input');
 
-            const currentYearVal = yearFilter ? yearFilter.value : 'ALL';
-            const currentSeasonVal = seasonFilter ? seasonFilter.value : 'ALL';
+            // Filter authorized groups for active user
+            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? groups : (currentUser ? currentUser.territories : []);
 
-            // Extract unique years sorted
+            groupFilter.innerHTML = '<option value="ALL">All Authorized Groups</option>';
+            seasonGroupInput.innerHTML = '';
+
+            userAllowedGroups.forEach(g => {
+                groupFilter.innerHTML += `<option value="${g}">${g}</option>`;
+                seasonGroupInput.innerHTML += `<option value="${g}">${g}</option>`;
+            });
+
+            // Extract unique years
             const uniqueYears = [...new Set(seasons.map(s => s.year || parseInt(s.anchor.split('-')[0])))].sort((a, b) => a - b);
-            
-            if (yearFilter) {
-                yearFilter.innerHTML = '<option value="ALL">All Years</option>';
-                uniqueYears.forEach(y => {
-                    yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
-                });
-                yearFilter.value = currentYearVal;
-            }
+            yearFilter.innerHTML = '<option value="ALL">All Years</option>';
+            uniqueYears.forEach(y => {
+                yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
+            });
 
             seasonFilter.innerHTML = '<option value="ALL">All Seasons</option>';
             taskSeasonInput.innerHTML = '';
 
             seasons.forEach(s => {
-                const yr = s.year || s.anchor.split('-')[0];
-                seasonFilter.innerHTML += `<option value="${s.key}">${yr} - ${s.name} (${s.session})</option>`;
-                taskSeasonInput.innerHTML += `<option value="${s.key}">${yr} - ${s.name} (${s.session})</option>`;
+                if (userAllowedGroups.length === 0 || userAllowedGroups.includes(s.group) || (currentUser && currentUser.territories.includes('ALL'))) {
+                    const yr = s.year || s.anchor.split('-')[0];
+                    seasonFilter.innerHTML += `<option value="${s.key}">[${s.group || 'General'}] ${yr} - ${s.name} (${s.session})</option>`;
+                    taskSeasonInput.innerHTML += `<option value="${s.key}">[${s.group || 'General'}] ${yr} - ${s.name} (${s.session})</option>`;
+                }
             });
-
-            if (currentSeasonVal) seasonFilter.value = currentSeasonVal;
         }
 
-        // 1-CLICK MULTI-YEAR GENERATOR
-        function promptGenerateYear() {
-            const targetYearStr = prompt("Enter the Year to generate full schedule for (e.g. 2027 or 2028):", new Date().getFullYear() + 1);
-            if (!targetYearStr) return;
-            const y = parseInt(targetYearStr);
-            if (isNaN(y) || y < 2020 || y > 2040) {
-                alert("Please enter a valid year between 2020 and 2040.");
-                return;
-            }
-
-            // Check if year already exists
-            const existing = seasons.filter(s => (s.year === y || s.anchor.startsWith(y.toString())));
-            if (existing.length > 0 && !confirm(`Seasons for ${y} already exist. Do you want to add/overwrite them?`)) {
-                return;
-            }
-
-            const yrShort = y.toString().substring(2);
-            const newYearSeasons = [
-                { year: y, key: `SP${yrShort}-S1`, name: `Spring ${y}`, session: 'Session 1', anchor: `${y}-03-29`, activeDays: 'Tue, Sat, Sun', venues: 'Central Park Complex', bye: `${y}-04-19` },
-                { year: y, key: `SP${yrShort}-S2`, name: `Spring ${y}`, session: 'Session 2', anchor: `${y}-05-17`, activeDays: 'Tue, Sat, Sun', venues: 'Central Park Complex', bye: '' },
-                { year: y, key: `SU${yrShort}-S1`, name: `Summer ${y}`, session: 'Session 1', anchor: `${y}-07-05`, activeDays: 'Sat, Sun', venues: 'Sports Dome Facility', bye: `${y}-07-04` },
-                { year: y, key: `SU${yrShort}-S2`, name: `Summer ${y}`, session: 'Session 2', anchor: `${y}-08-23`, activeDays: 'Sat, Sun', venues: 'Sports Dome Facility', bye: '' },
-                { year: y, key: `FA${yrShort}-S1`, name: `Fall ${y}`, session: 'Session 1', anchor: `${y}-09-13`, activeDays: 'Sat, Sun', venues: 'Community Field 1-4', bye: `${y}-10-11` },
-                { year: y, key: `FA${yrShort}-S2`, name: `Fall ${y}`, session: 'Session 2', anchor: `${y}-11-01`, activeDays: 'Sat, Sun', venues: 'Community Field 1-4', bye: `${y}-11-25` }
-            ];
-
-            newYearSeasons.forEach(ns => {
-                const idx = seasons.findIndex(s => s.key === ns.key);
-                if (idx !== -1) seasons[idx] = ns;
-                else seasons.push(ns);
-
-                // Auto-populate task templates
-                STANDARDIZED_TASKS.forEach(t => {
-                    const taskId = `${t.id}-${ns.key}`;
-                    if (!masterTasks.some(mt => mt.id === taskId)) {
-                        masterTasks.push({
-                            id: taskId,
-                            baseId: t.id,
-                            cat: t.cat,
-                            name: t.name,
-                            owner: t.owner,
-                            seasonKey: ns.key,
-                            leadOffset: t.leadOffset,
-                            dayOffset: t.dayOffset,
-                            status: "Pending",
-                            dateCompleted: "",
-                            completedBy: "",
-                            notes: ""
-                        });
-                    }
-                });
-            });
-
-            saveToLocalStorage();
-            populateFilterOptions();
-            renderControlCenter();
-            renderMasterTasks();
-            renderDashboard();
-            alert(`Full 4-Season Schedule for ${y} successfully generated!`);
-        }
-
-        // RENDER MASTER TASK TABLE
         function renderMasterTasks() {
             const tbody = document.getElementById('master-task-table-body');
             tbody.innerHTML = '';
 
-            const yearFilter = document.getElementById('filter-year') ? document.getElementById('filter-year').value : 'ALL';
+            const groupFilter = document.getElementById('filter-group').value;
+            const yearFilter = document.getElementById('filter-year').value;
             const seasonFilter = document.getElementById('filter-season').value;
             const catFilter = document.getElementById('filter-category').value;
             const ownerFilter = document.getElementById('filter-owner').value;
             const statusFilter = document.getElementById('filter-status').value;
             const searchFilter = document.getElementById('filter-search').value.toLowerCase();
 
+            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+
             masterTasks.forEach(task => {
                 const season = seasons.find(s => s.key === task.seasonKey);
+                const taskGroup = season ? (season.group || 'General') : 'General';
                 const taskYear = season ? (season.year || parseInt(season.anchor.split('-')[0])) : null;
-                const dates = calculateTaskDates(task);
 
-                // Multi-Year & Multi-Season Filtering
+                // Permissions Scope Check
+                if (userAllowedGroups && !userAllowedGroups.includes(taskGroup)) return;
+
+                // Filters Check
+                if (groupFilter !== 'ALL' && taskGroup !== groupFilter) return;
                 if (yearFilter !== 'ALL' && taskYear && taskYear.toString() !== yearFilter.toString()) return;
                 if (seasonFilter !== 'ALL' && task.seasonKey !== seasonFilter) return;
                 if (catFilter !== 'ALL' && task.cat !== catFilter) return;
                 if (ownerFilter !== 'ALL' && task.owner !== ownerFilter) return;
+
+                const dates = calculateTaskDates(task);
                 if (statusFilter !== 'ALL' && dates.actionStatus !== statusFilter) return;
                 if (searchFilter && !task.name.toLowerCase().includes(searchFilter) && !task.notes.toLowerCase().includes(searchFilter) && !task.id.toLowerCase().includes(searchFilter)) return;
 
-                // Status Badge Styling
+                // Action Badge Styling
                 let badgeClass = "bg-gray-100 text-gray-700";
-                if (dates.actionStatus === "✅ COMPLETE") badgeClass = "bg-gray-200 text-gray-600 line-through";
-                else if (dates.actionStatus === "🚨 OVERDUE") badgeClass = "bg-red-100 text-red-700 font-bold border border-red-200";
+                if (dates.actionStatus === "✅ COMPLETE") badgeClass = "bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 line-through";
+                else if (dates.actionStatus === "🚨 OVERDUE") badgeClass = "bg-red-100 text-red-700 font-bold border border-red-200 badge-pulse";
                 else if (dates.actionStatus === "⚠️ DUE THIS WEEK") badgeClass = "bg-amber-100 text-amber-800 font-bold border border-amber-200";
-                else if (dates.actionStatus === "⏳ UPCOMING") badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-
-                let categoryBadge = "bg-blue-50 text-i9blue";
-                if (task.cat === "Pre-Season Prep") categoryBadge = "bg-purple-50 text-purple-700";
-                else if (task.cat === "In-Season Ops") categoryBadge = "bg-emerald-50 text-emerald-700";
+                else if (dates.actionStatus === "⏳ UPCOMING") badgeClass = "bg-blue-50 text-blue-700 border border-blue-200";
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
                 tr.innerHTML = `
-                    <td class="px-3 py-2.5 font-mono font-semibold text-gray-600">${task.baseId || task.id}</td>
-                    <td class="px-3 py-2.5 whitespace-nowrap"><span class="${categoryBadge} px-2 py-0.5 rounded font-medium">${task.cat}</span></td>
-                    <td class="px-3 py-2.5 font-medium text-gray-900">${task.name}</td>
+                    <td class="px-3 py-2.5 font-mono font-bold text-gray-600">${task.baseId || task.id}</td>
+                    <td class="px-3 py-2.5 font-bold text-i9blue">${taskGroup}</td>
+                    <td class="px-3 py-2.5 whitespace-nowrap"><span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-medium">${task.cat}</span></td>
+                    <td class="px-3 py-2.5 font-semibold text-gray-900">${task.name}</td>
                     <td class="px-3 py-2.5 text-gray-600">${task.owner}</td>
                     <td class="px-3 py-2.5 font-mono text-gray-500">${task.seasonKey}</td>
-                    <td class="px-3 py-2.5 font-semibold text-gray-800 whitespace-nowrap">${dates.adjustedDate}</td>
+                    <td class="px-3 py-2.5 font-bold text-gray-800 whitespace-nowrap">${dates.adjustedDate}</td>
                     <td class="px-3 py-2.5 whitespace-nowrap">
                         <span class="px-2 py-1 rounded text-[11px] inline-block ${badgeClass}">${dates.actionStatus}</span>
                     </td>
                     <td class="px-3 py-2.5">
-                        <select onchange="updateTaskStatus('${task.id}', this.value)" class="bg-white border border-gray-300 rounded px-1.5 py-1 text-xs focus:ring-i9blue">
+                        <select onchange="updateTaskStatus('${task.id}', this.value)" class="bg-white border border-gray-300 rounded px-1.5 py-1 text-xs focus:ring-2 focus:ring-i9blue">
                             <option value="Pending" ${task.status === 'Pending' ? 'selected' : ''}>Pending</option>
                             <option value="In Progress" ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                             <option value="Complete" ${task.status === 'Complete' ? 'selected' : ''}>Complete</option>
                         </select>
                     </td>
-                    <td class="px-3 py-2.5 text-gray-500 whitespace-nowrap">${task.dateCompleted || '-'}</td>
-                    <td class="px-3 py-2.5 text-gray-500">${task.completedBy || '-'}</td>
+                    <td class="px-3 py-2.5 text-gray-500 whitespace-nowrap">${task.completedBy || '-'}</td>
                     <td class="px-3 py-2.5 text-gray-500 italic max-w-xs truncate" title="${task.notes}">${task.notes || '-'}</td>
                     <td class="px-3 py-2.5 text-center whitespace-nowrap">
-                        <button onclick="openEditTaskModal('${task.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteTask('${task.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                        ${currentUser.role !== 'Staff' ? `
+                            <button onclick="openEditTaskModal('${task.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteTask('${task.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                        ` : '<span class="text-gray-400 italic">View Only</span>'}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -592,18 +1153,21 @@
             updateKPIs();
         }
 
-        // RENDER CONTROL CENTER (SEASONS)
         function renderControlCenter() {
             const tbody = document.getElementById('control-center-table-body');
             tbody.innerHTML = '';
 
-            seasons.sort((a, b) => (a.anchor || '').localeCompare(b.anchor || '')).forEach(s => {
-                const yr = s.year || s.anchor.split('-')[0];
+            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+
+            seasons.forEach(s => {
+                if (userAllowedGroups && !userAllowedGroups.includes(s.group)) return;
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
                 tr.innerHTML = `
-                    <td class="px-4 py-3 font-bold text-gray-700">${yr}</td>
-                    <td class="px-4 py-3 font-mono font-bold text-i9blue">${s.key}</td>
+                    <td class="px-4 py-3 font-bold text-i9blue">${s.group || 'General'}</td>
+                    <td class="px-4 py-3 font-bold text-gray-700">${s.year}</td>
+                    <td class="px-4 py-3 font-mono font-bold text-gray-800">${s.key}</td>
                     <td class="px-4 py-3 font-semibold text-gray-800">${s.name}</td>
                     <td class="px-4 py-3 text-gray-600">${s.session}</td>
                     <td class="px-4 py-3 font-medium text-gray-900">${s.anchor || '-'}</td>
@@ -611,22 +1175,27 @@
                     <td class="px-4 py-3 text-gray-600">${s.venues || '-'}</td>
                     <td class="px-4 py-3 text-rose-600 font-medium">${s.bye || 'None'}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                        <button onclick="openEditSeasonModal('${s.key}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteSeason('${s.key}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                        ${currentUser.role !== 'Staff' ? `
+                            <button onclick="openEditSeasonModal('${s.key}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteSeason('${s.key}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                        ` : '<span class="text-gray-400 italic">View Only</span>'}
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // KPI UPDATES
         function updateKPIs() {
-            let total = masterTasks.length;
-            let completed = 0;
-            let dueThisWeek = 0;
-            let overdue = 0;
+            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+
+            let total = 0, completed = 0, dueThisWeek = 0, overdue = 0;
 
             masterTasks.forEach(t => {
+                const season = seasons.find(s => s.key === t.seasonKey);
+                const group = season ? (season.group || 'General') : 'General';
+                if (userAllowedGroups && !userAllowedGroups.includes(group)) return;
+
+                total++;
                 const dates = calculateTaskDates(t);
                 if (t.status === "Complete") completed++;
                 else if (dates.actionStatus === "🚨 OVERDUE") overdue++;
@@ -639,12 +1208,15 @@
             document.getElementById('kpi-overdue').textContent = overdue;
         }
 
-        // DASHBOARD RENDER
         function renderDashboard() {
             const seasonProgressContainer = document.getElementById('dashboard-season-progress');
             seasonProgressContainer.innerHTML = '';
 
+            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+
             seasons.forEach(s => {
+                if (userAllowedGroups && !userAllowedGroups.includes(s.group)) return;
+
                 const sTasks = masterTasks.filter(t => t.seasonKey === s.key);
                 const total = sTasks.length;
                 const done = sTasks.filter(t => t.status === "Complete").length;
@@ -652,8 +1224,8 @@
 
                 const div = document.createElement('div');
                 div.innerHTML = `
-                    <div class="flex justify-between text-xs font-semibold mb-1">
-                        <span>${s.name} (${s.key})</span>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-gray-800">[${s.group || 'General'}] ${s.name} (${s.key})</span>
                         <span class="text-i9blue">${done}/${total} Completed (${pct}%)</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5">
@@ -663,33 +1235,60 @@
                 seasonProgressContainer.appendChild(div);
             });
 
-            // Overdue Watchlist
+            // Overdue Priority Watchlist
             const overdueContainer = document.getElementById('dashboard-overdue-list');
             overdueContainer.innerHTML = '';
 
-            const overdueTasks = masterTasks.filter(t => calculateTaskDates(t).actionStatus === "🚨 OVERDUE");
+            const overdueTasks = masterTasks.filter(t => {
+                const season = seasons.find(s => s.key === t.seasonKey);
+                const group = season ? (season.group || 'General') : 'General';
+                if (userAllowedGroups && !userAllowedGroups.includes(group)) return false;
+                return calculateTaskDates(t).actionStatus === "🚨 OVERDUE";
+            });
 
             if (overdueTasks.length === 0) {
-                overdueContainer.innerHTML = '<p class="text-xs text-gray-500 italic">No overdue tasks! Everything is on schedule.</p>';
+                overdueContainer.innerHTML = '<p class="text-xs text-gray-500 italic p-3 bg-gray-50 rounded-lg text-center">No overdue tasks! All program milestones are on schedule.</p>';
             } else {
                 overdueTasks.forEach(t => {
                     const dates = calculateTaskDates(t);
                     const div = document.createElement('div');
-                    div.className = "p-2.5 bg-rose-50 border border-rose-200 rounded text-xs flex justify-between items-center";
+                    div.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs flex justify-between items-center";
                     div.innerHTML = `
                         <div>
                             <p class="font-bold text-rose-800">${t.name}</p>
-                            <p class="text-rose-600 text-[11px]">${t.seasonKey} | Owner: ${t.owner} | Due: ${dates.adjustedDate}</p>
+                            <p class="text-rose-600 text-[11px]">${t.seasonKey} | Owner: ${t.owner} | Target: ${dates.adjustedDate}</p>
                         </div>
-                        <button onclick="updateTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-rose-700">Mark Done</button>
+                        <button onclick="updateTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2.5 py-1 rounded text-[11px] font-bold hover:bg-rose-700 shadow-sm">Mark Complete</button>
                     `;
                     overdueContainer.appendChild(div);
                 });
             }
         }
 
-        // SEASON MODALS & ACTIONS
+        function updateTaskStatus(id, newStatus) {
+            const task = masterTasks.find(t => t.id === id);
+            if (!task) return;
+
+            task.status = newStatus;
+            if (newStatus === 'Complete') {
+                task.dateCompleted = new Date().toISOString().split('T')[0];
+                task.completedBy = currentUser ? currentUser.name : 'Staff';
+            } else {
+                task.dateCompleted = '';
+                task.completedBy = '';
+            }
+
+            saveToLocalStorage();
+            renderMasterTasks();
+            renderDashboard();
+            showToast("Status Updated", `Task marked as ${newStatus}`);
+        }
+
         function openAddSeasonModal() {
+            if (groups.length === 0) {
+                showToast("No Groups", "Please add a Group/Territory in Admin Controls first.", "warning");
+                return;
+            }
             document.getElementById('season-form').reset();
             document.getElementById('season-edit-id').value = '';
             document.getElementById('season-modal-title').textContent = 'Add New Season';
@@ -700,7 +1299,9 @@
             const s = seasons.find(item => item.key === key);
             if (!s) return;
             document.getElementById('season-edit-id').value = s.key;
+            document.getElementById('season-group-input').value = s.group || groups[0];
             document.getElementById('season-key-input').value = s.key;
+            document.getElementById('season-year-input').value = s.year;
             document.getElementById('season-name-input').value = s.name;
             document.getElementById('season-session-input').value = s.session;
             document.getElementById('season-anchor-input').value = s.anchor;
@@ -719,7 +1320,9 @@
             e.preventDefault();
             const editKey = document.getElementById('season-edit-id').value;
             const newSeason = {
-                key: document.getElementById('season-key-input').value.trim(),
+                group: document.getElementById('season-group-input').value,
+                key: document.getElementById('season-key-input').value.trim().toUpperCase(),
+                year: parseInt(document.getElementById('season-year-input').value) || 2026,
                 name: document.getElementById('season-name-input').value.trim(),
                 session: document.getElementById('season-session-input').value.trim(),
                 anchor: document.getElementById('season-anchor-input').value,
@@ -733,23 +1336,6 @@
                 if (idx !== -1) seasons[idx] = newSeason;
             } else {
                 seasons.push(newSeason);
-                // Pre-populate standard tasks for new season
-                STANDARDIZED_TASKS.forEach(t => {
-                    masterTasks.push({
-                        id: `${t.id}-${newSeason.key}`,
-                        baseId: t.id,
-                        cat: t.cat,
-                        name: t.name,
-                        owner: t.owner,
-                        seasonKey: newSeason.key,
-                        leadOffset: t.leadOffset,
-                        dayOffset: t.dayOffset,
-                        status: "Pending",
-                        dateCompleted: "",
-                        completedBy: "",
-                        notes: ""
-                    });
-                });
             }
 
             saveToLocalStorage();
@@ -757,21 +1343,24 @@
             renderControlCenter();
             renderMasterTasks();
             closeSeasonModal();
+            showToast("Season Saved", `Configured ${newSeason.name} (${newSeason.key})`);
         }
 
         function deleteSeason(key) {
-            if (confirm(`Delete season ${key} and all associated tasks?`)) {
-                seasons = seasons.filter(s => s.key !== key);
-                masterTasks = masterTasks.filter(t => t.seasonKey !== key);
-                saveToLocalStorage();
-                populateFilterOptions();
-                renderControlCenter();
-                renderMasterTasks();
-            }
+            seasons = seasons.filter(s => s.key !== key);
+            masterTasks = masterTasks.filter(t => t.seasonKey !== key);
+            saveToLocalStorage();
+            populateFilterOptions();
+            renderControlCenter();
+            renderMasterTasks();
+            showToast("Season Deleted", `Removed season ${key} and its tasks.`);
         }
 
-        // TASK MODALS & ACTIONS
         function openAddTaskModal() {
+            if (seasons.length === 0) {
+                showToast("No Seasons", "Create a Season in Control Center first.", "warning");
+                return;
+            }
             document.getElementById('task-form').reset();
             document.getElementById('task-edit-id').value = '';
             document.getElementById('task-modal-title').textContent = 'Add Milestone Task';
@@ -834,24 +1423,54 @@
             saveToLocalStorage();
             renderMasterTasks();
             closeTaskModal();
+            showToast("Task Saved", "Program milestone updated.");
         }
 
         function deleteTask(id) {
-            if (confirm("Are you sure you want to delete this task?")) {
-                masterTasks = masterTasks.filter(t => t.id !== id);
-                saveToLocalStorage();
-                renderMasterTasks();
-            }
+            masterTasks = masterTasks.filter(t => t.id !== id);
+            saveToLocalStorage();
+            renderMasterTasks();
+            showToast("Task Deleted", "Task milestone removed.");
         }
 
-        // CSV EXPORT ENGINE
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-i9blue', 'text-i9blue');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+
+            document.getElementById(`tab-${tab}`).classList.add('border-i9blue', 'text-i9blue');
+            document.getElementById(`tab-${tab}`).classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+        }
+
+        function showToast(title, message, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `p-3 rounded-lg shadow-lg text-xs flex items-center gap-2 pointer-events-auto transition transform duration-300 translate-y-2 ${type === 'warning' ? 'bg-amber-600 text-white' : 'bg-i9blue text-white'}`;
+            toast.innerHTML = `
+                <i class="fa-solid fa-circle-info text-i9gold"></i>
+                <div>
+                    <p class="font-bold">${title}</p>
+                    <p class="text-[11px] opacity-90">${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
         function exportToCSV() {
-            const headers = ["Task ID", "Category", "Task Name", "Assigned Owner", "Season Key", "Lead Offset", "Day Offset", "Calculated Date", "Adjusted Date", "Completion Status", "Date Completed", "Completed By", "Action Status", "Notes"];
+            const headers = ["Task ID", "Group / Territory", "Category", "Task Name", "Owner", "Season Key", "Lead Offset", "Day Offset", "Calculated Date", "Adjusted Date", "Completion Status", "Date Completed", "Completed By", "Action Status", "Notes"];
             
             const rows = masterTasks.map(t => {
+                const season = seasons.find(s => s.key === t.seasonKey);
+                const group = season ? (season.group || 'General') : 'General';
                 const dates = calculateTaskDates(t);
+
                 return [
                     `"${t.baseId || t.id}"`,
+                    `"${group}"`,
                     `"${t.cat}"`,
                     `"${t.name.replace(/"/g, '""')}"`,
                     `"${t.owner}"`,
@@ -872,10 +1491,11 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `i9_Sports_Calendar_Tasks_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `i9_Sports_Operations_Export_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            showToast("CSV Exported", "Downloaded Microsoft Excel compatible .csv file.");
         }
     </script>
 </body>
