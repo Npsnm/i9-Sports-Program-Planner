@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>i9 Sports® Operations Portal</title>
+    <title>PD Planner by NP Solutions LLC</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -36,7 +36,6 @@
             0%, 100% { opacity: 1; }
             50% { opacity: .6; }
         }
-        /* Custom scrollbar styling */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -60,11 +59,16 @@
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-3">
             <div class="flex items-center gap-3">
                 <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg shadow-sm border border-blue-800/30 flex items-center justify-center min-w-[38px] h-10">
-                    <img id="brand-logo-img" src="https://placehold.co/120x40/002855/FDB827?text=i9+SPORTS" alt="Logo" class="max-h-8 object-contain">
+                    <img id="brand-logo-img" src="https://placehold.co/120x40/002855/FDB827?text=PD+PLANNER" alt="Logo" class="max-h-8 object-contain">
                 </div>
                 <div>
-                    <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">i9 Sports® Operations Portal</h1>
-                    <p class="text-[11px] text-blue-200">Program Planning & Multi-Territory Task Engine</p>
+                    <div class="flex items-center gap-2">
+                        <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">PD Planner by NP Solutions LLC</h1>
+                        <span id="cloud-sync-badge" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-cloud text-emerald-400"></i> <span id="sync-status-text">Cloud Syncing</span>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-blue-200">PD Planner by NP Solutions LLC • Program Planning & Task Engine</p>
                 </div>
             </div>
 
@@ -78,6 +82,9 @@
                     </div>
                 </div>
 
+                <button id="btn-change-password" onclick="openChangePasswordModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm">
+                    <i class="fa-solid fa-key text-i9gold"></i> Change Password
+                </button>
                 <button id="btn-manage-branding" onclick="openBrandingModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm hidden">
                     <i class="fa-solid fa-palette text-i9gold"></i> Branding & Colors
                 </button>
@@ -318,6 +325,17 @@
 
     </main>
 
+    <!-- FOOTER -->
+    <footer class="bg-i9blue text-blue-200 text-xs py-4 px-4 mt-auto border-t border-blue-900">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2 text-center md:text-left">
+            <div>
+                <p class="font-bold text-white">PD Planner by NP Solutions LLC • Program Planning & Operations Engine</p>
+                <p class="text-[11px] text-blue-300">Custom Portal Solution Operating for i9 Sports® Franchises</p>
+            </div>
+            <p class="text-[10px] text-blue-400">© 2026 NP Solutions LLC. All rights reserved.</p>
+        </div>
+    </footer>
+
     <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -328,8 +346,8 @@
                 <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1">
                     <i class="fa-solid fa-shield-halved text-3xl"></i>
                 </div>
-                <h2 class="text-lg font-bold text-i9blue">Sign In to Operations Portal</h2>
-                <p class="text-xs text-gray-500">Enter your credentials to access territory schedules & tasks</p>
+                <h2 class="text-lg font-bold text-i9blue">Sign In to PD Planner</h2>
+                <p class="text-xs text-gray-500">PD Planner by NP Solutions LLC • Territory Management</p>
             </div>
 
             <form onsubmit="login(event)" class="space-y-3">
@@ -359,7 +377,7 @@
             <div class="flex justify-between items-center border-b pb-2">
                 <div>
                     <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> User Accounts & Group Controls</h3>
-                    <p class="text-[11px] text-gray-500">Manage 3-tier user accounts, roles, and allowed territories</p>
+                    <p class="text-[11px] text-gray-500">PD Planner System Admin Panel: Roles and Territory Access</p>
                 </div>
                 <button onclick="closeUserManagementModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -402,7 +420,7 @@
                         </div>
                         <div>
                             <label class="block font-bold mb-1">Password</label>
-                            <input type="password" id="new-user-password" required class="w-full p-2 border rounded bg-white">
+                            <input type="password" id="new-user-password" required placeholder="Enter password" class="w-full p-2 border rounded bg-white">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -448,7 +466,7 @@
         </div>
     </div>
 
-    <!-- BRANDING & COLOR CUSTOMIZATION MODAL (MAIN ADMIN ONLY) -->
+    <!-- BRANDING & COLOR CUSTOMIZATION MODAL -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -462,13 +480,13 @@
             <form onsubmit="saveBranding(event)" class="space-y-4 text-xs">
                 <div>
                     <label class="block font-bold mb-1">Organization Title</label>
-                    <input type="text" id="branding-title-input" required placeholder="e.g. i9 Sports® Operations Portal" class="w-full p-2 border rounded-lg bg-gray-50 text-xs">
+                    <input type="text" id="branding-title-input" required placeholder="e.g. PD Planner by NP Solutions LLC" class="w-full p-2 border rounded-lg bg-gray-50 text-xs">
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">Header Logo Image URL</label>
                     <input type="text" id="branding-logo-input" placeholder="https://example.com/logo.png" class="w-full p-2 border rounded-lg bg-gray-50 text-xs font-mono">
-                    <p class="text-[10px] text-gray-400 mt-1">* Paste image web link or leave blank for default i9 Sports badge.</p>
+                    <p class="text-[10px] text-gray-400 mt-1">* Paste image web link or leave blank for default PD Planner logo.</p>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
@@ -613,49 +631,253 @@
                             <option value="Training Session Ops">Training Session Ops</option>
                             <option value="Game-Day Ops">Game-Day Ops</option>
                             <option value="Next Session Prep">Next Session Prep</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1">Assigned Owner</label>
-                        <select id="task-owner-input" required class="w-full p-2 border rounded bg-gray-50">
-                            <option value="League Director">League Director</option>
-                            <option value="Ops Coordinator">Ops Coordinator</option>
-                            <option value="Site Lead">Site Lead</option>
-                            <option value="Marketing Lead">Marketing Lead</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold mb-1">Lead Offset (Days from Kickoff)</label>
-                        <input type="number" id="task-lead-input" required placeholder="-60" class="w-full p-2 border rounded bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1">Day Offset (0=Mon, 5=Sat, 6=Sun)</label>
-                        <input type="number" id="task-dayoffset-input" required min="0" max="6" value="0" class="w-full p-2 border rounded bg-gray-50">
-                    </div>
-                </div>
-
+    <!-- CHANGE PASSWORD MODAL (SELF-SERVICE) -->
+    <div id="password-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
                 <div>
-                    <label class="block font-bold mb-1">Notes / Field Location Override</label>
-                    <input type="text" id="task-notes-input" placeholder="Field #2, Concession Desk" class="w-full p-2 border rounded bg-gray-50">
+                    <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-key text-i9gold mr-1"></i> Change Password</h3>
+                    <p class="text-[11px] text-gray-500">Update credentials for your account</p>
+                </div>
+                <button onclick="closeChangePasswordModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form onsubmit="handleSelfPasswordChange(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Current Password</label>
+                    <input type="password" id="pass-current" required placeholder="••••••••" class="w-full p-2 border rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-i9blue">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">New Password</label>
+                    <input type="password" id="pass-new" required placeholder="••••••••" class="w-full p-2 border rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-i9blue">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Confirm New Password</label>
+                    <input type="password" id="pass-confirm" required placeholder="••••••••" class="w-full p-2 border rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-i9blue">
+                </div>
+
+                <div id="pass-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-[11px] font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="pass-error-text">Passwords do not match.</span>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closeTaskModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg font-semibold">Cancel</button>
-                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Task</button>
+                    <button type="button" onclick="closeChangePasswordModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold shadow-sm">Update Password</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Environment Variables Resolution
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'i9-sports-portal';
+        
+        // Replace the values inside firebaseConfig with the SDK snippet from your "Program Planner" Firebase project
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "PASTE_YOUR_API_KEY_HERE",
+                authDomain: "YOUR_PROGRAM_PLANNER_PROJECT_ID.firebaseapp.com",
+                projectId: "YOUR_PROGRAM_PLANNER_PROJECT_ID",
+                storageBucket: "YOUR_PROGRAM_PLANNER_PROJECT_ID.appspot.com",
+                messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID",
+                appId: "PASTE_YOUR_APP_ID"
+            };
+
+        let app, db, auth;
+        let isCloudActive = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            // Authentication Step
+            const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (authToken) {
+                await signInWithCustomToken(auth, authToken).catch(() => signInAnonymously(auth));
+            } else {
+                await signInAnonymously(auth).catch(err => console.warn("Anonymous auth fallback warning:", err));
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    isCloudActive = true;
+                    updateCloudBadge(true, "Live Cloud Sync");
+                    initRealtimeSync();
+                } else {
+                    updateCloudBadge(false, "Offline Local Cache");
+                }
+            });
+        } catch (e) {
+            console.warn("Firestore initialization fallback to LocalStorage:", e);
+            updateCloudBadge(false, "Offline Local Cache");
+        }
+
+        function updateCloudBadge(active, text) {
+            const badge = document.getElementById('cloud-sync-badge');
+            const statusText = document.getElementById('sync-status-text');
+            if (!badge || !statusText) return;
+
+            statusText.textContent = text;
+            if (active) {
+                badge.className = "bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1";
+            } else {
+                badge.className = "bg-amber-950/80 border border-amber-500/50 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1";
+            }
+        }
+
+        function initRealtimeSync() {
+            if (!auth.currentUser || !db) return;
+
+            // 1. Sync Groups Collection
+            const groupsRef = collection(db, 'artifacts', appId, 'public', 'data', 'groups');
+            onSnapshot(groupsRef, (snapshot) => {
+                if (!snapshot.empty) {
+                    window.groups = snapshot.docs.map(doc => doc.data().name);
+                    window.saveToLocalStorage();
+                    window.renderGroupPills();
+                    window.renderTerritoryCheckboxes();
+                    window.populateFilterOptions();
+                }
+            }, (err) => console.warn("Groups snapshot error:", err));
+
+            // 2. Sync Seasons Collection
+            const seasonsRef = collection(db, 'artifacts', appId, 'public', 'data', 'seasons');
+            onSnapshot(seasonsRef, (snapshot) => {
+                if (!snapshot.empty) {
+                    window.seasons = snapshot.docs.map(doc => doc.data());
+                    window.saveToLocalStorage();
+                    window.populateFilterOptions();
+                    window.renderControlCenter();
+                    window.renderMasterTasks();
+                    window.renderDashboard();
+                }
+            }, (err) => console.warn("Seasons snapshot error:", err));
+
+            // 3. Sync Tasks Collection
+            const tasksRef = collection(db, 'artifacts', appId, 'public', 'data', 'tasks');
+            onSnapshot(tasksRef, (snapshot) => {
+                if (!snapshot.empty) {
+                    window.masterTasks = snapshot.docs.map(doc => doc.data());
+                    window.saveToLocalStorage();
+                    window.renderMasterTasks();
+                    window.renderDashboard();
+                }
+            }, (err) => console.warn("Tasks snapshot error:", err));
+
+            // 4. Sync System Users
+            const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'portal_users');
+            onSnapshot(usersRef, (snapshot) => {
+                if (!snapshot.empty) {
+                    window.users = snapshot.docs.map(doc => doc.data());
+                    window.saveToLocalStorage();
+                    window.renderUsersTable();
+                } else {
+                    // Seed default admin account to Cloud if empty
+                    window.users.forEach(u => window.cloudSaveUser(u));
+                }
+            }, (err) => console.warn("Users snapshot error:", err));
+
+            // 5. Sync Branding
+            const brandingRef = doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current');
+            onSnapshot(brandingRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    window.currentBranding = docSnap.data();
+                    window.applyBrandingUI();
+                }
+            }, (err) => console.warn("Branding snapshot error:", err));
+        }
+
+        // Global Exposed Cloud Mutators
+        window.cloudSaveTask = async function(task) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', task.id);
+                await setDoc(docRef, task);
+            } catch (e) { console.error("Cloud task save error:", e); }
+        };
+
+        window.cloudDeleteTask = async function(taskId) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+                await deleteDoc(docRef);
+            } catch (e) { console.error("Cloud task delete error:", e); }
+        };
+
+        window.cloudSaveSeason = async function(season) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'seasons', season.key);
+                await setDoc(docRef, season);
+            } catch (e) { console.error("Cloud season save error:", e); }
+        };
+
+        window.cloudDeleteSeason = async function(seasonKey) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'seasons', seasonKey);
+                await deleteDoc(docRef);
+            } catch (e) { console.error("Cloud season delete error:", e); }
+        };
+
+        window.cloudSaveGroup = async function(groupName) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docId = groupName.replace(/[^a-zA-Z0-9]/g, '_');
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'groups', docId);
+                await setDoc(docRef, { name: groupName, createdAt: new Date().toISOString() });
+            } catch (e) { console.error("Cloud group save error:", e); }
+        };
+
+        window.cloudDeleteGroup = async function(groupName) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docId = groupName.replace(/[^a-zA-Z0-9]/g, '_');
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'groups', docId);
+                await deleteDoc(docRef);
+            } catch (e) { console.error("Cloud group delete error:", e); }
+        };
+
+        window.cloudSaveUser = async function(user) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docId = user.username.replace(/[^a-zA-Z0-9]/g, '_');
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'portal_users', docId);
+                await setDoc(docRef, user);
+            } catch (e) { console.error("Cloud user save error:", e); }
+        };
+
+        window.cloudDeleteUser = async function(username) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docId = username.replace(/[^a-zA-Z0-9]/g, '_');
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'portal_users', docId);
+                await deleteDoc(docRef);
+            } catch (e) { console.error("Cloud user delete error:", e); }
+        };
+
+        window.cloudSaveBranding = async function(branding) {
+            if (!isCloudActive || !db || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current');
+                await setDoc(docRef, branding);
+            } catch (e) { console.error("Cloud branding save error:", e); }
+        };
+    </script>
+
     <!-- JAVASCRIPT APPLICATION ENGINE -->
     <script>
         // BRANDING & THEME DEFAULT STATE
         const DEFAULT_BRANDING = {
-            title: "i9 Sports® Operations Portal",
-            logoUrl: "https://placehold.co/120x40/002855/FDB827?text=i9+SPORTS",
+            title: "PD Planner by NP Solutions LLC",
+            logoUrl: "https://placehold.co/120x40/002855/FDB827?text=PD+PLANNER",
             primaryColor: "#002855",
             accentColor: "#FDB827",
             secondaryColor: "#E31837"
@@ -851,233 +1073,132 @@
             };
 
             localStorage.setItem('i9_portal_branding', JSON.stringify(currentBranding));
+            if (window.cloudSaveBranding) window.cloudSaveBranding(currentBranding);
             applyBrandingUI();
             closeBrandingModal();
-            showToast("Theme Updated", "Branding settings and color scheme saved.");
+            showToast("Theme Updated", "Branding settings saved & synced to cloud.");
         }
 
         function resetBrandingToDefault() {
             currentBranding = { ...DEFAULT_BRANDING };
             localStorage.removeItem('i9_portal_branding');
+            if (window.cloudSaveBranding) window.cloudSaveBranding(DEFAULT_BRANDING);
             applyBrandingUI();
-            openBrandingModal();
-            showToast("Branding Reset", "Restored official i9 Sports default theme and colors.");
+            closeBrandingModal();
+            showToast("Theme Reset", "Restored default theme settings.");
         }
 
-        function openUserManagementModal() {
-            if (!currentUser || currentUser.role !== 'Main Admin') return;
-            renderGroupPills();
-            renderUsersTable();
-            renderTerritoryCheckboxes();
-            document.getElementById('user-management-modal').classList.remove('hidden');
-        }
-
-        function closeUserManagementModal() {
-            document.getElementById('user-management-modal').classList.add('hidden');
-        }
-
-        function addGroup(e) {
-            e.preventDefault();
-            const groupName = document.getElementById('new-group-name').value.trim();
-            if (!groupName) return;
-
-            if (groups.includes(groupName)) {
-                showToast("Group Exists", "This group/territory already exists.", "warning");
-                return;
-            }
-
-            groups.push(groupName);
-            saveToLocalStorage();
-            document.getElementById('new-group-name').value = '';
-            renderGroupPills();
-            renderTerritoryCheckboxes();
-            populateFilterOptions();
-            showToast("Group Added", `Created territory group "${groupName}".`);
-        }
-
-        function deleteGroup(groupName) {
-            groups = groups.filter(g => g !== groupName);
-            saveToLocalStorage();
-            renderGroupPills();
-            renderTerritoryCheckboxes();
-            populateFilterOptions();
-            showToast("Group Removed", `Deleted territory group "${groupName}".`);
-        }
-
-        function renderGroupPills() {
-            const container = document.getElementById('group-pill-list');
-            container.innerHTML = '';
-
-            if (groups.length === 0) {
-                container.innerHTML = '<span class="text-[11px] text-gray-400 italic">No groups created yet. Add your first group above!</span>';
-                return;
-            }
-
-            groups.forEach(g => {
-                const pill = document.createElement('span');
-                pill.className = "bg-white border border-blue-300 text-i9blue font-bold px-2 py-0.5 rounded-md text-[11px] flex items-center gap-1.5 shadow-sm";
-                pill.innerHTML = `
-                    <span>${g}</span>
-                    <button type="button" onclick="deleteGroup('${g}')" class="text-rose-500 hover:text-rose-700 text-[10px]"><i class="fa-solid fa-xmark"></i></button>
-                `;
-                container.appendChild(pill);
+        // TAB NAVIGATION
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap";
             });
-        }
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
 
-        function renderTerritoryCheckboxes() {
-            const container = document.getElementById('new-user-territory-checkboxes');
-            container.innerHTML = `
-                <label class="flex items-center gap-1.5 font-bold text-i9blue">
-                    <input type="checkbox" value="ALL" class="rounded text-i9blue"> ALL GROUPS (Network Wide)
-                </label>
-            `;
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            const activeView = document.getElementById(`view-${tabName}`);
 
-            groups.forEach(g => {
-                container.innerHTML += `
-                    <label class="flex items-center gap-1.5 text-gray-700">
-                        <input type="checkbox" value="${g}" class="user-group-checkbox rounded"> ${g}
-                    </label>
-                `;
-            });
-        }
-
-        function toggleAddUserForm() {
-            document.getElementById('add-user-form').classList.toggle('hidden');
-        }
-
-        function saveUser(e) {
-            e.preventDefault();
-            const username = document.getElementById('new-user-username').value.trim();
-            const name = document.getElementById('new-user-name').value.trim();
-            const password = document.getElementById('new-user-password').value.trim();
-            const role = document.getElementById('new-user-role').value;
-
-            const checkboxes = document.querySelectorAll('#new-user-territory-checkboxes input:checked');
-            const selectedTerritories = Array.from(checkboxes).map(cb => cb.value);
-
-            if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-                showToast("Account Exists", "A user with this email/username already exists.", "warning");
-                return;
+            if (activeBtn && activeView) {
+                activeBtn.className = "tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap";
+                activeView.classList.remove('hidden');
             }
 
-            users.push({ username, password, name, role, territories: selectedTerritories.length > 0 ? selectedTerritories : ["ALL"] });
-            saveToLocalStorage();
-            renderUsersTable();
-            toggleAddUserForm();
-            showToast("User Created", `Added account for ${name} (${role})`);
+            if (tabName === 'dashboard') renderDashboard();
         }
 
-        function deleteUser(username) {
-            if (username === 'nick@npsnm.com') {
-                showToast("Action Restricted", "Cannot delete the primary Main Admin account.", "warning");
-                return;
-            }
-            users = users.filter(u => u.username !== username);
-            saveToLocalStorage();
-            renderUsersTable();
-            showToast("User Removed", "User account deleted successfully.");
-        }
-
-        function renderUsersTable() {
-            const tbody = document.getElementById('users-table-body');
-            tbody.innerHTML = '';
-
-            users.forEach(u => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50";
-                tr.innerHTML = `
-                    <td class="p-2 font-bold text-gray-800">${u.username}</td>
-                    <td class="p-2 text-gray-700">${u.name}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded font-bold text-[10px] ${u.role === 'Main Admin' ? 'bg-purple-100 text-purple-700' : u.role === 'Manager' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-700'}">${u.role}</span></td>
-                    <td class="p-2 text-gray-600">${u.territories.join(', ')}</td>
-                    <td class="p-2 text-center">
-                        ${u.username !== 'nick@npsnm.com' ? `<button onclick="deleteUser('${u.username}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs"><i class="fa-solid fa-trash"></i></button>` : '<span class="text-[10px] text-gray-400 italic">Protected</span>'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function calculateTaskDates(task) {
-            const season = seasons.find(s => s.key === task.seasonKey);
-            if (!season || !season.anchor) {
-                return { calculatedDate: 'N/A', adjustedDate: 'N/A', actionStatus: '⏳ UPCOMING' };
-            }
-
-            const anchorDate = new Date(season.anchor + 'T00:00:00');
-            const totalOffsetDays = (parseInt(task.leadOffset) || 0) + (parseInt(task.dayOffset) || 0);
-            
-            const calculated = new Date(anchorDate);
-            calculated.setDate(calculated.getDate() + totalOffsetDays);
-
-            let adjusted = new Date(calculated);
-            if (season.bye) {
-                const byeDate = new Date(season.bye + 'T00:00:00');
-                if (calculated >= byeDate) {
-                    adjusted.setDate(adjusted.getDate() + 7);
-                }
-            }
-
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const diffDays = Math.ceil((adjusted.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-            let actionStatus = "⏳ UPCOMING";
-            if (task.status === "Complete") {
-                actionStatus = "✅ COMPLETE";
-            } else if (diffDays < 0) {
-                actionStatus = "🚨 OVERDUE";
-            } else if (diffDays <= 7) {
-                actionStatus = "⚠️ DUE THIS WEEK";
-            }
-
-            const formattedDate = adjusted.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-            return {
-                calculatedDate: calculated.toISOString().split('T')[0],
-                adjustedDate: formattedDate,
-                actionStatus: actionStatus
-            };
-        }
-
+        // POPULATE DROPDOWNS & FILTERS
         function populateFilterOptions() {
             const groupFilter = document.getElementById('filter-group');
             const yearFilter = document.getElementById('filter-year');
             const seasonFilter = document.getElementById('filter-season');
             const seasonGroupInput = document.getElementById('season-group-input');
-            const taskSeasonInput = document.getElementById('task-season-input');
 
-            // Filter authorized groups for active user
-            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? groups : (currentUser ? currentUser.territories : []);
-
+            // 1. Group Dropdowns
+            const allowedGroups = getAuthorizedGroups();
             groupFilter.innerHTML = '<option value="ALL">All Authorized Groups</option>';
             seasonGroupInput.innerHTML = '';
 
-            userAllowedGroups.forEach(g => {
+            allowedGroups.forEach(g => {
                 groupFilter.innerHTML += `<option value="${g}">${g}</option>`;
                 seasonGroupInput.innerHTML += `<option value="${g}">${g}</option>`;
             });
 
-            // Extract unique years
+            // 2. Year Dropdown
             const uniqueYears = [...new Set(seasons.map(s => s.year || parseInt(s.anchor.split('-')[0])))].sort((a, b) => a - b);
             yearFilter.innerHTML = '<option value="ALL">All Years</option>';
             uniqueYears.forEach(y => {
                 yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
             });
 
+            // 3. Season Dropdown
             seasonFilter.innerHTML = '<option value="ALL">All Seasons</option>';
+            const taskSeasonInput = document.getElementById('task-season-input');
             taskSeasonInput.innerHTML = '';
 
             seasons.forEach(s => {
-                if (userAllowedGroups.length === 0 || userAllowedGroups.includes(s.group) || (currentUser && currentUser.territories.includes('ALL'))) {
+                if (allowedGroups.includes(s.group) || currentUser.territories.includes('ALL')) {
                     const yr = s.year || s.anchor.split('-')[0];
-                    seasonFilter.innerHTML += `<option value="${s.key}">[${s.group || 'General'}] ${yr} - ${s.name} (${s.session})</option>`;
-                    taskSeasonInput.innerHTML += `<option value="${s.key}">[${s.group || 'General'}] ${yr} - ${s.name} (${s.session})</option>`;
+                    seasonFilter.innerHTML += `<option value="${s.key}">[${s.group}] ${yr} - ${s.name} (${s.session})</option>`;
+                    taskSeasonInput.innerHTML += `<option value="${s.key}">[${s.group}] ${yr} - ${s.name} (${s.session})</option>`;
                 }
             });
         }
 
+        function getAuthorizedGroups() {
+            if (!currentUser) return [];
+            if (currentUser.territories.includes('ALL')) return [...groups];
+            return groups.filter(g => currentUser.territories.includes(g));
+        }
+
+        // DATE COMPUTATION ENGINE
+        function calculateTaskDates(task) {
+            const season = seasons.find(s => s.key === task.seasonKey);
+            if (!season || !season.anchor) {
+                return { calculatedDate: 'N/A', adjustedDate: 'N/A', actionStatus: '⏳ UPCOMING' };
+            }
+
+            const anchorParts = season.anchor.split('-').map(Number);
+            const anchorDate = new Date(Date.UTC(anchorParts[0], anchorParts[1] - 1, anchorParts[2]));
+
+            const calcMs = anchorDate.getTime() + (task.leadOffset * 86400000) + (task.dayOffset * 86400000);
+            const calcDate = new Date(calcMs);
+
+            let isByeShifted = false;
+            if (season.bye) {
+                const byeParts = season.bye.split('-').map(Number);
+                const byeDate = new Date(Date.UTC(byeParts[0], byeParts[1] - 1, byeParts[2]));
+                if (calcDate.getTime() >= byeDate.getTime()) {
+                    isByeShifted = true;
+                }
+            }
+
+            const adjMs = isByeShifted ? calcMs + (7 * 86400000) : calcMs;
+            const adjDate = new Date(adjMs);
+
+            const formatDate = (d) => d.toISOString().split('T')[0];
+
+            // Calculate Action Status Badge
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const adjCheck = new Date(adjDate.getUTCFullYear(), adjDate.getUTCMonth(), adjDate.getUTCDate());
+
+            let actionStatus = "⏳ UPCOMING";
+            if (task.status === "Complete") {
+                actionStatus = "✅ COMPLETE";
+            } else if (today.getTime() > adjCheck.getTime()) {
+                actionStatus = "🚨 OVERDUE";
+            } else if (today.getTime() >= (adjCheck.getTime() - (7 * 86400000))) {
+                actionStatus = "⚠️ DUE THIS WEEK";
+            }
+
+            return {
+                calculatedDate: formatDate(calcDate),
+                adjustedDate: formatDate(adjDate),
+                actionStatus: actionStatus
+            };
+        }
+
+        // RENDER MASTER TASKS TABLE
         function renderMasterTasks() {
             const tbody = document.getElementById('master-task-table-body');
             tbody.innerHTML = '';
@@ -1090,61 +1211,61 @@
             const statusFilter = document.getElementById('filter-status').value;
             const searchFilter = document.getElementById('filter-search').value.toLowerCase();
 
-            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+            const authorizedGroups = getAuthorizedGroups();
 
             masterTasks.forEach(task => {
                 const season = seasons.find(s => s.key === task.seasonKey);
-                const taskGroup = season ? (season.group || 'General') : 'General';
-                const taskYear = season ? (season.year || parseInt(season.anchor.split('-')[0])) : null;
+                if (!season) return;
 
-                // Permissions Scope Check
-                if (userAllowedGroups && !userAllowedGroups.includes(taskGroup)) return;
+                const taskGroup = season.group;
+                if (!authorizedGroups.includes(taskGroup) && !currentUser.territories.includes('ALL')) return;
 
-                // Filters Check
+                const taskYear = season.year || parseInt(season.anchor.split('-')[0]);
+                const dates = calculateTaskDates(task);
+
+                // Apply Filters
                 if (groupFilter !== 'ALL' && taskGroup !== groupFilter) return;
-                if (yearFilter !== 'ALL' && taskYear && taskYear.toString() !== yearFilter.toString()) return;
+                if (yearFilter !== 'ALL' && taskYear.toString() !== yearFilter) return;
                 if (seasonFilter !== 'ALL' && task.seasonKey !== seasonFilter) return;
                 if (catFilter !== 'ALL' && task.cat !== catFilter) return;
                 if (ownerFilter !== 'ALL' && task.owner !== ownerFilter) return;
-
-                const dates = calculateTaskDates(task);
                 if (statusFilter !== 'ALL' && dates.actionStatus !== statusFilter) return;
                 if (searchFilter && !task.name.toLowerCase().includes(searchFilter) && !task.notes.toLowerCase().includes(searchFilter) && !task.id.toLowerCase().includes(searchFilter)) return;
 
-                // Action Badge Styling
+                // Status Badge Styling
                 let badgeClass = "bg-gray-100 text-gray-700";
-                if (dates.actionStatus === "✅ COMPLETE") badgeClass = "bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 line-through";
-                else if (dates.actionStatus === "🚨 OVERDUE") badgeClass = "bg-red-100 text-red-700 font-bold border border-red-200 badge-pulse";
+                if (dates.actionStatus === "✅ COMPLETE") badgeClass = "bg-gray-200 text-gray-600 line-through";
+                else if (dates.actionStatus === "🚨 OVERDUE") badgeClass = "bg-red-100 text-red-700 font-bold border border-red-200";
                 else if (dates.actionStatus === "⚠️ DUE THIS WEEK") badgeClass = "bg-amber-100 text-amber-800 font-bold border border-amber-200";
-                else if (dates.actionStatus === "⏳ UPCOMING") badgeClass = "bg-blue-50 text-blue-700 border border-blue-200";
+                else if (dates.actionStatus === "⏳ UPCOMING") badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
+
+                const isEditable = currentUser.role === 'Main Admin' || currentUser.role === 'Manager';
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
                 tr.innerHTML = `
-                    <td class="px-3 py-2.5 font-mono font-bold text-gray-600">${task.baseId || task.id}</td>
-                    <td class="px-3 py-2.5 font-bold text-i9blue">${taskGroup}</td>
-                    <td class="px-3 py-2.5 whitespace-nowrap"><span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-medium">${task.cat}</span></td>
-                    <td class="px-3 py-2.5 font-semibold text-gray-900">${task.name}</td>
+                    <td class="px-3 py-2.5 font-mono font-semibold text-gray-600">${task.baseId || task.id}</td>
+                    <td class="px-3 py-2.5 font-bold text-i9blue whitespace-nowrap"><i class="fa-solid fa-location-dot text-i9gold mr-1"></i>${taskGroup}</td>
+                    <td class="px-3 py-2.5 whitespace-nowrap"><span class="bg-blue-50 text-i9blue px-2 py-0.5 rounded font-medium">${task.cat}</span></td>
+                    <td class="px-3 py-2.5 font-medium text-gray-900">${task.name}</td>
                     <td class="px-3 py-2.5 text-gray-600">${task.owner}</td>
                     <td class="px-3 py-2.5 font-mono text-gray-500">${task.seasonKey}</td>
-                    <td class="px-3 py-2.5 font-bold text-gray-800 whitespace-nowrap">${dates.adjustedDate}</td>
-                    <td class="px-3 py-2.5 whitespace-nowrap">
-                        <span class="px-2 py-1 rounded text-[11px] inline-block ${badgeClass}">${dates.actionStatus}</span>
-                    </td>
+                    <td class="px-3 py-2.5 font-semibold text-gray-800 whitespace-nowrap">${dates.adjustedDate}</td>
+                    <td class="px-3 py-2.5 whitespace-nowrap"><span class="px-2 py-1 rounded text-[11px] inline-block ${badgeClass}">${dates.actionStatus}</span></td>
                     <td class="px-3 py-2.5">
-                        <select onchange="updateTaskStatus('${task.id}', this.value)" class="bg-white border border-gray-300 rounded px-1.5 py-1 text-xs focus:ring-2 focus:ring-i9blue">
+                        <select onchange="updateTaskStatus('${task.id}', this.value)" class="bg-white border border-gray-300 rounded px-1.5 py-1 text-xs focus:ring-2 focus:ring-i9blue outline-none font-semibold">
                             <option value="Pending" ${task.status === 'Pending' ? 'selected' : ''}>Pending</option>
                             <option value="In Progress" ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                             <option value="Complete" ${task.status === 'Complete' ? 'selected' : ''}>Complete</option>
                         </select>
                     </td>
-                    <td class="px-3 py-2.5 text-gray-500 whitespace-nowrap">${task.completedBy || '-'}</td>
+                    <td class="px-3 py-2.5 text-gray-500 whitespace-nowrap">${task.completedBy ? `${task.completedBy} (${task.dateCompleted})` : '-'}</td>
                     <td class="px-3 py-2.5 text-gray-500 italic max-w-xs truncate" title="${task.notes}">${task.notes || '-'}</td>
                     <td class="px-3 py-2.5 text-center whitespace-nowrap">
-                        ${currentUser.role !== 'Staff' ? `
+                        ${isEditable ? `
                             <button onclick="openEditTaskModal('${task.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="deleteTask('${task.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
-                        ` : '<span class="text-gray-400 italic">View Only</span>'}
+                        ` : '<span class="text-gray-400 text-[10px]">Read-Only</span>'}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1153,21 +1274,44 @@
             updateKPIs();
         }
 
+        function updateTaskStatus(taskId, status) {
+            const task = masterTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            task.status = status;
+            if (status === "Complete") {
+                task.dateCompleted = new Date().toISOString().split('T')[0];
+                task.completedBy = currentUser.name;
+            } else {
+                task.dateCompleted = "";
+                task.completedBy = "";
+            }
+
+            saveToLocalStorage();
+            if (window.cloudSaveTask) window.cloudSaveTask(task);
+            renderMasterTasks();
+            renderDashboard();
+            showToast("Status Updated", `Task ${task.baseId || task.id} set to ${status}`);
+        }
+
+        // RENDER CONTROL CENTER (SEASONS)
         function renderControlCenter() {
             const tbody = document.getElementById('control-center-table-body');
             tbody.innerHTML = '';
 
-            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+            const authorizedGroups = getAuthorizedGroups();
+            const isManagerOrAdmin = currentUser.role === 'Main Admin' || currentUser.role === 'Manager';
 
-            seasons.forEach(s => {
-                if (userAllowedGroups && !userAllowedGroups.includes(s.group)) return;
+            seasons.sort((a, b) => (a.anchor || '').localeCompare(b.anchor || '')).forEach(s => {
+                if (!authorizedGroups.includes(s.group) && !currentUser.territories.includes('ALL')) return;
 
+                const yr = s.year || s.anchor.split('-')[0];
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
                 tr.innerHTML = `
-                    <td class="px-4 py-3 font-bold text-i9blue">${s.group || 'General'}</td>
-                    <td class="px-4 py-3 font-bold text-gray-700">${s.year}</td>
-                    <td class="px-4 py-3 font-mono font-bold text-gray-800">${s.key}</td>
+                    <td class="px-4 py-3 font-bold text-i9blue"><i class="fa-solid fa-location-dot text-i9gold mr-1"></i>${s.group}</td>
+                    <td class="px-4 py-3 font-bold text-gray-700">${yr}</td>
+                    <td class="px-4 py-3 font-mono font-bold text-i9blue">${s.key}</td>
                     <td class="px-4 py-3 font-semibold text-gray-800">${s.name}</td>
                     <td class="px-4 py-3 text-gray-600">${s.session}</td>
                     <td class="px-4 py-3 font-medium text-gray-900">${s.anchor || '-'}</td>
@@ -1175,25 +1319,82 @@
                     <td class="px-4 py-3 text-gray-600">${s.venues || '-'}</td>
                     <td class="px-4 py-3 text-rose-600 font-medium">${s.bye || 'None'}</td>
                     <td class="px-4 py-3 text-center whitespace-nowrap">
-                        ${currentUser.role !== 'Staff' ? `
+                        ${isManagerOrAdmin ? `
                             <button onclick="openEditSeasonModal('${s.key}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="deleteSeason('${s.key}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
-                        ` : '<span class="text-gray-400 italic">View Only</span>'}
+                        ` : '<span class="text-gray-400 text-[10px]">View Only</span>'}
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function updateKPIs() {
-            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+        // RENDER DASHBOARD
+        function renderDashboard() {
+            const seasonProgressContainer = document.getElementById('dashboard-season-progress');
+            seasonProgressContainer.innerHTML = '';
 
+            const authorizedGroups = getAuthorizedGroups();
+
+            seasons.forEach(s => {
+                if (!authorizedGroups.includes(s.group) && !currentUser.territories.includes('ALL')) return;
+
+                const sTasks = masterTasks.filter(t => t.seasonKey === s.key);
+                const total = sTasks.length;
+                const done = sTasks.filter(t => t.status === "Complete").length;
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span>[${s.group}] ${s.name} (${s.key})</span>
+                        <span class="text-i9blue">${done}/${total} Tasks Complete (${pct}%)</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-i9blue h-2.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                seasonProgressContainer.appendChild(div);
+            });
+
+            // Overdue Priority List
+            const overdueContainer = document.getElementById('dashboard-overdue-list');
+            overdueContainer.innerHTML = '';
+
+            const overdueTasks = masterTasks.filter(t => {
+                const s = seasons.find(se => se.key === t.seasonKey);
+                if (!s || (!authorizedGroups.includes(s.group) && !currentUser.territories.includes('ALL'))) return false;
+                return calculateTaskDates(t).actionStatus === "🚨 OVERDUE";
+            });
+
+            if (overdueTasks.length === 0) {
+                overdueContainer.innerHTML = '<p class="text-xs text-gray-500 italic p-3 bg-gray-50 rounded-lg">No overdue tasks for your authorized groups!</p>';
+            } else {
+                overdueTasks.forEach(t => {
+                    const dates = calculateTaskDates(t);
+                    const s = seasons.find(se => se.key === t.seasonKey);
+                    const div = document.createElement('div');
+                    div.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs flex justify-between items-center gap-2";
+                    div.innerHTML = `
+                        <div>
+                            <p class="font-bold text-rose-800">${t.name}</p>
+                            <p class="text-rose-600 text-[11px]">[${s.group}] ${t.seasonKey} • Owner: ${t.owner} • Target: ${dates.adjustedDate}</p>
+                        </div>
+                        <button onclick="updateTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold hover:bg-rose-700 transition whitespace-nowrap shadow-sm">Mark Complete</button>
+                    `;
+                    overdueContainer.appendChild(div);
+                });
+            }
+        }
+
+        // UPDATE KPI METRICS
+        function updateKPIs() {
             let total = 0, completed = 0, dueThisWeek = 0, overdue = 0;
+            const authorizedGroups = getAuthorizedGroups();
 
             masterTasks.forEach(t => {
-                const season = seasons.find(s => s.key === t.seasonKey);
-                const group = season ? (season.group || 'General') : 'General';
-                if (userAllowedGroups && !userAllowedGroups.includes(group)) return;
+                const s = seasons.find(se => se.key === t.seasonKey);
+                if (!s || (!authorizedGroups.includes(s.group) && !currentUser.territories.includes('ALL'))) return;
 
                 total++;
                 const dates = calculateTaskDates(t);
@@ -1208,85 +1409,226 @@
             document.getElementById('kpi-overdue').textContent = overdue;
         }
 
-        function renderDashboard() {
-            const seasonProgressContainer = document.getElementById('dashboard-season-progress');
-            seasonProgressContainer.innerHTML = '';
+        // USER MANAGEMENT MODAL
+        function openUserManagementModal() {
+            if (!currentUser || currentUser.role !== 'Main Admin') return;
+            renderGroupPills();
+            renderTerritoryCheckboxes();
+            renderUsersTable();
+            document.getElementById('user-management-modal').classList.remove('hidden');
+        }
 
-            const userAllowedGroups = (currentUser && currentUser.territories.includes('ALL')) ? null : currentUser.territories;
+        function closeUserManagementModal() {
+            document.getElementById('user-management-modal').classList.add('hidden');
+        }
 
-            seasons.forEach(s => {
-                if (userAllowedGroups && !userAllowedGroups.includes(s.group)) return;
+        function addGroup(e) {
+            e.preventDefault();
+            const groupNameInput = document.getElementById('new-group-name');
+            const groupName = groupNameInput.value.trim();
 
-                const sTasks = masterTasks.filter(t => t.seasonKey === s.key);
-                const total = sTasks.length;
-                const done = sTasks.filter(t => t.status === "Complete").length;
-                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <div class="flex justify-between text-xs font-bold mb-1">
-                        <span class="text-gray-800">[${s.group || 'General'}] ${s.name} (${s.key})</span>
-                        <span class="text-i9blue">${done}/${total} Completed (${pct}%)</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div class="bg-i9blue h-2.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
-                    </div>
-                `;
-                seasonProgressContainer.appendChild(div);
-            });
-
-            // Overdue Priority Watchlist
-            const overdueContainer = document.getElementById('dashboard-overdue-list');
-            overdueContainer.innerHTML = '';
-
-            const overdueTasks = masterTasks.filter(t => {
-                const season = seasons.find(s => s.key === t.seasonKey);
-                const group = season ? (season.group || 'General') : 'General';
-                if (userAllowedGroups && !userAllowedGroups.includes(group)) return false;
-                return calculateTaskDates(t).actionStatus === "🚨 OVERDUE";
-            });
-
-            if (overdueTasks.length === 0) {
-                overdueContainer.innerHTML = '<p class="text-xs text-gray-500 italic p-3 bg-gray-50 rounded-lg text-center">No overdue tasks! All program milestones are on schedule.</p>';
-            } else {
-                overdueTasks.forEach(t => {
-                    const dates = calculateTaskDates(t);
-                    const div = document.createElement('div');
-                    div.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs flex justify-between items-center";
-                    div.innerHTML = `
-                        <div>
-                            <p class="font-bold text-rose-800">${t.name}</p>
-                            <p class="text-rose-600 text-[11px]">${t.seasonKey} | Owner: ${t.owner} | Target: ${dates.adjustedDate}</p>
-                        </div>
-                        <button onclick="updateTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2.5 py-1 rounded text-[11px] font-bold hover:bg-rose-700 shadow-sm">Mark Complete</button>
-                    `;
-                    overdueContainer.appendChild(div);
-                });
+            if (groupName && !groups.includes(groupName)) {
+                groups.push(groupName);
+                saveToLocalStorage();
+                if (window.cloudSaveGroup) window.cloudSaveGroup(groupName);
+                groupNameInput.value = '';
+                renderGroupPills();
+                renderTerritoryCheckboxes();
+                populateFilterOptions();
+                showToast("Group Added", `New territory group "${groupName}" created.`);
             }
         }
 
-        function updateTaskStatus(id, newStatus) {
-            const task = masterTasks.find(t => t.id === id);
-            if (!task) return;
+        function removeGroup(groupName) {
+            if (confirm(`Remove group "${groupName}"? Associated seasons and tasks will be hidden.`)) {
+                groups = groups.filter(g => g !== groupName);
+                saveToLocalStorage();
+                if (window.cloudDeleteGroup) window.cloudDeleteGroup(groupName);
+                renderGroupPills();
+                renderTerritoryCheckboxes();
+                populateFilterOptions();
+                renderControlCenter();
+                renderMasterTasks();
+            }
+        }
 
-            task.status = newStatus;
-            if (newStatus === 'Complete') {
-                task.dateCompleted = new Date().toISOString().split('T')[0];
-                task.completedBy = currentUser ? currentUser.name : 'Staff';
+        function renderGroupPills() {
+            const container = document.getElementById('group-pill-list');
+            container.innerHTML = '';
+
+            if (groups.length === 0) {
+                container.innerHTML = '<span class="text-xs text-gray-400 italic">No groups created yet. Add your first territory above.</span>';
+                return;
+            }
+
+            groups.forEach(g => {
+                const pill = document.createElement('span');
+                pill.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-i9blue font-bold text-xs border border-blue-200";
+                pill.innerHTML = `${g} <button onclick="removeGroup('${g}')" class="text-blue-500 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>`;
+                container.appendChild(pill);
+            });
+        }
+
+        function renderTerritoryCheckboxes() {
+            const container = document.getElementById('new-user-territory-checkboxes');
+            container.innerHTML = `
+                <label class="flex items-center gap-1.5 font-bold text-i9blue">
+                    <input type="checkbox" value="ALL" checked class="user-terr-checkbox"> All Network / Territories
+                </label>
+            `;
+
+            groups.forEach(g => {
+                container.innerHTML += `
+                    <label class="flex items-center gap-1.5 text-gray-700">
+                        <input type="checkbox" value="${g}" class="user-terr-checkbox"> ${g}
+                    </label>
+                `;
+            });
+        }
+
+        function toggleAddUserForm() {
+            const form = document.getElementById('add-user-form');
+            form.classList.toggle('hidden');
+        }
+
+        function saveUser(e) {
+            e.preventDefault();
+            const username = document.getElementById('new-user-username').value.trim();
+            const name = document.getElementById('new-user-name').value.trim();
+            const password = document.getElementById('new-user-password').value.trim();
+            const role = document.getElementById('new-user-role').value;
+
+            const selectedTerritories = Array.from(document.querySelectorAll('.user-terr-checkbox:checked')).map(cb => cb.value);
+
+            const existingIdx = users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
+            const newUserObj = { username, name, password, role, territories: selectedTerritories };
+
+            if (existingIdx !== -1) {
+                users[existingIdx] = newUserObj;
             } else {
-                task.dateCompleted = '';
-                task.completedBy = '';
+                users.push(newUserObj);
             }
 
             saveToLocalStorage();
-            renderMasterTasks();
-            renderDashboard();
-            showToast("Status Updated", `Task marked as ${newStatus}`);
+            if (window.cloudSaveUser) window.cloudSaveUser(newUserObj);
+            renderUsersTable();
+            toggleAddUserForm();
+            showToast("User Saved", `Account saved for ${name}`);
         }
 
+        function deleteUser(username) {
+            if (username === currentUser.username) {
+                alert("You cannot delete your own logged-in account.");
+                return;
+            }
+            if (confirm(`Delete user account ${username}?`)) {
+                users = users.filter(u => u.username !== username);
+                saveToLocalStorage();
+                if (window.cloudDeleteUser) window.cloudDeleteUser(username);
+                renderUsersTable();
+                showToast("User Removed", `Account ${username} deleted.`);
+            }
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                const terrText = u.territories.includes('ALL') ? 'All Network' : u.territories.join(', ');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2 font-bold font-mono">${u.username}</td>
+                    <td class="p-2">${u.name}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded font-bold ${u.role === 'Main Admin' ? 'bg-purple-100 text-purple-700' : u.role === 'Manager' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-700'}">${u.role}</span></td>
+                    <td class="p-2 text-gray-600">${terrText || 'None'}</td>
+                    <td class="p-2 text-center whitespace-nowrap">
+                        <button onclick="openAdminEditUser('${u.username}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Edit User or Reset Password"><i class="fa-solid fa-user-pen"></i></button>
+                        <button onclick="deleteUser('${u.username}')" class="text-rose-600 hover:text-rose-800" title="Delete User"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openAdminEditUser(username) {
+            const u = users.find(usr => usr.username.toLowerCase() === username.toLowerCase());
+            if (!u) return;
+
+            document.getElementById('new-user-username').value = u.username;
+            document.getElementById('new-user-name').value = u.name;
+            document.getElementById('new-user-password').value = u.password;
+            document.getElementById('new-user-role').value = u.role;
+
+            const checkboxes = document.querySelectorAll('.user-terr-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = u.territories.includes(cb.value);
+            });
+
+            document.getElementById('add-user-form').classList.remove('hidden');
+            showToast("Edit User Mode", `Loaded ${u.name}'s account into the form above.`);
+        }
+
+        // PASSWORD CHANGE MODAL LOGIC
+        function openChangePasswordModal() {
+            if (!currentUser) return;
+            document.getElementById('pass-current').value = '';
+            document.getElementById('pass-new').value = '';
+            document.getElementById('pass-confirm').value = '';
+            document.getElementById('pass-error').classList.add('hidden');
+            document.getElementById('password-modal').classList.remove('hidden');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function handleSelfPasswordChange(e) {
+            e.preventDefault();
+            const currentPass = document.getElementById('pass-current').value;
+            const newPass = document.getElementById('pass-new').value;
+            const confirmPass = document.getElementById('pass-confirm').value;
+            const errorBox = document.getElementById('pass-error');
+            const errorText = document.getElementById('pass-error-text');
+
+            if (currentPass !== currentUser.password) {
+                errorText.textContent = "Current password is incorrect.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            if (newPass.length < 4) {
+                errorText.textContent = "New password must be at least 4 characters long.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                errorText.textContent = "New passwords do not match.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            // Update Password in Memory
+            currentUser.password = newPass;
+            const uIdx = users.findIndex(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+            if (uIdx !== -1) {
+                users[uIdx].password = newPass;
+            }
+
+            // Save to LocalStorage & Sync to Firebase Cloud
+            saveToLocalStorage();
+            if (window.cloudSaveUser) window.cloudSaveUser(currentUser);
+
+            closeChangePasswordModal();
+            showToast("Password Updated", "Your password has been changed and synced successfully.");
+        }
+
+        // SEASON & TASK MODALS
         function openAddSeasonModal() {
             if (groups.length === 0) {
-                showToast("No Groups", "Please add a Group/Territory in Admin Controls first.", "warning");
+                alert("Please add at least one Group / Territory first using the Admin Controls.");
+                openUserManagementModal();
                 return;
             }
             document.getElementById('season-form').reset();
@@ -1299,15 +1641,15 @@
             const s = seasons.find(item => item.key === key);
             if (!s) return;
             document.getElementById('season-edit-id').value = s.key;
-            document.getElementById('season-group-input').value = s.group || groups[0];
+            document.getElementById('season-group-input').value = s.group;
             document.getElementById('season-key-input').value = s.key;
-            document.getElementById('season-year-input').value = s.year;
+            document.getElementById('season-year-input').value = s.year || 2026;
             document.getElementById('season-name-input').value = s.name;
             document.getElementById('season-session-input').value = s.session;
             document.getElementById('season-anchor-input').value = s.anchor;
             document.getElementById('season-days-input').value = s.activeDays;
             document.getElementById('season-venues-input').value = s.venues;
-            document.getElementById('season-bye-input').value = s.bye;
+            document.getElementById('season-bye-input').value = s.bye || '';
             document.getElementById('season-modal-title').textContent = 'Edit Season';
             document.getElementById('season-modal').classList.remove('hidden');
         }
@@ -1322,7 +1664,7 @@
             const newSeason = {
                 group: document.getElementById('season-group-input').value,
                 key: document.getElementById('season-key-input').value.trim().toUpperCase(),
-                year: parseInt(document.getElementById('season-year-input').value) || 2026,
+                year: parseInt(document.getElementById('season-year-input').value),
                 name: document.getElementById('season-name-input').value.trim(),
                 session: document.getElementById('season-session-input').value.trim(),
                 anchor: document.getElementById('season-anchor-input').value,
@@ -1339,26 +1681,31 @@
             }
 
             saveToLocalStorage();
+            if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
             populateFilterOptions();
             renderControlCenter();
             renderMasterTasks();
             closeSeasonModal();
-            showToast("Season Saved", `Configured ${newSeason.name} (${newSeason.key})`);
+            showToast("Season Saved", `Season ${newSeason.key} saved.`);
         }
 
         function deleteSeason(key) {
-            seasons = seasons.filter(s => s.key !== key);
-            masterTasks = masterTasks.filter(t => t.seasonKey !== key);
-            saveToLocalStorage();
-            populateFilterOptions();
-            renderControlCenter();
-            renderMasterTasks();
-            showToast("Season Deleted", `Removed season ${key} and its tasks.`);
+            if (confirm(`Delete season ${key} and its tasks?`)) {
+                seasons = seasons.filter(s => s.key !== key);
+                masterTasks = masterTasks.filter(t => t.seasonKey !== key);
+                saveToLocalStorage();
+                if (window.cloudDeleteSeason) window.cloudDeleteSeason(key);
+                populateFilterOptions();
+                renderControlCenter();
+                renderMasterTasks();
+                showToast("Season Deleted", `Season ${key} removed.`);
+            }
         }
 
+        // TASK MODAL LOGIC
         function openAddTaskModal() {
             if (seasons.length === 0) {
-                showToast("No Seasons", "Create a Season in Control Center first.", "warning");
+                alert("Please add at least one Season in the Control Center before adding tasks.");
                 return;
             }
             document.getElementById('task-form').reset();
@@ -1378,7 +1725,7 @@
             document.getElementById('task-owner-input').value = t.owner;
             document.getElementById('task-lead-input').value = t.leadOffset;
             document.getElementById('task-dayoffset-input').value = t.dayOffset;
-            document.getElementById('task-notes-input').value = t.notes;
+            document.getElementById('task-notes-input').value = t.notes || '';
             document.getElementById('task-modal-title').textContent = 'Edit Task';
             document.getElementById('task-modal').classList.remove('hidden');
         }
@@ -1421,56 +1768,36 @@
             }
 
             saveToLocalStorage();
+            if (window.cloudSaveTask) window.cloudSaveTask(taskData);
             renderMasterTasks();
             closeTaskModal();
-            showToast("Task Saved", "Program milestone updated.");
+            showToast("Task Saved", `Task ${taskData.baseId} saved.`);
         }
 
         function deleteTask(id) {
-            masterTasks = masterTasks.filter(t => t.id !== id);
-            saveToLocalStorage();
-            renderMasterTasks();
-            showToast("Task Deleted", "Task milestone removed.");
+            if (confirm("Delete this task?")) {
+                masterTasks = masterTasks.filter(t => t.id !== id);
+                saveToLocalStorage();
+                if (window.cloudDeleteTask) window.cloudDeleteTask(id);
+                renderMasterTasks();
+                showToast("Task Deleted", `Task removed.`);
+            }
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('border-i9blue', 'text-i9blue');
-                btn.classList.add('border-transparent', 'text-gray-500');
-            });
-            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-
-            document.getElementById(`tab-${tab}`).classList.add('border-i9blue', 'text-i9blue');
-            document.getElementById(`tab-${tab}`).classList.remove('border-transparent', 'text-gray-500');
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-        }
-
-        function showToast(title, message, type = "info") {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `p-3 rounded-lg shadow-lg text-xs flex items-center gap-2 pointer-events-auto transition transform duration-300 translate-y-2 ${type === 'warning' ? 'bg-amber-600 text-white' : 'bg-i9blue text-white'}`;
-            toast.innerHTML = `
-                <i class="fa-solid fa-circle-info text-i9gold"></i>
-                <div>
-                    <p class="font-bold">${title}</p>
-                    <p class="text-[11px] opacity-90">${message}</p>
-                </div>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
-        }
-
+        // CSV EXPORT
         function exportToCSV() {
-            const headers = ["Task ID", "Group / Territory", "Category", "Task Name", "Owner", "Season Key", "Lead Offset", "Day Offset", "Calculated Date", "Adjusted Date", "Completion Status", "Date Completed", "Completed By", "Action Status", "Notes"];
-            
-            const rows = masterTasks.map(t => {
-                const season = seasons.find(s => s.key === t.seasonKey);
-                const group = season ? (season.group || 'General') : 'General';
-                const dates = calculateTaskDates(t);
+            const headers = ["Group", "Task ID", "Phase", "Task Description", "Owner", "Season Key", "Lead Offset", "Day Offset", "Calculated Target", "Adjusted Target", "Status", "Completed By", "Date Completed", "Notes"];
+            const authorizedGroups = getAuthorizedGroups();
 
+            const rows = masterTasks.filter(t => {
+                const s = seasons.find(se => se.key === t.seasonKey);
+                return s && (authorizedGroups.includes(s.group) || currentUser.territories.includes('ALL'));
+            }).map(t => {
+                const s = seasons.find(se => se.key === t.seasonKey);
+                const dates = calculateTaskDates(t);
                 return [
+                    `"${s ? s.group : ''}"`,
                     `"${t.baseId || t.id}"`,
-                    `"${group}"`,
                     `"${t.cat}"`,
                     `"${t.name.replace(/"/g, '""')}"`,
                     `"${t.owner}"`,
@@ -1480,22 +1807,38 @@
                     `"${dates.calculatedDate}"`,
                     `"${dates.adjustedDate}"`,
                     `"${t.status}"`,
-                    `"${t.dateCompleted}"`,
-                    `"${t.completedBy}"`,
-                    `"${dates.actionStatus}"`,
+                    `"${t.completedBy || ''}"`,
+                    `"${t.dateCompleted || ''}"`,
                     `"${(t.notes || '').replace(/"/g, '""')}"`
                 ];
             });
 
             const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `i9_Sports_Operations_Export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.href = encodeURI(csvContent);
+            link.download = `PD_Planner_Tasks_${new Date().toISOString().split('T')[0]}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showToast("CSV Exported", "Downloaded Microsoft Excel compatible .csv file.");
+        }
+
+        // TOAST NOTIFIER
+        function showToast(title, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "bg-gray-900 text-white p-3 rounded-lg shadow-xl text-xs flex items-center gap-3 border border-gray-700 pointer-events-auto transition-all duration-300";
+            toast.innerHTML = `
+                <div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div>
+                <div>
+                    <p class="font-bold">${title}</p>
+                    <p class="text-gray-300 text-[11px]">${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>
