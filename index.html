@@ -630,7 +630,49 @@
                             <option value="Pre-Season Prep">Pre-Season Prep</option>
                             <option value="Training Session Ops">Training Session Ops</option>
                             <option value="Game-Day Ops">Game-Day Ops</option>
-                            <option value="Next Session Prep">Next Session Prep</option>
+                           </select>
+                    </div>
+                    
+                    <!-- Assignee (Owner) -->
+                    <div>
+                        <label class="block font-bold mb-1">Assignee</label>
+                        <select id="task-owner-input" required class="w-full p-2 border rounded bg-gray-50">
+                            <option value="League Director">League Director</option>
+                            <option value="Ops Coordinator">Ops Coordinator</option>
+                            <option value="Site Lead">Site Lead</option>
+                            <option value="Marketing Lead">Marketing Lead</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Time Prior to Season (Days) -->
+                    <div>
+                        <label class="block font-bold mb-1">Days Prior to Kickoff</label>
+                        <input type="number" id="task-lead-input" required placeholder="e.g. -14" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <!-- Secondary Day Offset (Optional adjustment) -->
+                    <div>
+                        <label class="block font-bold mb-1">Day Offset</label>
+                        <input type="number" id="task-dayoffset-input" required value="0" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                </div>
+
+                <!-- Details / Notes -->
+                <div>
+                    <label class="block font-bold mb-1">Details / Notes</label>
+                    <textarea id="task-notes-input" placeholder="Add specific task details here..." class="w-full p-2 border rounded bg-gray-50 text-xs h-20"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeTaskModal()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold hover:bg-blue-900 transition">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- CHANGE PASSWORD MODAL (SELF-SERVICE) -->
     <div id="password-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4">
