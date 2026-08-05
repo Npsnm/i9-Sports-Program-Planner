@@ -105,7 +105,6 @@
 
         <!-- TAB 1: EXECUTIVE DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
-            <!-- KPI SUMMARY STATS -->
             <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border border-gray-100 flex justify-between items-center">
                     <div>
@@ -377,7 +376,6 @@
     </div>
 
     <!-- MODALS -->
-    <!-- Add Program Modal -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue">Add New Program</h3>
@@ -404,7 +402,6 @@
         </div>
     </div>
 
-    <!-- Active Task Edit Modal -->
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue" id="active-task-title">Edit Active Task</h3>
@@ -426,7 +423,6 @@
         </div>
     </div>
 
-    <!-- Admin & User Control Modal -->
     <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-2">
@@ -435,7 +431,6 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Group Management Pane -->
                 <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
                     <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1">Franchise Groups</h4>
                     <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
@@ -445,7 +440,6 @@
                     <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- User Management Pane -->
                 <div class="md:col-span-2 space-y-3">
                     <h4 class="text-xs font-bold text-gray-800 border-b pb-1">System Users in Your Groups</h4>
                     <div class="border rounded-lg overflow-y-auto max-h-64">
@@ -459,16 +453,13 @@
                 </div>
             </div>
 
-            <!-- Edit User Form -->
             <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300 space-y-4 text-xs mt-4">
                 <h4 class="font-bold text-i9blue text-sm border-b pb-1">Edit User Access</h4>
                 <input type="hidden" id="admin-u-email">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block font-bold mb-1">Role Tier</label>
-                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold">
-                            <!-- Options injected dynamically based on current user tier -->
-                        </select>
+                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold"></select>
                     </div>
                     <div>
                         <label class="block font-bold mb-1">Territory Access</label>
@@ -480,7 +471,6 @@
         </div>
     </div>
 
-    <!-- Branding Modal -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
             <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -509,10 +499,13 @@
             window.auth = auth; window.signInWithEmailAndPassword = signInWithEmailAndPassword; window.createUserWithEmailAndPassword = createUserWithEmailAndPassword; window.updatePassword = updatePassword; window.updateEmail = updateEmail; window.signOut = signOut; window.linkWithPopup = linkWithPopup; window.sendPasswordResetEmail = sendPasswordResetEmail;
             const googleProvider = new GoogleAuthProvider(); window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
 
-            // STRICT Auth Listener
             onAuthStateChanged(auth, (user) => {
-                if (user) { initRealtimeSync(); } 
-                else { document.getElementById('auth-overlay').classList.remove('hidden'); document.getElementById('sync-status-text').textContent = "Disconnected"; }
+                if (user) { 
+                    initRealtimeSync(); 
+                } else { 
+                    document.getElementById('auth-overlay').classList.remove('hidden'); 
+                    document.getElementById('sync-status-text').textContent = "Disconnected"; 
+                }
             });
         } catch (e) { console.error("Firebase Init Error:", e); }
 
@@ -533,31 +526,18 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
                 window.users = snap.docs.map(d => d.data()); window.renderUsersTable();
                 
-                // Session Restore / Auth Verify
-                if (auth.currentUser && !window.currentUser) {
-                    const matched = window.users.find(u => u.username.toLowerCase() === auth.currentUser.email.toLowerCase());
+                if (auth.currentUser) {
+                    const em = auth.currentUser.email.toLowerCase();
+                    let matched = window.users.find(u => u.username.toLowerCase() === em);
+                    
+                    if (em === 'nick@npsnm.com') {
+                        matched = { username: 'nick@npsnm.com', name: 'Nick Padilla', role: 'System Admin', territories: ['ALL'] };
+                    }
+
                     if (matched) {
                         window.currentUser = matched;
                         window.unlockPortal();
-                    } else if (auth.currentUser.email) {
-                        let assignRole = "Pending";
-                        let assignTerr = [];
-                        let assignName = "New User";
-                        
-                        if (window.users.length === 0 || auth.currentUser.email.toLowerCase() === 'nick@npsnm.com') {
-                            assignRole = "System Admin";
-                            assignTerr = ["ALL"];
-                            assignName = "Nick Padilla";
-                        }
-                        
-                        const newU = { username: auth.currentUser.email, name: assignName, role: assignRole, territories: assignTerr };
-                        window.cloudSaveUser(newU);
-                        window.currentUser = newU;
-                        window.unlockPortal();
                     }
-                } else if (window.currentUser) {
-                    const matched = window.users.find(u => u.username.toLowerCase() === window.currentUser.username.toLowerCase());
-                    if (matched) { window.currentUser = matched; window.applyPermissions(); }
                 }
             });
 
@@ -642,7 +622,6 @@
             updateSubcats();
         });
 
-        // --- AUTH FLOW ---
         function toggleAuthMode(mode) {
             const err = document.getElementById('auth-error'); err.classList.add('hidden');
             if (mode === 'login') {
@@ -681,7 +660,6 @@
                 const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
                 const authUser = userCredential.user;
 
-                // Immediate Admin Bypass
                 if (em === 'nick@npsnm.com') {
                     window.currentUser = {
                         username: 'nick@npsnm.com',
@@ -789,8 +767,8 @@
                 return;
             }
 
-            const overlay = document.getElementById('auth-overlay');
-            if (overlay) overlay.classList.add('hidden');
+            // Unconditionally hide overlay when logged in
+            document.getElementById('auth-overlay').classList.add('hidden');
 
             applyPermissions();
             populateFilterOptions();
@@ -834,7 +812,6 @@
             if (tab === 'dashboard') renderDashboard();
         }
 
-        // --- USER SETTINGS ---
         async function handleEmailUpdate(e) {
             e.preventDefault();
             if (!currentUser) return;
@@ -864,7 +841,6 @@
             } catch (err) { alert(err.message); }
         }
 
-        // --- UTILS & GENERATORS ---
         function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
         function getAuthorizedGroups() { return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); }
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
@@ -876,7 +852,6 @@
             (SUBCATS[type] || []).forEach(sc => sel.innerHTML += `<option value="${sc}">${sc}</option>`);
         }
 
-        // --- DATA RENDERING ---
         function populateFilterOptions() {
             if (!currentUser) return;
             const ag = getAuthorizedGroups();
@@ -959,7 +934,6 @@
             const kUn = document.getElementById('kpi-unassigned'); if(kUn) kUn.textContent = unassigned;
         }
 
-        // --- PROGRAM CONTROLS ---
         function renderControlCenter() {
             if (!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
@@ -1008,7 +982,6 @@
             closeModals(); showToast("Program Created", "Ready for task generation.");
         }
 
-        // --- TEMPLATES ---
         function renderTemplates() {
             if (!currentUser) return;
             const f = document.getElementById('filter-template-type'); if(!f) return;
@@ -1049,7 +1022,6 @@
             closeModals(); showToast("Template Added", "Master list updated.");
         }
 
-        // --- GENERATION ENGINE ---
         function generateTaskPlan(progId) {
             const p = programs.find(x => x.id === progId);
             if(!p) return;
@@ -1084,7 +1056,6 @@
             switchTab('tasks');
         }
 
-        // --- ACTIVE TASKS EXECUTION ---
         function renderActiveTasks() {
             if (!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
@@ -1199,7 +1170,6 @@
             closeModals();
         }
 
-        // --- GROUP & USER ADMIN ---
         function openUserManagementModal() { document.getElementById('user-management-modal').classList.remove('hidden'); }
         
         function renderGroupPills() {
@@ -1267,7 +1237,6 @@
             }
         }
 
-        // --- PERMISSIONS PORTAL ---
         function renderPermissions() {
             const tb = document.getElementById('permissions-table-body'); if(!tb) return;
             tb.innerHTML = '';
