@@ -710,24 +710,17 @@
         </div>
     </div>
 
-    <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
-    <script type="module">
-        import { 
-        getAuth, 
-        signInWithEmailAndPassword, 
-        updatePassword 
-        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        
-        const auth = getAuth(app);
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-          getAuth, 
-          signInAnonymously, 
-          onAuthStateChanged,
-          signInWithEmailAndPassword,
-          updatePassword
-        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
+            <script type="module">
+                import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+                import { 
+                  getAuth, 
+                  signInAnonymously, 
+                  onAuthStateChanged,
+                  signInWithEmailAndPassword,
+                  updatePassword
+                } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+                import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Environment Variables Resolution
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'i9-sports-portal';
@@ -752,6 +745,11 @@
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
+
+            // Expose auth and functions to the global scope for the main script
+            window.auth = auth;
+            window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+            window.updatePassword = updatePassword;
             
             // Authentication Step
             const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -1014,23 +1012,25 @@ window.applyBrandingUI = applyBrandingUI;
         }
 
         async function login(e) {
-          if (e) e.preventDefault();
-          const email = document.getElementById('usernameInput').value.trim();
-          const password = document.getElementById('passwordInput').value.trim();
-        
-          try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            currentUser = userCredential.user;
-            
-            document.getElementById('loginModal').style.display = 'none';
-            showToast(`Welcome back, ${currentUser.email}!`);
-            
-            // Re-initialize app data for logged in user
-            initRealtimeSync();
-          } catch (error) {
-            alert("Login failed: " + error.message);
-          }
-        }
+                  if (e) e.preventDefault();
+                  const email = document.getElementById('login-username').value.trim();
+                  const password = document.getElementById('login-password').value.trim();
+                
+                  try {
+                    const userCredential = await window.signInWithEmailAndPassword(window.auth, email, password);
+                    currentUser = userCredential.user;
+                    
+                    document.getElementById('auth-overlay').classList.add('hidden');
+                    showToast("Success", `Welcome back, ${currentUser.email}!`);
+                    
+                    // Re-initialize app data for logged in user
+                    initRealtimeSync();
+                  } catch (error) {
+                    const errorBox = document.getElementById('login-error');
+                    document.getElementById('login-error-text').textContent = "Login failed: " + error.message;
+                    errorBox.classList.remove('hidden');
+                  }
+                }
 
         function logout() {
             currentUser = null;
@@ -1712,135 +1712,135 @@ function promptGenerateYear() {
             document.getElementById('password-modal').classList.add('hidden');
         }
 
-        function handleSelfPasswordChange(e) {
-            e.preventDefault();
-            const currentPass = document.getElementById('pass-current').value;
-            const newPass = document.getElementById('pass-new').value;
-            const confirmPass = document.getElementById('pass-confirm').value;
-            const errorBox = document.getElementById('pass-error');
-            const errorText = document.getElementById('pass-error-text');
-
-            if (currentPass !== currentUser.password) {
-                errorText.textContent = "Current password is incorrect.";
-                errorBox.classList.remove('hidden');
-                return;
-            }
-
-            if (newPass.length < 4) {
-                errorText.textContent = "New password must be at least 4 characters long.";
-                errorBox.classList.remove('hidden');
-                return;
-            }
-
-            if (newPass !== confirmPass) {
-                errorText.textContent = "New passwords do not match.";
-                errorBox.classList.remove('hidden');
-                return;
-            }
-
-            // Update Password in Memory
-            async function changePassword(newPassword) {
-              const user = auth.currentUser;
-            
-              if (user) {
-                try {
-                  await updatePassword(user, newPassword);
-                  showToast("Password updated successfully in the cloud!");
-                } catch (error) {
-                  alert("Error updating password: " + error.message);
+        async function handleSelfPasswordChange(e) {
+                    e.preventDefault();
+                    const currentPass = document.getElementById('pass-current').value;
+                    const newPass = document.getElementById('pass-new').value;
+                    const confirmPass = document.getElementById('pass-confirm').value;
+                    const errorBox = document.getElementById('pass-error');
+                    const errorText = document.getElementById('pass-error-text');
+        
+                    if (currentPass !== currentUser.password) {
+                        errorText.textContent = "Current password is incorrect.";
+                        errorBox.classList.remove('hidden');
+                        return;
+                    }
+        
+                    if (newPass.length < 4) {
+                        errorText.textContent = "New password must be at least 4 characters long.";
+                        errorBox.classList.remove('hidden');
+                        return;
+                    }
+        
+                    if (newPass !== confirmPass) {
+                        errorText.textContent = "New passwords do not match.";
+                        errorBox.classList.remove('hidden');
+                        return;
+                    }
+        
+                    // Update Password in Firebase Cloud
+                    const user = window.auth.currentUser;
+                    
+                    if (user) {
+                        try {
+                            await window.updatePassword(user, newPass);
+                            
+                            // Update Local State
+                            currentUser.password = newPass;
+                            saveToLocalStorage();
+                            if (window.cloudSaveUser) window.cloudSaveUser(currentUser);
+        
+                            closeChangePasswordModal();
+                            showToast("Password Updated", "Your password has been changed and synced successfully.");
+                        } catch (error) {
+                            errorText.textContent = "Error updating password: " + error.message;
+                            errorBox.classList.remove('hidden');
+                        }
+                    } else {
+                        errorText.textContent = "You must be logged in to change your password.";
+                        errorBox.classList.remove('hidden');
+                    }
                 }
-              } else {
-                alert("You must be logged in to change your password.");
-              }
-            }
-
-            // Save to LocalStorage & Sync to Firebase Cloud
-            saveToLocalStorage();
-            if (window.cloudSaveUser) window.cloudSaveUser(currentUser);
-
-            closeChangePasswordModal();
-            showToast("Password Updated", "Your password has been changed and synced successfully.");
+        
+                // SEASON & TASK MODALS
+                function openAddSeasonModal() {
+                    if (groups.length === 0) {
+                        alert("Please add at least one Group / Territory first using the Admin Controls.");
+                        openUserManagementModal();
+                        return;
+                    }
+                    document.getElementById('season-form').reset();
+                    document.getElementById('season-edit-id').value = '';
+                    // Auto-generate the Season Key
+                    document.getElementById('season-key-input').value = generateUniqueId('SEA');
+                    document.getElementById('season-modal-title').textContent = 'Add New Season';
+                    document.getElementById('season-modal').classList.remove('hidden');
         }
-
-        // SEASON & TASK MODALS
-        function openAddSeasonModal() {
-            if (groups.length === 0) {
-                alert("Please add at least one Group / Territory first using the Admin Controls.");
-                openUserManagementModal();
-                return;
-            }
-            document.getElementById('season-form').reset();
-            document.getElementById('season-edit-id').value = '';
-            // Auto-generate the Season Key
-            document.getElementById('season-key-input').value = generateUniqueId('SEA');
-            document.getElementById('season-modal-title').textContent = 'Add New Season';
-            document.getElementById('season-modal').classList.remove('hidden');
-}
-
-        function openEditSeasonModal(key) {
-            const s = seasons.find(item => item.key === key);
-            if (!s) return;
-            document.getElementById('season-edit-id').value = s.key;
-            document.getElementById('season-group-input').value = s.group;
-            document.getElementById('season-key-input').value = s.key;
-            document.getElementById('season-year-input').value = s.year || 2026;
-            document.getElementById('season-name-input').value = s.name;
-            document.getElementById('season-session-input').value = s.session;
-            document.getElementById('season-anchor-input').value = s.anchor;
-            document.getElementById('season-days-input').value = s.activeDays;
-            document.getElementById('season-venues-input').value = s.venues;
-            document.getElementById('season-bye-input').value = s.bye || '';
-            document.getElementById('season-modal-title').textContent = 'Edit Season';
-            document.getElementById('season-modal').classList.remove('hidden');
-        }
-
-        function closeSeasonModal() {
-            document.getElementById('season-modal').classList.add('hidden');
-        }
-
-        function saveSeason(e) {
-            e.preventDefault();
-            const editKey = document.getElementById('season-edit-id').value;
-            const newSeason = {
-                group: document.getElementById('season-group-input').value,
-                key: document.getElementById('season-key-input').value.trim().toUpperCase(),
-                year: parseInt(document.getElementById('season-year-input').value),
-                name: document.getElementById('season-name-input').value.trim(),
-                session: document.getElementById('season-session-input').value.trim(),
-                anchor: document.getElementById('season-anchor-input').value,
-                activeDays: document.getElementById('season-days-input').value.trim(),
-                venues: document.getElementById('season-venues-input').value.trim(),
-                bye: document.getElementById('season-bye-input').value
-            };
-
-            if (editKey) {
-                const idx = seasons.findIndex(s => s.key === editKey);
-                if (idx !== -1) seasons[idx] = newSeason;
-            } else {
-                seasons.push(newSeason);
-            }
-
-            saveToLocalStorage();
-            if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
-            populateFilterOptions();
-            renderControlCenter();
-            renderMasterTasks();
-            closeSeasonModal();
-            showToast("Season Saved", `Season ${newSeason.key} saved.`);
-        }
-
-        function deleteSeason(key) {
-            if (confirm(`Delete season ${key} and its tasks?`)) {
-                seasons = seasons.filter(s => s.key !== key);
-                masterTasks = masterTasks.filter(t => t.seasonKey !== key);
-                saveToLocalStorage();
-                if (window.cloudDeleteSeason) window.cloudDeleteSeason(key);
-                populateFilterOptions();
-                renderControlCenter();
-                renderMasterTasks();
-                showToast("Season Deleted", `Season ${key} removed.`);
-            }
-        }
+        
+                function openEditSeasonModal(key) {
+                    const s = seasons.find(item => item.key === key);
+                    if (!s) return;
+                    document.getElementById('season-edit-id').value = s.key;
+                    document.getElementById('season-group-input').value = s.group;
+                    document.getElementById('season-key-input').value = s.key;
+                    document.getElementById('season-year-input').value = s.year || 2026;
+                    document.getElementById('season-name-input').value = s.name;
+                    document.getElementById('season-session-input').value = s.session;
+                    document.getElementById('season-anchor-input').value = s.anchor;
+                    document.getElementById('season-days-input').value = s.activeDays;
+                    document.getElementById('season-venues-input').value = s.venues;
+                    document.getElementById('season-bye-input').value = s.bye || '';
+                    document.getElementById('season-modal-title').textContent = 'Edit Season';
+                    document.getElementById('season-modal').classList.remove('hidden');
+                }
+        
+                function closeSeasonModal() {
+                    document.getElementById('season-modal').classList.add('hidden');
+                }
+        
+                function saveSeason(e) {
+                    e.preventDefault();
+                    const editKey = document.getElementById('season-edit-id').value;
+                    const newSeason = {
+                        group: document.getElementById('season-group-input').value,
+                        key: document.getElementById('season-key-input').value.trim().toUpperCase(),
+                        year: parseInt(document.getElementById('season-year-input').value),
+                        name: document.getElementById('season-name-input').value.trim(),
+                        session: document.getElementById('season-session-input').value.trim(),
+                        anchor: document.getElementById('season-anchor-input').value,
+                        activeDays: document.getElementById('season-days-input').value.trim(),
+                        venues: document.getElementById('season-venues-input').value.trim(),
+                        bye: document.getElementById('season-bye-input').value
+                    };
+        
+                    if (editKey) {
+                        const idx = seasons.findIndex(s => s.key === editKey);
+                        if (idx !== -1) seasons[idx] = newSeason;
+                    } else {
+                        seasons.push(newSeason);
+                    }
+        
+                    saveToLocalStorage();
+                    if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
+                    populateFilterOptions();
+                    renderControlCenter();
+                    renderMasterTasks();
+                    closeSeasonModal();
+                    showToast("Season Saved", `Season ${newSeason.key} saved.`);
+                }
+        
+                function deleteSeason(key) {
+                    if (confirm(`Delete season ${key} and its tasks?`)) {
+                        seasons = seasons.filter(s => s.key !== key);
+                        masterTasks = masterTasks.filter(t => t.seasonKey !== key);
+                        saveToLocalStorage();
+                        if (window.cloudDeleteSeason) window.cloudDeleteSeason(key);
+                        populateFilterOptions();
+                        renderControlCenter();
+                        renderMasterTasks();
+                        showToast("Season Deleted", `Season ${key} removed.`);
+                    }
+                }
 
         // TASK MODAL LOGIC
        function openAddTaskModal() {
