@@ -84,16 +84,16 @@
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[60px] z-30">
         <div class="max-w-7xl mx-auto px-4 flex space-x-6 overflow-x-auto">
             <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-chart-pie"></i> Executive Dashboard
+                <i class="fa-solid fa-chart-pie"></i> Home Dashboard
+            </button>
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-list-check"></i> Task List
             </button>
             <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-calendar-days"></i> Programs
             </button>
             <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-layer-group"></i> Template Builder
-            </button>
-            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-list-check"></i> Active Task Execution
+                <i class="fa-solid fa-layer-group"></i> Task Profiles
             </button>
             <button onclick="switchTab('permissions')" id="tab-permissions" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap hidden admin-only">
                 <i class="fa-solid fa-shield-halved"></i> System Permissions
@@ -107,7 +107,7 @@
     <!-- MAIN APP CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
 
-        <!-- TAB 1: EXECUTIVE DASHBOARD -->
+        <!-- TAB 1: HOME DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
             <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border border-gray-100 flex justify-between items-center">
@@ -156,7 +156,59 @@
             </div>
         </section>
 
-        <!-- TAB 2: PROGRAMS -->
+        <!-- TAB 2: TASK LIST -->
+        <section id="view-tasks" class="tab-view hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-list-check text-i9gold"></i> Task List</h2>
+                        <p class="text-xs text-gray-500">Manage, execute, and track active tasks.</p>
+                    </div>
+                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                        <i class="fa-solid fa-plus"></i> Add One-Off Task
+                    </button>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap gap-2">
+                        <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
+                        <select id="filter-task-program" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2"><option value="ALL">All Programs</option></select>
+                        <select id="filter-task-assignee" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
+                            <option value="ALL">All Assignees</option><option value="ME">Assigned to Me</option><option value="UNASSIGNED">🚨 Missing Assignment</option>
+                        </select>
+                        <select id="filter-task-status" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
+                            <option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="bulkEditOpen('tasks')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                            <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
+                        </button>
+                        <button onclick="bulkDelete('tasks')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                            <i class="fa-solid fa-trash"></i> Delete Selected
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="w-full text-xs text-left text-gray-700">
+                    <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
+                            <th class="px-3 py-3 font-bold">Program Link</th>
+                            <th class="px-3 py-3 font-bold">Task Name</th>
+                            <th class="px-3 py-3 font-bold">Target Date</th>
+                            <th class="px-3 py-3 font-bold">Assigned To</th>
+                            <th class="px-3 py-3 font-bold">Status Update</th>
+                            <th class="px-3 py-3 text-center font-bold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="active-task-table-body" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: PROGRAMS -->
         <section id="view-control" class="tab-view hidden space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
                 <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
@@ -213,13 +265,28 @@
             </div>
         </section>
 
-        <!-- TAB 3: TEMPLATE BUILDER -->
+        <!-- TAB 4: TASK PROFILES -->
         <section id="view-templates" class="tab-view hidden space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
                 <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
                     <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Master Template Builder</h2>
+                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Task Profiles</h2>
                         <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
+                    </div>
+                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
+                        <i class="fa-solid fa-plus text-i9gold"></i> Add Profile Rule
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap gap-2">
+                        <select id="filter-template-group" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                            <option value="ALL">All Authorized Groups</option>
+                        </select>
+                        <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                            <option value="ALL">All Program Types</option>
+                            <option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
+                        </select>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
@@ -228,20 +295,7 @@
                         <button onclick="bulkDelete('templates')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
                             <i class="fa-solid fa-trash"></i> Delete Selected
                         </button>
-                        <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
-                            <i class="fa-solid fa-plus text-i9gold"></i> Add Template Rule
-                        </button>
                     </div>
-                </div>
-                
-                <div class="flex flex-wrap gap-2">
-                    <select id="filter-template-group" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
-                        <option value="ALL">All Authorized Groups</option>
-                    </select>
-                    <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
-                        <option value="ALL">All Program Types</option>
-                        <option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
-                    </select>
                 </div>
             </div>
 
@@ -264,97 +318,58 @@
             </div>
         </section>
 
-        <!-- TAB 4: ACTIVE TASKS -->
-        <section id="view-tasks" class="tab-view hidden space-y-4">
+        <!-- TAB 5: SYSTEM PERMISSIONS (ADMIN ONLY) -->
+        <section id="view-permissions" class="tab-view hidden space-y-4 admin-only">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
-                <div class="flex flex-wrap gap-2 items-center justify-between border-b pb-3">
-                    <div class="flex flex-wrap gap-2">
-                        <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
-                        <select id="filter-task-program" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2"><option value="ALL">All Programs</option></select>
-                        <select id="filter-task-assignee" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
-                            <option value="ALL">All Assignees</option><option value="ME">Assigned to Me</option><option value="UNASSIGNED">🚨 Missing Assignment</option>
-                        </select>
-                        <select id="filter-task-status" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
-                            <option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option>
-                        </select>
+                <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions</h2>
+                        <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
                     </div>
-                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
-                        <i class="fa-solid fa-plus"></i> Add One-Off Task
-                    </button>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="bulkEditOpen('tasks')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
-                        <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
-                    </button>
-                    <button onclick="bulkDelete('tasks')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
-                        <i class="fa-solid fa-trash"></i> Delete Selected
-                    </button>
                 </div>
             </div>
-
+            
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
-                            <th class="px-3 py-3 font-bold">Program Link</th>
-                            <th class="px-3 py-3 font-bold">Task Name</th>
-                            <th class="px-3 py-3 font-bold">Target Date</th>
-                            <th class="px-3 py-3 font-bold">Assigned To</th>
-                            <th class="px-3 py-3 font-bold">Status Update</th>
-                            <th class="px-3 py-3 text-center font-bold">Actions</th>
+                            <th class="px-4 py-3 font-bold">Role Tier</th>
+                            <th class="px-4 py-3 font-bold text-center">Manage Groups & Users</th>
+                            <th class="px-4 py-3 font-bold text-center">Create Programs</th>
+                            <th class="px-4 py-3 font-bold text-center">Edit Task Profiles</th>
+                            <th class="px-4 py-3 font-bold text-center">Edit/Assign Active Tasks</th>
                         </tr>
                     </thead>
-                    <tbody id="active-task-table-body" class="divide-y divide-gray-200"></tbody>
+                    <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
                 </table>
             </div>
         </section>
 
-        <!-- TAB 5: SYSTEM PERMISSIONS (ADMIN ONLY) -->
-        <section id="view-permissions" class="tab-view hidden space-y-6 max-w-5xl mx-auto admin-only">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
-                <div class="border-b pb-4">
-                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permission Portal</h2>
-                    <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-left">
-                        <thead class="bg-gray-50 text-gray-600 uppercase font-bold border-b">
-                            <tr>
-                                <th class="p-3">Role Tier</th>
-                                <th class="p-3 text-center">Manage Groups & Users</th>
-                                <th class="p-3 text-center">Create Programs</th>
-                                <th class="p-3 text-center">Edit Master Templates</th>
-                                <th class="p-3 text-center">Edit/Assign Active Tasks</th>
-                            </tr>
-                        </thead>
-                        <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
-                    </table>
+        <!-- TAB 6: USER SETTINGS -->
+        <section id="view-settings" class="tab-view hidden space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+                <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
+                        <p class="text-xs text-gray-500">Manage your credentials and view your system account links.</p>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- TAB 6: USER SETTINGS -->
-        <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
-                <div class="border-b pb-4">
-                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                    <p class="text-xs text-gray-500">Manage your credentials and view your group access.</p>
-                </div>
-
                 <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
-                    <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
                     <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Email</button>
                 </form>
 
                 <form onsubmit="handlePasswordUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Password</h3>
-                    <div><label class="block font-bold mb-1">New Password (Min 6 Chars)</label><input type="password" id="setting-new-password" required minlength="6" class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    <div><label class="block font-bold mb-1">New Password (Min 6 Chars)</label><input type="password" id="setting-new-password" required minlength="6" class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
                     <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
                 </form>
 
-                <div class="space-y-3 text-xs pt-2 border-b pb-6">
+                <div class="space-y-3 text-xs pt-2">
                     <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
                     <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
                     <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
@@ -398,7 +413,7 @@
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-date"><div class="flex-grow"><label class="font-bold block text-[10px]">Target Date</label><input type="date" id="be-date" class="w-full p-1.5 border rounded"></div></div>
                 </div>
 
-                <!-- Template Bulk Edit Fields -->
+                <!-- Task Profile Bulk Edit Fields -->
                 <div id="bulk-edit-templates-fields" class="hidden space-y-4">
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
                         <input type="checkbox" id="be-cb-tpl-role">
@@ -682,7 +697,7 @@
     <!-- TEMPLATE CREATION MODAL -->
     <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 class="text-sm font-bold text-i9blue">Add/Edit Master Template Rule</h3>
+            <h3 class="text-sm font-bold text-i9blue">Add/Edit Task Profile Rule</h3>
             <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="tpl-edit-id">
                 
@@ -722,7 +737,7 @@
                 <div><label class="block font-bold mb-1">Default Assignee Role (Optional)</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50"></div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button>
-                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Template</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Profile Rule</button>
                 </div>
             </form>
         </div>
@@ -872,7 +887,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.5.3";
+        const APP_VERSION = "1.6.0";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1302,7 +1317,7 @@
 
         function cloneProgram(id) { const p = programs.find(x => x.id === id); if(!p) return; const clone = {...p, id: generateId('PRG')}; window.cloudSaveProgram(clone); showToast("Cloned", "Program duplicated successfully."); }
 
-        /* --- TEMPLATES --- */
+        /* --- TASK PROFILES --- */
         function updateTplPreHeaderOptions() {
             const typeEl = document.getElementById('tpl-type'); if(!typeEl) return;
             const sel = document.getElementById('tpl-preheader'); if(!sel) return; sel.innerHTML = '<option value="">-- None (Blank) --</option>';
@@ -1374,7 +1389,7 @@
             document.getElementById('template-modal').classList.remove('hidden');
         }
         
-        function cloneTemplate(id) { const t = templates.find(x => x.id === id); if(!t) return; window.cloudSaveTemplate({...t, id: generateId('TPL')}); showToast("Cloned", "Template rule duplicated."); }
+        function cloneTemplate(id) { const t = templates.find(x => x.id === id); if(!t) return; window.cloudSaveTemplate({...t, id: generateId('TPL')}); showToast("Cloned", "Task Profile rule duplicated."); }
         
         function saveTemplate(e) {
             e.preventDefault();
@@ -1386,7 +1401,7 @@
                 desc: document.getElementById('tpl-desc').value, seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
                 offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value.trim()
             };
-            window.cloudSaveTemplate(t); closeModals(); showToast("Template Saved", "Master list updated.");
+            window.cloudSaveTemplate(t); closeModals(); showToast("Task Profile Saved", "Master list updated.");
         }
 
         /* --- TASKS --- */
@@ -1414,7 +1429,7 @@
                        (tPre === '' || tPre === pPre);
             });
             
-            if(tpls.length === 0) return alert(`No templates matched this program's Type (${p.type}), Season (${p.season}), and Pre-Header (${p.preHeader || 'None'}). No tasks generated.`);
+            if(tpls.length === 0) return alert(`No profiles matched this program's Type (${p.type}), Season (${p.season}), and Pre-Header (${p.preHeader || 'None'}). No tasks generated.`);
             
             let count = 0;
             tpls.forEach(t => {
