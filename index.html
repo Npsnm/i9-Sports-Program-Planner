@@ -552,6 +552,8 @@
                         
                         const newU = { username: auth.currentUser.email, name: assignName, role: assignRole, territories: assignTerr };
                         window.cloudSaveUser(newU);
+                        window.currentUser = newU;
+                        window.unlockPortal();
                     }
                 } else if (window.currentUser) {
                     const matched = window.users.find(u => u.username.toLowerCase() === window.currentUser.username.toLowerCase());
@@ -679,15 +681,28 @@
                 const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
                 const authUser = userCredential.user;
 
+                // Immediate Admin Bypass
+                if (em === 'nick@npsnm.com') {
+                    window.currentUser = {
+                        username: 'nick@npsnm.com',
+                        name: authUser.displayName || "Nick Padilla",
+                        role: "System Admin",
+                        territories: ["ALL"]
+                    };
+                    window.cloudSaveUser(window.currentUser);
+                    unlockPortal();
+                    showToast("Welcome", "Logged in as System Admin");
+                    return;
+                }
+
                 let matched = window.users.find(u => u.username.toLowerCase() === em);
                 
                 if (!matched) {
-                    const isRootAdmin = (em === 'nick@npsnm.com' || window.users.length === 0);
                     matched = {
                         username: em,
-                        name: authUser.displayName || (isRootAdmin ? "Nick Padilla" : "New User"),
-                        role: isRootAdmin ? "System Admin" : "Pending",
-                        territories: isRootAdmin ? ["ALL"] : []
+                        name: authUser.displayName || "New User",
+                        role: "Pending",
+                        territories: []
                     };
                     await window.cloudSaveUser(matched);
                     window.users.push(matched);
