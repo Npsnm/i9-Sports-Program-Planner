@@ -589,14 +589,25 @@
                 </div>
 
                 <div class="border-t pt-3 mt-3">
-                    <label class="block font-bold mb-2 text-i9blue">Program Deadlines & Anchors</label>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block font-bold text-i9blue">Program Deadlines</label>
+                        <div class="flex gap-3 text-[11px] font-bold">
+                            <span class="text-gray-500">Count:</span>
+                            <label><input type="radio" name="prog-deadline-count" value="1" onchange="updateDeadlineCount()"> 1</label>
+                            <label><input type="radio" name="prog-deadline-count" value="2" onchange="updateDeadlineCount()"> 2</label>
+                            <label><input type="radio" name="prog-deadline-count" value="3" onchange="updateDeadlineCount()"> 3</label>
+                            <label><input type="radio" name="prog-deadline-count" value="4" checked onchange="updateDeadlineCount()"> 4</label>
+                        </div>
+                    </div>
+                    
                     <div class="grid grid-cols-2 gap-4">
                         <div><label class="block font-bold mb-1 text-[10px]">1. Start Date (Main)</label><input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div><label class="block font-bold mb-1 text-[10px]">2. Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div><label class="block font-bold mb-1 text-[10px]">3. Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div><label class="block font-bold mb-1 text-[10px]">4. Offseason Deadline</label><input type="date" id="prog-date-offseason" class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-2-container"><label class="block font-bold mb-1 text-[10px]">2. Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-3-container"><label class="block font-bold mb-1 text-[10px]">3. Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-4-container"><label class="block font-bold mb-1 text-[10px]">4. Offseason Deadline</label><input type="date" id="prog-date-offseason" class="w-full p-2 border rounded bg-gray-50"></div>
                     </div>
                 </div>
+                
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold mb-1">Length (Wks)</label><input type="number" id="prog-weeks" value="7" class="w-full p-2 border rounded bg-gray-50"></div>
                     <div><label class="block font-bold mb-1">Venue</label><input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50"></div>
@@ -649,7 +660,7 @@
                         </select>
                     </div>
                 </div>
-                <div><label class="block font-bold mb-1">Default Assignee Role</label><input type="text" id="tpl-role" required class="w-full p-2 border rounded bg-gray-50"></div>
+                <div><label class="block font-bold mb-1">Default Assignee Role (Optional)</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50"></div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button>
                     <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Template</button>
@@ -802,7 +813,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.5.1";
+        const APP_VERSION = "1.5.2";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1128,7 +1139,7 @@
                         <td class="px-4 py-2 font-bold text-i9blue">${p.groupId}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
-                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${p.dateStart || 'TBD'}<br>Final: ${p.dateFinal || 'TBD'}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${p.dateStart || 'TBD'} ${p.dateFinal ? `<br>Final: ${p.dateFinal}` : ''}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
                             <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1"><i class="fa-solid fa-bolt"></i> Generate</button>
@@ -1139,6 +1150,13 @@
                         </td>
                     </tr>`;
             });
+        }
+        
+        function updateDeadlineCount() {
+            const count = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
+            document.getElementById('prog-dl-2-container').classList.toggle('hidden', count < 2);
+            document.getElementById('prog-dl-3-container').classList.toggle('hidden', count < 3);
+            document.getElementById('prog-dl-4-container').classList.toggle('hidden', count < 4);
         }
 
         function updateProgPreHeaderOptions() {
@@ -1151,6 +1169,9 @@
         function openAddProgramModal() { 
             document.getElementById('prog-edit-id').value = ''; 
             updateProgPreHeaderOptions();
+            
+            document.querySelector(`input[name="prog-deadline-count"][value="4"]`).checked = true;
+            updateDeadlineCount();
             
             // Clear visual form fields to prevent showing previous entry
             document.getElementById('prog-date-start').value = '';
@@ -1171,6 +1192,12 @@
             updateProgPreHeaderOptions();
             document.getElementById('prog-pre').value = p.preHeader || '';
             document.getElementById('prog-season').value = p.season;
+            
+            const count = p.deadlineCount || 4;
+            const rb = document.querySelector(`input[name="prog-deadline-count"][value="${count}"]`);
+            if(rb) rb.checked = true;
+            updateDeadlineCount();
+            
             document.getElementById('prog-date-start').value = p.dateStart || '';
             document.getElementById('prog-date-final').value = p.dateFinal || '';
             document.getElementById('prog-date-early').value = p.dateEarly || '';
@@ -1184,12 +1211,18 @@
             e.preventDefault();
             const id = document.getElementById('prog-edit-id').value || generateId('PRG');
             const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
+            const dCount = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
+            
             const p = {
                 id: id, groupId: document.getElementById('prog-group').value, year: document.getElementById('prog-year').value,
                 type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
-                season: document.getElementById('prog-season').value, dateStart: document.getElementById('prog-date-start').value,
-                dateFinal: document.getElementById('prog-date-final').value, dateEarly: document.getElementById('prog-date-early').value,
-                dateOffseason: document.getElementById('prog-date-offseason').value, weeks: document.getElementById('prog-weeks').value,
+                season: document.getElementById('prog-season').value, 
+                deadlineCount: dCount,
+                dateStart: document.getElementById('prog-date-start').value,
+                dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
+                dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
+                dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
+                weeks: document.getElementById('prog-weeks').value,
                 venue: document.getElementById('prog-venue').value
             };
             window.cloudSaveProgram(p);
@@ -1232,7 +1265,7 @@
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2 text-[11px]">${grpDisplay}</td>
-                        <td class="px-4 py-2 font-bold text-gray-800">${t.type}<br><span class="text-gray-500 font-normal">${t.preHeader || 'Any Pre-Header'}</span></td>
+                        <td class="px-4 py-2 font-bold text-gray-800">${t.type}${t.preHeader ? `<br><span class="text-gray-500 font-normal">${t.preHeader}</span>` : ''}</td>
                         <td class="px-4 py-2 text-i9blue font-medium">${t.name}</td>
                         <td class="px-4 py-2 text-[10px] text-gray-500">${t.seasons.join(', ')}</td>
                         <td class="px-4 py-2 text-gray-700 font-mono text-[10px]">${t.offsetNum} Days ${t.offsetDir} ${t.anchor.replace('date','')}</td>
@@ -1271,7 +1304,7 @@
             document.getElementById('tpl-name').value = t.name; document.getElementById('tpl-desc').value = t.desc || '';
             document.querySelectorAll('.tpl-season-cb').forEach(cb => cb.checked = t.seasons.includes(cb.value));
             document.getElementById('tpl-offset-num').value = t.offsetNum; document.getElementById('tpl-offset-dir').value = t.offsetDir;
-            document.getElementById('tpl-anchor').value = t.anchor; document.getElementById('tpl-role').value = t.role;
+            document.getElementById('tpl-anchor').value = t.anchor; document.getElementById('tpl-role').value = t.role || '';
             document.getElementById('template-modal').classList.remove('hidden');
         }
         
@@ -1285,7 +1318,7 @@
                 id: id, groupId: document.getElementById('tpl-group').value, type: document.getElementById('tpl-type').value, 
                 preHeader: document.getElementById('tpl-preheader').value, name: document.getElementById('tpl-name').value, 
                 desc: document.getElementById('tpl-desc').value, seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
-                offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value
+                offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value.trim()
             };
             window.cloudSaveTemplate(t); closeModals(); showToast("Template Saved", "Master list updated.");
         }
