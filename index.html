@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Program Director Planner V2</title>
+    <title>Program Director Planner V3</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -24,11 +24,7 @@
         }
     </script>
     <style>
-        :root {
-            --i9blue: #002855;
-            --i9red: #E31837;
-            --i9gold: #FDB827;
-        }
+        :root { --i9blue: #002855; --i9red: #E31837; --i9gold: #FDB827; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -51,12 +47,11 @@
                             <i class="fa-solid fa-cloud"></i> <span id="sync-status-text">Connecting...</span>
                         </span>
                     </div>
-                    <p class="text-[11px] text-blue-200">by NP Solutions LLC • Generation & Execution Engine</p>
+                    <p class="text-[11px] text-blue-200">by NP Solutions LLC • Multi-Group Franchise Portal</p>
                 </div>
             </div>
 
             <div class="flex items-center flex-wrap gap-2 text-xs">
-                <!-- User Profile Badge -->
                 <div id="user-badge" class="bg-blue-950/60 border border-blue-700/60 px-3 py-1.5 rounded-lg flex items-center gap-2">
                     <i class="fa-solid fa-user-gear text-i9gold"></i>
                     <div>
@@ -69,7 +64,10 @@
                     <i class="fa-solid fa-palette text-i9gold"></i> Branding
                 </button>
                 <button id="btn-manage-users" onclick="openUserManagementModal()" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm hidden">
-                    <i class="fa-solid fa-users-gear"></i> Admin Controls
+                    <i class="fa-solid fa-users-gear"></i> Admin & Users
+                </button>
+                <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-file-excel"></i> Export CSV
                 </button>
                 <button onclick="logout()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
                     <i class="fa-solid fa-right-from-bracket"></i> Sign Out
@@ -93,8 +91,11 @@
             <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-list-check"></i> Active Task Execution
             </button>
+            <button onclick="switchTab('permissions')" id="tab-permissions" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap hidden admin-only">
+                <i class="fa-solid fa-shield-halved"></i> System Permissions
+            </button>
             <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-user-shield"></i> User Settings
+                <i class="fa-solid fa-user-gear"></i> User Settings
             </button>
         </div>
     </div>
@@ -137,14 +138,12 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Program Progress -->
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                     <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
                         <i class="fa-solid fa-chart-column text-i9red"></i> Program Execution Progress
                     </h3>
                     <div id="dashboard-season-progress" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
                 </div>
-                <!-- Overdue Priority Watchlist -->
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                     <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> High-Priority Overdue Items
@@ -158,13 +157,11 @@
         <section id="view-control" class="tab-view hidden space-y-4">
             <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-3">
                 <div>
-                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-i9gold"></i> Program Control Center
-                    </h2>
+                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-calendar-days text-i9gold"></i> Program Control Center</h2>
                     <p class="text-xs text-gray-500">Establish program dates, bye-weeks, and generate task lists from templates.</p>
                 </div>
-                <div id="manager-season-controls" class="flex items-center gap-2 hidden">
-                    <button onclick="openAddProgramModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <div class="flex items-center gap-2 permission-create-program hidden">
+                    <button onclick="openAddProgramModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
                         <i class="fa-solid fa-plus text-i9gold"></i> Add New Program
                     </button>
                 </div>
@@ -174,13 +171,13 @@
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-4 py-3 font-bold">Group / Territory</th>
+                            <th class="px-4 py-3 font-bold">Group / Franchise</th>
                             <th class="px-4 py-3 font-bold">Program Identity</th>
                             <th class="px-4 py-3 font-bold">Type</th>
                             <th class="px-4 py-3 font-bold">Anchor Kickoff (Mon)</th>
                             <th class="px-4 py-3 font-bold">Specs</th>
                             <th class="px-4 py-3 font-bold text-rose-600">Bye-Weeks</th>
-                            <th class="px-4 py-3 text-center font-bold">Generation & Actions</th>
+                            <th class="px-4 py-3 text-center font-bold">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="control-center-table-body" class="divide-y divide-gray-200"></tbody>
@@ -192,19 +189,15 @@
         <section id="view-templates" class="tab-view hidden space-y-4">
             <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-3">
                 <div>
-                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2">
-                        <i class="fa-solid fa-layer-group text-i9gold"></i> Master Template Builder
-                    </h2>
-                    <p class="text-xs text-gray-500">Build the blueprint rules for League, Training/Clinic, and School task generation.</p>
+                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Master Template Builder</h2>
+                    <p class="text-xs text-gray-500">Build the blueprint rules for task generation. Templates apply across all franchises.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 focus:ring-2 focus:ring-i9blue outline-none font-semibold">
+                    <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 font-semibold">
                         <option value="ALL">All Program Types</option>
-                        <option value="League">League</option>
-                        <option value="Training/Clinic">Training/Clinic</option>
-                        <option value="School">School</option>
+                        <option value="League">League</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
                     </select>
-                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm manager-only">
+                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
                         <i class="fa-solid fa-plus text-i9gold"></i> Add Template Rule
                     </button>
                 </div>
@@ -229,44 +222,24 @@
 
         <!-- TAB 4: ACTIVE TASKS -->
         <section id="view-tasks" class="tab-view hidden space-y-4">
-            <!-- FILTERS & SEARCH BAR -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-3 items-center justify-between">
                 <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                    <div>
-                        <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 outline-none font-semibold">
-                            <option value="ALL">All Authorized Groups</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select id="filter-task-program" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 outline-none">
-                            <option value="ALL">All Programs</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select id="filter-task-assignee" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 outline-none">
-                            <option value="ALL">All Assignees</option>
-                            <option value="ME">Assigned to Me</option>
-                            <option value="UNASSIGNED">🚨 Missing Assignment</option>
-                        </select>
-                    </div>
-                    <div>
-                        <select id="filter-task-status" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 outline-none">
-                            <option value="ALL">All Statuses</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Complete">Complete</option>
-                        </select>
-                    </div>
+                    <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
+                    <select id="filter-task-program" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2"><option value="ALL">All Programs</option></select>
+                    <select id="filter-task-assignee" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
+                        <option value="ALL">All Assignees</option><option value="ME">Assigned to Me</option><option value="UNASSIGNED">🚨 Missing Assignment</option>
+                    </select>
+                    <select id="filter-task-status" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
+                        <option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option>
+                    </select>
                 </div>
-
                 <div class="flex items-center gap-2 w-full lg:w-auto">
-                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm manager-only">
+                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                         <i class="fa-solid fa-plus"></i> Add One-Off Task
                     </button>
                 </div>
             </div>
 
-            <!-- MASTER TASK TABLE -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
@@ -285,35 +258,53 @@
             </div>
         </section>
 
-        <!-- TAB 5: USER SETTINGS -->
+        <!-- TAB 5: SYSTEM PERMISSIONS (ADMIN ONLY) -->
+        <section id="view-permissions" class="tab-view hidden space-y-6 max-w-5xl mx-auto admin-only">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permission Portal</h2>
+                    <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-gray-50 text-gray-600 uppercase font-bold border-b">
+                            <tr>
+                                <th class="p-3">Role Tier</th>
+                                <th class="p-3 text-center">Manage Groups & Users</th>
+                                <th class="p-3 text-center">Create Programs</th>
+                                <th class="p-3 text-center">Edit Master Templates</th>
+                                <th class="p-3 text-center">Edit/Assign Active Tasks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: USER SETTINGS -->
         <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
                 <div class="border-b pb-4">
-                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-shield text-i9gold"></i> My Account Settings</h2>
-                    <p class="text-xs text-gray-500">Manage your security credentials and profile links.</p>
+                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
+                    <p class="text-xs text-gray-500">Manage your credentials and view your group access.</p>
                 </div>
 
                 <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
-                    <div>
-                        <label class="block font-bold mb-1">New Email</label>
-                        <input type="email" id="setting-new-email" required class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 outline-none">
-                    </div>
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold shadow-sm">Update Email</button>
+                    <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Email</button>
                 </form>
 
                 <form onsubmit="handlePasswordUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Password</h3>
-                    <div>
-                        <label class="block font-bold mb-1">New Password (Min 6 Characters)</label>
-                        <input type="password" id="setting-new-password" required minlength="6" class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 outline-none">
-                    </div>
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold shadow-sm">Update Password</button>
+                    <div><label class="block font-bold mb-1">New Password (Min 6 Chars)</label><input type="password" id="setting-new-password" required minlength="6" class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
                 </form>
 
-                <div class="space-y-3 text-xs pt-2">
+                <div class="space-y-3 text-xs pt-2 border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
-                    <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in capabilities.</p>
+                    <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
                     <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
                         <i class="fa-brands fa-google text-red-500 text-sm"></i> Link Google Account
                     </button>
@@ -323,76 +314,69 @@
 
     </main>
 
-    <!-- AUTHENTICATION LOGIN MODAL OVERLAY -->
+    <!-- AUTHENTICATION OVERLAY -->
     <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
-            <!-- Auth Tabs -->
             <div class="flex text-sm font-bold text-center border-b">
                 <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue">Sign In</button>
-                <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Create Account</button>
+                <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Register / Join Group</button>
             </div>
 
             <div class="p-6 space-y-5">
                 <div class="text-center space-y-1">
-                    <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1">
-                        <i class="fa-solid fa-shield-halved text-3xl"></i>
-                    </div>
+                    <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1"><i class="fa-solid fa-shield-halved text-3xl"></i></div>
                     <h2 class="text-lg font-bold text-i9blue" id="auth-title">Sign In to PD Planner</h2>
-                    <p class="text-xs text-gray-500" id="auth-subtitle">Authorized personnel only</p>
                 </div>
 
                 <!-- Login Form -->
                 <form id="form-login" onsubmit="login(event)" class="space-y-3">
+                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Email</label><input type="email" id="login-email" required class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs"></div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
-                        <input type="email" id="login-email" required placeholder="Enter your email" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
+                        <div class="flex justify-between items-end mb-1">
+                            <label class="block text-xs font-bold text-gray-700">Password</label>
+                            <button type="button" onclick="triggerPasswordReset()" class="text-i9blue text-[10px] font-bold hover:underline">Forgot Password?</button>
+                        </div>
+                        <input type="password" id="login-password" required class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Password</label>
-                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
-                    </div>
-                    <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs transition shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-right-to-bracket text-i9gold"></i> Authenticate
-                    </button>
+                    <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
                 </form>
 
                 <!-- Signup Form -->
-                <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="signup-name" required placeholder="John Doe" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
+                <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden text-xs">
+                    <div><label class="block font-bold text-gray-700 mb-1">Full Name</label><input type="text" id="signup-name" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Email Address</label><input type="email" id="signup-email" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label><input type="password" id="signup-password" required minlength="6" class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    
+                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
+                        <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
+                        <div class="flex gap-4 mb-2">
+                            <label><input type="radio" name="signup-action" value="join" checked onchange="toggleSignupAction()"> Join Existing</label>
+                            <label><input type="radio" name="signup-action" value="create" onchange="toggleSignupAction()"> Create New</label>
+                        </div>
+                        <div id="signup-join-fields">
+                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Sends a request to the Group Admin for approval.</p>
+                        </div>
+                        <div id="signup-create-fields" class="hidden">
+                            <input type="text" id="signup-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Generates a new Franchise ID and sets you as Group Owner.</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="signup-email" required placeholder="Enter your email" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label>
-                        <input type="password" id="signup-password" required minlength="6" placeholder="••••••••" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
-                    </div>
-                    <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-user-plus text-emerald-200"></i> Request Access
-                    </button>
+
+                    <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md">Register Account</button>
                 </form>
 
-                <div id="auth-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-xs flex items-center gap-2 font-medium">
-                    <i class="fa-solid fa-circle-exclamation"></i> <span id="auth-error-text">Error.</span>
-                </div>
+                <div id="auth-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-xs font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="auth-error-text">Error.</span></div>
 
-                <div class="relative flex py-2 items-center" id="google-divider">
-                    <div class="flex-grow border-t border-gray-200"></div>
-                    <span class="flex-shrink mx-2 text-gray-400 text-[10px] uppercase font-bold">Or</span>
-                    <div class="flex-grow border-t border-gray-200"></div>
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div><span class="mx-2 text-gray-400 text-[10px] uppercase font-bold">Or</span><div class="flex-grow border-t border-gray-200"></div>
                 </div>
-
-                <button type="button" id="btn-google-auth" onclick="loginWithGoogle()" class="w-full py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg text-xs transition border border-gray-300 shadow-sm flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-google text-red-500 text-sm"></i> Sign In with Google
-                </button>
+                <button type="button" onclick="loginWithGoogle()" class="w-full py-2.5 bg-white text-gray-700 font-bold rounded-lg text-xs border border-gray-300 shadow-sm"><i class="fa-brands fa-google text-red-500 mr-1"></i> Sign In with Google</button>
             </div>
         </div>
     </div>
 
-    <!-- MODALS (Program, Template, Active Task, User Admin, Branding) -->
+    <!-- MODALS -->
     <!-- Add Program Modal -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
@@ -400,23 +384,13 @@
             <form onsubmit="saveProgram(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="prog-edit-id">
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="block font-bold mb-1">Group / Territory</label><select id="prog-group" required class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
+                    <div><label class="block font-bold mb-1">Group / Franchise</label><select id="prog-group" required class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
                     <div><label class="block font-bold mb-1">Year</label><input type="number" id="prog-year" required value="2026" class="w-full p-2 border rounded bg-gray-50"></div>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <div><label class="block font-bold mb-1">Pre-Header</label><input type="text" id="prog-pre" placeholder="e.g. SP26" class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div>
-                        <label class="block font-bold mb-1">Season</label>
-                        <select id="prog-season" class="w-full p-2 border rounded bg-gray-50">
-                            <option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1">Program Type</label>
-                        <select id="prog-type" class="w-full p-2 border rounded bg-gray-50">
-                            <option value="League">League</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
-                        </select>
-                    </div>
+                    <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
+                    <div><label class="block font-bold mb-1">Program Type</label><select id="prog-type" class="w-full p-2 border rounded bg-gray-50"><option value="League">League</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option></select></div>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <div><label class="block font-bold mb-1">Start (Mon)</label><input type="date" id="prog-start" required class="w-full p-2 border rounded bg-gray-50"></div>
@@ -430,111 +404,89 @@
         </div>
     </div>
 
-    <!-- Add Template Modal -->
-    <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
-            <h3 class="text-sm font-bold text-i9blue">Master Template Rule</h3>
-            <form onsubmit="saveTemplate(event)" class="space-y-3 text-xs">
-                <input type="hidden" id="tpl-edit-id">
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold mb-1">Program Type</label>
-                        <select id="tpl-type" onchange="updateSubcats()" class="w-full p-2 border rounded bg-gray-50">
-                            <option value="League">League</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
-                        </select>
-                    </div>
-                    <div><label class="block font-bold mb-1">Subcategory</label><select id="tpl-subcat" class="w-full p-2 border rounded bg-gray-50"></select></div>
-                </div>
-                <div><label class="block font-bold mb-1">Task Description</label><input type="text" id="tpl-desc" required class="w-full p-2 border rounded bg-gray-50"></div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div><label class="block font-bold mb-1">Days Offset from Start</label><input type="number" id="tpl-offset" required placeholder="-14" class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Default Role</label><input type="text" id="tpl-role" required placeholder="League Director" class="w-full p-2 border rounded bg-gray-50"></div>
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Template</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Active Task Edit/One-Off Modal -->
+    <!-- Active Task Edit Modal -->
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue" id="active-task-title">Edit Active Task</h3>
             <form onsubmit="saveActiveTask(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="at-edit-id">
                 <input type="hidden" id="at-is-oneoff" value="false">
-                
-                <div id="at-program-select-container" class="hidden">
-                    <label class="block font-bold mb-1 text-emerald-700">Link to Program (One-Off)</label>
-                    <select id="at-program" class="w-full p-2 border rounded bg-emerald-50"></select>
-                </div>
-
+                <div id="at-program-select-container" class="hidden"><label class="block font-bold mb-1 text-emerald-700">Link to Program</label><select id="at-program" class="w-full p-2 border rounded bg-emerald-50"></select></div>
                 <div><label class="block font-bold mb-1">Task Description</label><input type="text" id="at-desc" required class="w-full p-2 border rounded bg-gray-50"></div>
-                
                 <div class="grid grid-cols-2 gap-2">
                     <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Assignee</label><input type="text" id="at-assignee" placeholder="Leave blank for UNASSIGNED" class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div>
+                        <label class="block font-bold mb-1">Assignee</label>
+                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50 font-semibold"></select>
+                    </div>
                 </div>
                 <div><label class="block font-bold mb-1">Notes</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
-                
                 <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Task</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Admin User Modal -->
+    <!-- Admin & User Control Modal -->
     <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-2">
-                <div><h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> User Accounts & Group Controls</h3></div>
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> Group & User Directory</h3>
                 <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="bg-blue-50/60 p-3 rounded-lg border border-blue-200/60 space-y-2">
-                <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
-                    <input type="text" id="new-group-name" required placeholder="Add New Territory (e.g. NM - ABQ)" class="flex-grow p-2 border rounded-lg bg-white">
-                    <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded-lg">+ Add</button>
-                </form>
-                <div id="group-pill-list" class="flex flex-wrap gap-1.5 pt-1"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Group Management Pane -->
+                <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
+                    <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1">Franchise Groups</h4>
+                    <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                        <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
+                        <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
+                    </form>
+                    <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- User Management Pane -->
+                <div class="md:col-span-2 space-y-3">
+                    <h4 class="text-xs font-bold text-gray-800 border-b pb-1">System Users in Your Groups</h4>
+                    <div class="border rounded-lg overflow-y-auto max-h-64">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-gray-100 text-gray-700 uppercase font-bold sticky top-0">
+                                <tr><th class="p-2">User</th><th class="p-2">Role Tier</th><th class="p-2">Assigned Groups</th><th class="p-2 text-center">Actions</th></tr>
+                            </thead>
+                            <tbody id="users-table-body" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="border rounded-lg overflow-hidden">
-                <table class="w-full text-xs text-left">
-                    <thead class="bg-gray-100 text-gray-700 uppercase font-bold border-b">
-                        <tr><th class="p-2">User / Email</th><th class="p-2">Name</th><th class="p-2">Role</th><th class="p-2">Territories</th><th class="p-2 text-center">Actions</th></tr>
-                    </thead>
-                    <tbody id="users-table-body" class="divide-y"></tbody>
-                </table>
-            </div>
+
             <!-- Edit User Form -->
-            <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-3 rounded-lg border space-y-3 text-xs">
+            <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300 space-y-4 text-xs mt-4">
+                <h4 class="font-bold text-i9blue text-sm border-b pb-1">Edit User Access</h4>
                 <input type="hidden" id="admin-u-email">
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block font-bold mb-1">Role Tier</label>
-                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white">
-                            <option value="Main Admin">Main Admin</option><option value="Manager">Manager</option><option value="Staff">Staff</option><option value="Pending">Pending Approval</option>
+                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold">
+                            <!-- Options injected dynamically based on current user tier -->
                         </select>
                     </div>
                     <div>
                         <label class="block font-bold mb-1">Territory Access</label>
-                        <div id="admin-u-terr" class="p-2 border rounded bg-white max-h-24 overflow-y-auto space-y-1"></div>
+                        <div id="admin-u-terr" class="p-2 border rounded bg-white h-24 overflow-y-auto space-y-1"></div>
                     </div>
                 </div>
-                <div class="flex justify-end gap-2"><button type="submit" class="px-3 py-1 bg-i9blue text-white rounded font-bold">Update Permissions</button></div>
+                <div class="flex justify-end gap-2 pt-2 border-t"><button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow-sm">Save User Settings</button></div>
             </form>
         </div>
     </div>
 
     <!-- Branding Modal -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <!-- Kept exactly standard as requested, simplified html for space -->
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 space-y-4">
-            <div class="flex justify-between border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue">Branding Settings</h3>
-                <button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="saveBranding(event)" class="space-y-4 text-xs">
-                <div><label class="block font-bold mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded-lg bg-gray-50"></div>
-                <div><label class="block font-bold mb-1">Logo URL</label><input type="text" id="branding-logo-input" class="w-full p-2 border rounded-lg bg-gray-50"></div>
-                <div class="flex justify-end gap-2"><button type="submit" class="px-3 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Theme</button></div>
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="saveBranding(event)" class="space-y-4">
+                <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
+                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
             </form>
         </div>
     </div>
@@ -544,49 +496,23 @@
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-            updatePassword, updateEmail, signOut, GoogleAuthProvider, signInWithPopup, linkWithPopup
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, updateEmail, signOut, GoogleAuthProvider, signInWithPopup, linkWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'i9-sports-portal';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyBuXlwYrt2nAolPzjZBDbzDAE8qwO1yPRg",
-            authDomain: "program-planner-npsnm.firebaseapp.com",
-            projectId: "program-planner-npsnm",
-            storageBucket: "program-planner-npsnm.firebasestorage.app",
-            messagingSenderId: "255697704591",
-            appId: "1:255697704591:web:f67728f42bf1d694cec2fa"
-        };
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "AIzaSyBuXlwYrt2nAolPzjZBDbzDAE8qwO1yPRg", authDomain: "program-planner-npsnm.firebaseapp.com", projectId: "program-planner-npsnm", storageBucket: "program-planner-npsnm.firebasestorage.app", messagingSenderId: "255697704591", appId: "1:255697704591:web:f67728f42bf1d694cec2fa" };
 
         let app, db, auth;
 
         try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            // Expose logic to window
-            window.auth = auth;
-            window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-            window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-            window.updatePassword = updatePassword;
-            window.updateEmail = updateEmail;
-            window.signOut = signOut;
-            window.linkWithPopup = linkWithPopup;
-            
-            const googleProvider = new GoogleAuthProvider();
-            window.signInWithGoogle = () => signInWithPopup(auth, googleProvider);
-            window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
+            app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app);
+            window.auth = auth; window.signInWithEmailAndPassword = signInWithEmailAndPassword; window.createUserWithEmailAndPassword = createUserWithEmailAndPassword; window.updatePassword = updatePassword; window.updateEmail = updateEmail; window.signOut = signOut; window.linkWithPopup = linkWithPopup; window.sendPasswordResetEmail = sendPasswordResetEmail;
+            const googleProvider = new GoogleAuthProvider(); window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
 
             // STRICT Auth Listener
             onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    initRealtimeSync();
-                } else {
-                    document.getElementById('auth-overlay').classList.remove('hidden');
-                }
+                if (user) { initRealtimeSync(); } 
+                else { document.getElementById('auth-overlay').classList.remove('hidden'); document.getElementById('sync-status-text').textContent = "Disconnected"; }
             });
         } catch (e) { console.error("Firebase Init Error:", e); }
 
@@ -595,13 +521,17 @@
             document.getElementById('sync-status-text').textContent = "Cloud Active";
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
-                window.groups = snap.docs.map(d => d.data().name);
-                window.renderGroupPills(); window.populateFilterOptions();
+                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions();
+            });
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
+                let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
+                window.sysPermissions = Object.keys(p).length > 0 ? p : window.DEFAULT_PERMISSIONS;
+                window.renderPermissions(); window.applyPermissions();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
-                window.users = snap.docs.map(d => d.data());
-                window.renderUsersTable();
+                window.users = snap.docs.map(d => d.data()); window.renderUsersTable();
                 
                 // Session Restore / Auth Verify
                 if (auth.currentUser && !window.currentUser) {
@@ -646,14 +576,15 @@
 
         window.cloudSaveUser = (u) => window.cloudSave('portal_users', u.username.replace(/[^a-zA-Z0-9]/g, '_'), u);
         window.cloudDeleteUser = (id) => window.cloudDelete('portal_users', id.replace(/[^a-zA-Z0-9]/g, '_'));
-        window.cloudSaveGroup = (g) => window.cloudSave('groups', g.replace(/[^a-zA-Z0-9]/g, '_'), {name: g});
-        window.cloudDeleteGroup = (g) => window.cloudDelete('groups', g.replace(/[^a-zA-Z0-9]/g, '_'));
+        window.cloudSaveGroup = (g) => window.cloudSave('groups', g.id, g);
+        window.cloudDeleteGroup = (id) => window.cloudDelete('groups', id);
         window.cloudSaveProgram = (p) => window.cloudSave('programs', p.id, p);
         window.cloudDeleteProgram = (id) => window.cloudDelete('programs', id);
         window.cloudSaveTemplate = (t) => window.cloudSave('task_templates', t.id, t);
         window.cloudDeleteTemplate = (id) => window.cloudDelete('task_templates', id);
         window.cloudSaveActiveTask = (t) => window.cloudSave('active_tasks', t.id, t);
         window.cloudDeleteActiveTask = (id) => window.cloudDelete('active_tasks', id);
+        window.cloudSavePermissions = (tier, data) => window.cloudSave('permissions', tier, data);
         window.cloudSaveBranding = (b) => setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), b);
     </script>
 
@@ -665,8 +596,17 @@
             "School": ["In", "After"]
         };
 
-        let currentBranding = { title: "Program Director Planner", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837" };
-        let users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
+        const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
+        const DEFAULT_PERMISSIONS = {
+            "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
+            "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
+            "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false } // Staff can only mark status Complete
+        };
+
+        let currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
+        let users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], sysPermissions = DEFAULT_PERMISSIONS;
 
         window.addEventListener('DOMContentLoaded', () => {
             applyBrandingUI();
@@ -682,14 +622,23 @@
                 document.getElementById('tab-login').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
                 document.getElementById('tab-signup').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
                 document.getElementById('auth-title').textContent = "Sign In to PD Planner";
-                document.getElementById('auth-subtitle').textContent = "Authorized personnel only";
             } else {
                 document.getElementById('form-login').classList.add('hidden');
                 document.getElementById('form-signup').classList.remove('hidden');
                 document.getElementById('tab-signup').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
                 document.getElementById('tab-login').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
                 document.getElementById('auth-title').textContent = "Request Access";
-                document.getElementById('auth-subtitle').textContent = "Accounts require admin approval";
+            }
+        }
+
+        function toggleSignupAction() {
+            const action = document.querySelector('input[name="signup-action"]:checked').value;
+            if(action === 'join') { 
+                document.getElementById('signup-join-fields').classList.remove('hidden'); 
+                document.getElementById('signup-create-fields').classList.add('hidden'); 
+            } else { 
+                document.getElementById('signup-join-fields').classList.add('hidden'); 
+                document.getElementById('signup-create-fields').classList.remove('hidden'); 
             }
         }
 
@@ -703,15 +652,48 @@
             } catch (error) { showError(error.message); }
         }
 
+        async function triggerPasswordReset() {
+            const em = document.getElementById('login-email').value.trim();
+            if (!em) {
+                showError("Please enter your email address first to reset your password.");
+                return;
+            }
+            try {
+                showToast("Sending", "Requesting password reset link...");
+                await window.sendPasswordResetEmail(window.auth, em);
+                document.getElementById('auth-error').classList.add('hidden');
+                alert(`Success! A password reset link has been sent to ${em}. Check your inbox/spam folder.`);
+            } catch (error) {
+                showError("Error: " + error.message);
+            }
+        }
+
         async function signup(e) {
             e.preventDefault();
             const name = document.getElementById('signup-name').value.trim();
             const em = document.getElementById('signup-email').value.trim();
             const pw = document.getElementById('signup-password').value.trim();
+            const action = document.querySelector('input[name="signup-action"]:checked').value;
+            const uObj = { username: em, name: name, role: 'Pending', territories: [] };
+
+            if(action === 'create') {
+                const maxId = groups.length > 0 ? Math.max(...groups.map(g => parseInt(g.id))) : 8764;
+                const newId = (maxId + 1).toString();
+                const gName = document.getElementById('signup-create-name').value.trim();
+                const gFullName = `${newId} - ${gName}`;
+                window.cloudSaveGroup({ id: newId, name: gName, fullName: gFullName, status: 'Active' });
+                uObj.role = 'Group Owner'; uObj.territories = [newId];
+            } else {
+                const joinId = document.getElementById('signup-join-id').value.trim();
+                if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
+                uObj.territories = [joinId]; // Requested territory
+            }
+
             try {
                 showToast("Registering", "Creating secure account...");
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
-                // Auth listener will handle creation of DB profile via fallback logic
+                window.cloudSaveUser(uObj);
+                // Auth listener will handle the rest
             } catch (error) { showError(error.message); }
         }
 
@@ -748,23 +730,28 @@
             document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
             document.getElementById('user-display-scope').textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Network' : currentUser.territories.join(', ') || 'None'}`;
 
-            const els = document.querySelectorAll('.manager-only');
-            const admins = document.querySelectorAll('.admin-only');
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
             
-            document.getElementById('btn-manage-branding').classList.add('hidden');
-            document.getElementById('btn-manage-users').classList.add('hidden');
-            document.getElementById('manager-season-controls').classList.add('hidden');
-            els.forEach(el => el.classList.add('hidden'));
+            // Reset UI Visibility
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-create-program').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
-            if (currentUser.role === 'Main Admin') {
-                document.getElementById('btn-manage-branding').classList.remove('hidden');
-                document.getElementById('btn-manage-users').classList.remove('hidden');
-                document.getElementById('manager-season-controls').classList.remove('hidden');
-                els.forEach(el => el.classList.remove('hidden'));
-            } else if (currentUser.role === 'Manager') {
-                document.getElementById('manager-season-controls').classList.remove('hidden');
-                els.forEach(el => el.classList.remove('hidden'));
+            // Apply System Admin overrides
+            if (currentUser.role === 'System Admin') {
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            } 
+            
+            // Apply granular permissions
+            if (perms.manageGroups) { 
+                document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); 
+                document.getElementById('btn-manage-users').classList.remove('hidden'); 
             }
+            if (perms.createPrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
+            if (perms.editTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
+            if (perms.editTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
         }
 
         function switchTab(tab) {
@@ -805,7 +792,7 @@
 
         // --- UTILS & GENERATORS ---
         function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
-        function getAuthorizedGroups() { return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups : groups.filter(g => currentUser.territories.includes(g))); }
+        function getAuthorizedGroups() { return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); }
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
         function updateSubcats() {
             const type = document.getElementById('tpl-type').value;
@@ -820,11 +807,15 @@
             const pGroup = document.getElementById('prog-group');
             const atGroup = document.getElementById('at-program');
             
-            pGroup.innerHTML = ''; atGroup.innerHTML = '';
-            ag.forEach(g => { pGroup.innerHTML += `<option value="${g}">${g}</option>`; });
+            if(pGroup) pGroup.innerHTML = ''; 
+            if(atGroup) atGroup.innerHTML = '';
+            
+            ag.forEach(g => { if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`; });
 
             programs.forEach(p => {
-                if (ag.includes(p.group)) atGroup.innerHTML += `<option value="${p.id}">[${p.group}] ${p.preHeader} ${p.season} - ${p.type}</option>`;
+                if (ag.some(g=>g.id===p.groupId)) {
+                    if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} - ${p.type}</option>`;
+                }
             });
 
             // Filters
@@ -833,31 +824,39 @@
                 const el = document.getElementById(f);
                 if(el) {
                     el.innerHTML = '<option value="ALL">All Authorized Groups</option>';
-                    ag.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
+                    ag.forEach(g => el.innerHTML += `<option value="${g.id}">${g.fullName}</option>`);
                 }
             });
+
+            const asSel = document.getElementById('at-assignee');
+            if(asSel) {
+                asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
+                users.forEach(u => asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`);
+            }
         }
 
         function renderDashboard() {
-            const ag = getAuthorizedGroups();
+            const agIds = getAuthorizedGroups().map(g=>g.id);
             let tot = 0, comp = 0, due = 0, over = 0, unassigned = 0;
             
-            const dashProg = document.getElementById('dashboard-season-progress'); dashProg.innerHTML = '';
-            const dashOver = document.getElementById('dashboard-overdue-list'); dashOver.innerHTML = '';
+            const dashProg = document.getElementById('dashboard-season-progress'); if(dashProg) dashProg.innerHTML = '';
+            const dashOver = document.getElementById('dashboard-overdue-list'); if(dashOver) dashOver.innerHTML = '';
 
             const today = new Date(); today.setHours(0,0,0,0);
 
-            programs.filter(p => ag.includes(p.group)).forEach(p => {
+            programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
                 const pTasks = activeTasks.filter(t => t.programId === p.id);
                 const pTot = pTasks.length;
                 const pComp = pTasks.filter(t => t.status === "Complete").length;
                 const pct = pTot > 0 ? Math.round((pComp/pTot)*100) : 0;
 
-                dashProg.innerHTML += `
-                    <div class="mb-3">
-                        <div class="flex justify-between text-[11px] font-bold mb-1 text-gray-700"><span>[${p.group}] ${p.preHeader} ${p.season} ${p.type}</span><span class="text-i9blue">${pComp}/${pTot} (${pct}%)</span></div>
-                        <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-i9blue h-2 rounded-full" style="width: ${pct}%"></div></div>
-                    </div>`;
+                if(dashProg) {
+                    dashProg.innerHTML += `
+                        <div class="mb-3">
+                            <div class="flex justify-between text-[11px] font-bold mb-1 text-gray-700"><span>[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</span><span class="text-i9blue">${pComp}/${pTot} (${pct}%)</span></div>
+                            <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-i9blue h-2 rounded-full" style="width: ${pct}%"></div></div>
+                        </div>`;
+                }
 
                 pTasks.forEach(t => {
                     tot++;
@@ -867,7 +866,7 @@
                         const tgt = new Date(t.targetDate + "T00:00:00");
                         if (today > tgt) {
                             over++;
-                            dashOver.innerHTML += `<div class="p-2 bg-rose-50 border border-rose-200 rounded text-xs flex justify-between items-center"><div class="font-bold text-rose-800">${t.desc}<div class="text-[10px] text-rose-600 font-normal">Assigned: ${t.assignee || 'UNASSIGNED'} | Due: ${t.targetDate}</div></div><button onclick="updateActiveTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2 py-1 rounded shadow-sm">Done</button></div>`;
+                            if(dashOver) dashOver.innerHTML += `<div class="p-2 bg-rose-50 border border-rose-200 rounded text-xs flex justify-between items-center"><div class="font-bold text-rose-800">${t.desc}<div class="text-[10px] text-rose-600 font-normal">Assigned: ${t.assignee || 'UNASSIGNED'} | Due: ${t.targetDate}</div></div><button onclick="updateActiveTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2 py-1 rounded shadow-sm">Done</button></div>`;
                         } else if (today >= new Date(tgt.getTime() - (7*86400000))) {
                             due++;
                         }
@@ -875,31 +874,34 @@
                 });
             });
 
-            if (dashOver.innerHTML === '') dashOver.innerHTML = '<p class="text-xs text-gray-500 italic p-2 bg-gray-50 rounded">No overdue tasks!</p>';
+            if (dashOver && dashOver.innerHTML === '') dashOver.innerHTML = '<p class="text-xs text-gray-500 italic p-2 bg-gray-50 rounded">No overdue tasks!</p>';
 
-            document.getElementById('kpi-total').textContent = tot;
-            document.getElementById('kpi-completed').textContent = comp;
-            document.getElementById('kpi-duethisweek').textContent = due;
-            document.getElementById('kpi-overdue').textContent = over;
-            document.getElementById('kpi-unassigned').textContent = unassigned;
+            const kTot = document.getElementById('kpi-total'); if(kTot) kTot.textContent = tot;
+            const kComp = document.getElementById('kpi-completed'); if(kComp) kComp.textContent = comp;
+            const kDue = document.getElementById('kpi-duethisweek'); if(kDue) kDue.textContent = due;
+            const kOver = document.getElementById('kpi-overdue'); if(kOver) kOver.textContent = over;
+            const kUn = document.getElementById('kpi-unassigned'); if(kUn) kUn.textContent = unassigned;
         }
 
         // --- PROGRAM CONTROLS ---
         function renderControlCenter() {
-            const ag = getAuthorizedGroups();
-            const tb = document.getElementById('control-center-table-body'); tb.innerHTML = '';
-            const isManager = currentUser && (currentUser.role === 'Main Admin' || currentUser.role === 'Manager');
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            const tb = document.getElementById('control-center-table-body'); if(!tb) return;
+            tb.innerHTML = '';
+            
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const isManager = currentUser && (currentUser.role === 'System Admin' || perms.createPrograms);
 
-            programs.filter(p => ag.includes(p.group)).sort((a,b)=>a.start.localeCompare(b.start)).forEach(p => {
+            programs.filter(p => agIds.includes(p.groupId)).sort((a,b)=>a.start.localeCompare(b.start)).forEach(p => {
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 font-bold text-i9blue">${p.group}</td>
+                        <td class="px-4 py-2 font-bold text-i9blue">${p.groupId}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold text-[10px]">${p.type}</span></td>
                         <td class="px-4 py-2 font-mono text-gray-600">${p.start}</td>
                         <td class="px-4 py-2 text-gray-500 text-[10px]">${p.days} | ${p.weeks} Wks<br>${p.venue||'TBD'}</td>
                         <td class="px-4 py-2 text-rose-600 font-mono text-[10px]">${p.byes || 'None'}</td>
-                        <td class="px-4 py-2 text-center">
+                        <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
                             <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded shadow-sm hover:bg-emerald-700 mr-2"><i class="fa-solid fa-bolt"></i> Generate Tasks</button>
                             <button onclick="window.cloudDeleteProgram('${p.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
@@ -914,7 +916,7 @@
             e.preventDefault();
             const p = {
                 id: generateId('PRG'),
-                group: document.getElementById('prog-group').value,
+                groupId: document.getElementById('prog-group').value,
                 year: document.getElementById('prog-year').value,
                 preHeader: document.getElementById('prog-pre').value.trim(),
                 season: document.getElementById('prog-season').value,
@@ -931,11 +933,15 @@
 
         // --- TEMPLATES ---
         function renderTemplates() {
-            const f = document.getElementById('filter-template-type').value;
-            const tb = document.getElementById('template-table-body'); tb.innerHTML = '';
-            const isManager = currentUser && (currentUser.role === 'Main Admin' || currentUser.role === 'Manager');
+            const f = document.getElementById('filter-template-type'); if(!f) return;
+            const filterVal = f.value;
+            const tb = document.getElementById('template-table-body'); if(!tb) return;
+            tb.innerHTML = '';
+            
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const isManager = currentUser && (currentUser.role === 'System Admin' || perms.editTemplates);
 
-            templates.filter(t => f === 'ALL' || t.type === f).sort((a,b)=>a.offset - b.offset).forEach(t => {
+            templates.filter(t => filterVal === 'ALL' || t.type === filterVal).sort((a,b)=>a.offset - b.offset).forEach(t => {
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2 font-bold text-gray-800">${t.type}</td>
@@ -966,19 +972,6 @@
         }
 
         // --- GENERATION ENGINE ---
-        function calculateTargetDate(startStr, offsetDays, byeStr) {
-            const d = new Date(startStr + "T00:00:00");
-            d.setDate(d.getDate() + offsetDays);
-            
-            // Simple V2 Bye-week handling: If calculated date hits exactly on a bye date string, push 7 days
-            if (byeStr) {
-                const byes = byeStr.split(',').map(s=>s.trim());
-                const calcStr = d.toISOString().split('T')[0];
-                if (byes.includes(calcStr)) d.setDate(d.getDate() + 7);
-            }
-            return d.toISOString().split('T')[0];
-        }
-
         function generateTaskPlan(progId) {
             const p = programs.find(x => x.id === progId);
             if(!p) return;
@@ -995,7 +988,7 @@
                 const at = {
                     id: generateId('ATK'),
                     programId: p.id,
-                    group: p.group,
+                    groupId: p.groupId,
                     type: p.type,
                     subcat: t.subcat,
                     desc: t.desc,
@@ -1015,25 +1008,26 @@
 
         // --- ACTIVE TASKS EXECUTION ---
         function renderActiveTasks() {
-            const ag = getAuthorizedGroups();
-            const fGroup = document.getElementById('filter-task-group').value;
-            const fAssignee = document.getElementById('filter-task-assignee').value;
-            const fStatus = document.getElementById('filter-task-status').value;
-            const isManager = currentUser && (currentUser.role === 'Main Admin' || currentUser.role === 'Manager');
-
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            const fGroup = document.getElementById('filter-task-group'); if(!fGroup) return;
+            const fAssignee = document.getElementById('filter-task-assignee');
+            const fStatus = document.getElementById('filter-task-status');
             const tb = document.getElementById('active-task-table-body'); tb.innerHTML = '';
             
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const canEdit = currentUser.role === 'System Admin' || perms.editTasks;
+
             activeTasks.forEach(t => {
-                if (!ag.includes(t.group)) return;
-                if (fGroup !== 'ALL' && t.group !== fGroup) return;
-                if (fStatus !== 'ALL' && t.status !== fStatus) return;
+                if (!agIds.includes(t.groupId)) return;
+                if (fGroup.value !== 'ALL' && t.groupId !== fGroup.value) return;
+                if (fStatus.value !== 'ALL' && t.status !== fStatus.value) return;
                 
                 let isUnassigned = (!t.assignee || t.assignee.trim() === '');
-                if (fAssignee === 'ME' && t.assignee !== currentUser.name) return;
-                if (fAssignee === 'UNASSIGNED' && !isUnassigned) return;
+                if (fAssignee.value === 'ME' && t.assignee !== currentUser.name) return;
+                if (fAssignee.value === 'UNASSIGNED' && !isUnassigned) return;
 
                 const p = programs.find(x => x.id === t.programId);
-                const pName = p ? `[${p.group}] ${p.preHeader} ${p.season}` : 'Unknown Program';
+                const pName = p ? `[${p.groupId}] ${p.preHeader} ${p.season}` : 'Unknown Program';
                 
                 // Status Logic
                 const today = new Date(); today.setHours(0,0,0,0);
@@ -1057,7 +1051,7 @@
                             </select>
                         </td>
                         <td class="px-3 py-2 text-center whitespace-nowrap">
-                            ${isManager ? `
+                            ${canEdit ? `
                                 <button onclick="openEditActiveTask('${t.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fa-solid fa-pen"></i></button>
                                 <button onclick="window.cloudDeleteActiveTask('${t.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
                             ` : '-'}
@@ -1115,7 +1109,7 @@
                 if(p) {
                     const at = {
                         id: generateId('ATK'),
-                        programId: p.id, group: p.group, type: p.type, subcat: "One-Off",
+                        programId: p.id, groupId: p.groupId, type: p.type, subcat: "One-Off",
                         desc: document.getElementById('at-desc').value.trim(),
                         assignee: document.getElementById('at-assignee').value.trim(),
                         defaultRole: "Custom", targetDate: document.getElementById('at-date').value,
@@ -1127,45 +1121,6 @@
             closeModals();
         }
 
-        // --- ADMIN CONTROLS ---
-        function openUserManagementModal() { document.getElementById('user-management-modal').classList.remove('hidden'); }
-        function renderGroupPills() {
-            const ct = document.getElementById('group-pill-list'); ct.innerHTML = '';
-            groups.forEach(g => {
-                ct.innerHTML += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full text-xs font-bold text-i9blue">${g} <button onclick="window.cloudDeleteGroup('${g}')" class="text-rose-500"><i class="fa-solid fa-xmark"></i></button></span>`;
-            });
-        }
-        function renderTerritoryCheckboxes() {
-            const ct = document.getElementById('admin-u-terr'); ct.innerHTML = `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>`;
-            groups.forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g}" class="admin-cb"> ${g}</label>`);
-        }
-        function addGroup(e) { e.preventDefault(); const g = document.getElementById('new-group-name').value.trim(); if(g) window.cloudSaveGroup(g); document.getElementById('new-group-name').value=''; }
-        
-        function renderUsersTable() {
-            const tb = document.getElementById('users-table-body'); tb.innerHTML = '';
-            users.forEach(u => {
-                tb.innerHTML += `<tr><td class="p-2 font-mono font-bold">${u.username}</td><td class="p-2">${u.name}</td><td class="p-2 font-bold ${u.role==='Pending'?'text-rose-500':'text-i9blue'}">${u.role}</td><td class="p-2 text-xs">${u.territories.join(', ')||'None'}</td><td class="p-2"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600"><i class="fa-solid fa-pen"></i></button></td></tr>`;
-            });
-        }
-        function openAdminEdit(em) {
-            const u = users.find(x => x.username === em); if(!u) return;
-            document.getElementById('admin-u-email').value = u.username;
-            document.getElementById('admin-u-role').value = u.role;
-            document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
-            document.getElementById('admin-edit-user-form').classList.remove('hidden');
-        }
-        function adminSaveUser(e) {
-            e.preventDefault();
-            const em = document.getElementById('admin-u-email').value;
-            const u = users.find(x => x.username === em);
-            if(u) {
-                u.role = document.getElementById('admin-u-role').value;
-                u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value);
-                window.cloudSaveUser(u);
-                document.getElementById('admin-edit-user-form').classList.add('hidden');
-            }
-        }
-        function showToast(t, m) { alert(`${t}: ${m}`); /* Simplified for V2 fit, use custom UI in prod */ }
     </script>
 </body>
 </html>
