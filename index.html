@@ -353,7 +353,7 @@
             <form onsubmit="login(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Email / Username</label>
-                    <input type="text" id="login-username" required placeholder="Enter username" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
+                    <input type="email" id="login-username" required placeholder="Enter your email" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs focus:ring-2 focus:ring-i9blue outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Password</label>
@@ -366,6 +366,16 @@
 
                 <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs transition shadow-md flex items-center justify-center gap-2">
                     <i class="fa-solid fa-right-to-bracket text-i9gold"></i> Authenticate & Enter Portal
+                </button>
+
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink mx-2 text-gray-400 text-[10px] uppercase font-bold">Or</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <button type="button" onclick="loginWithGoogle()" class="w-full py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg text-xs transition border border-gray-300 shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-google text-red-500 text-sm"></i> Sign In with Google
                 </button>
             </form>
         </div>
@@ -412,7 +422,7 @@
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="block font-bold mb-1">Username / Email</label>
-                            <input type="text" id="new-user-username" required class="w-full p-2 border rounded bg-white">
+                            <input type="email" id="new-user-username" required class="w-full p-2 border rounded bg-white">
                         </div>
                         <div>
                             <label class="block font-bold mb-1">Full Name</label>
@@ -420,7 +430,7 @@
                         </div>
                         <div>
                             <label class="block font-bold mb-1">Password</label>
-                            <input type="password" id="new-user-password" required placeholder="Enter password" class="w-full p-2 border rounded bg-white">
+                            <input type="password" id="new-user-password" placeholder="[Set inside Firebase Auth]" class="w-full p-2 border rounded bg-white text-gray-400" disabled title="Passwords are managed directly in the Firebase Authentication Console for security.">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -441,7 +451,7 @@
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" onclick="toggleAddUserForm()" class="px-2.5 py-1 bg-gray-200 text-gray-700 rounded font-semibold">Cancel</button>
-                        <button type="submit" class="px-3 py-1 bg-i9blue text-white rounded font-bold">Save User Account</button>
+                        <button type="submit" class="px-3 py-1 bg-i9blue text-white rounded font-bold">Save User Profile</button>
                     </div>
                 </form>
 
@@ -719,7 +729,9 @@
                   onAuthStateChanged,
                   signInWithEmailAndPassword,
                   updatePassword,
-                  signOut
+                  signOut,
+                  GoogleAuthProvider,
+                  signInWithPopup
                 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
                 import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -752,6 +764,9 @@
             window.signInWithEmailAndPassword = signInWithEmailAndPassword;
             window.updatePassword = updatePassword;
             window.signOut = signOut;
+            
+            const googleProvider = new GoogleAuthProvider();
+            window.signInWithGoogle = () => signInWithPopup(auth, googleProvider);
             
             // Authentication Step
             const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -945,11 +960,11 @@
 
         let currentBranding = { ...DEFAULT_BRANDING };
 
-        // DEFAULT 3-TIER USER ACCOUNTS
+        // DEFAULT 3-TIER USER ACCOUNTS (Passwords removed for security)
         const DEFAULT_USERS = [
-            { username: "nick@npsnm.com", password: "1234", name: "Nick", role: "Main Admin", territories: ["ALL"] },
-            { username: "manager", password: "managerpass2026", name: "Regional Manager", role: "Manager", territories: ["ALL"] },
-            { username: "staff", password: "staffpass2026", name: "Operations Staff", role: "Staff", territories: ["ALL"] }
+            { username: "nick@npsnm.com", password: "[Set in Firebase Auth]", name: "Nick", role: "Main Admin", territories: ["ALL"] },
+            { username: "manager@example.com", password: "[Set in Firebase Auth]", name: "Regional Manager", role: "Manager", territories: ["ALL"] },
+            { username: "staff@example.com", password: "[Set in Firebase Auth]", name: "Operations Staff", role: "Staff", territories: ["ALL"] }
         ];
 
         let users = [];
@@ -993,6 +1008,36 @@
             } catch (error) {
                 const errorBox = document.getElementById('login-error');
                 document.getElementById('login-error-text').textContent = "Login failed: " + error.message;
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        async function loginWithGoogle() {
+            try {
+                // 1. Trigger Google Sign-In Popup
+                const result = await window.signInWithGoogle();
+                const googleEmail = result.user.email.toLowerCase();
+
+                // 2. Match Google Email with your User Accounts Directory
+                const matchedUser = users.find(u => u.username.toLowerCase() === googleEmail);
+
+                if (!matchedUser) {
+                    // Sign out of Google immediately if they aren't authorized in your portal
+                    await window.signOut(window.auth);
+                    throw new Error(`The Google account (${googleEmail}) is not authorized. Please ask an Admin for access.`);
+                }
+
+                // 3. Set Active User & Unlock Application
+                currentUser = matchedUser;
+                document.getElementById('auth-overlay').classList.add('hidden');
+                showToast("Success", `Welcome back, ${currentUser.name}!`);
+                
+                unlockPortal();
+                initRealtimeSync();
+
+            } catch (error) {
+                const errorBox = document.getElementById('login-error');
+                document.getElementById('login-error-text').textContent = error.message;
                 errorBox.classList.remove('hidden');
             }
         }
@@ -1587,13 +1632,13 @@ function promptGenerateYear() {
             e.preventDefault();
             const username = document.getElementById('new-user-username').value.trim();
             const name = document.getElementById('new-user-name').value.trim();
-            const password = document.getElementById('new-user-password').value.trim();
+            // We no longer retrieve or care about the password box value here
             const role = document.getElementById('new-user-role').value;
 
             const selectedTerritories = Array.from(document.querySelectorAll('.user-terr-checkbox:checked')).map(cb => cb.value);
 
             const existingIdx = users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
-            const newUserObj = { username, name, password, role, territories: selectedTerritories };
+            const newUserObj = { username, name, password: "[Set in Firebase Auth]", role, territories: selectedTerritories };
 
             if (existingIdx !== -1) {
                 users[existingIdx] = newUserObj;
@@ -1647,7 +1692,6 @@ function promptGenerateYear() {
 
             document.getElementById('new-user-username').value = u.username;
             document.getElementById('new-user-name').value = u.name;
-            document.getElementById('new-user-password').value = u.password;
             document.getElementById('new-user-role').value = u.role;
 
             const checkboxes = document.querySelectorAll('.user-terr-checkbox');
@@ -1681,14 +1725,8 @@ function promptGenerateYear() {
                     const errorBox = document.getElementById('pass-error');
                     const errorText = document.getElementById('pass-error-text');
         
-                    if (currentPass !== currentUser.password) {
-                        errorText.textContent = "Current password is incorrect.";
-                        errorBox.classList.remove('hidden');
-                        return;
-                    }
-        
-                    if (newPass.length < 4) {
-                        errorText.textContent = "New password must be at least 4 characters long.";
+                    if (newPass.length < 6) {
+                        errorText.textContent = "New password must be at least 6 characters long.";
                         errorBox.classList.remove('hidden');
                         return;
                     }
@@ -1704,16 +1742,16 @@ function promptGenerateYear() {
                     
                     if (user) {
                         try {
-                            await window.updatePassword(user, newPass);
+                            // Try to re-authenticate first (Firebase requires recent login to change password)
+                            await window.signInWithEmailAndPassword(window.auth, currentUser.username, currentPass);
                             
-                            // Update Local State
-                            currentUser.password = newPass;
-                            if (window.cloudSaveUser) window.cloudSaveUser(currentUser);
+                            // If successful, change it
+                            await window.updatePassword(user, newPass);
         
                             closeChangePasswordModal();
-                            showToast("Password Updated", "Your password has been changed and synced successfully.");
+                            showToast("Password Updated", "Your password has been changed successfully.");
                         } catch (error) {
-                            errorText.textContent = "Error updating password: " + error.message;
+                            errorText.textContent = "Error: " + error.message;
                             errorBox.classList.remove('hidden');
                         }
                     } else {
