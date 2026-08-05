@@ -690,14 +690,10 @@
                         territories: isRootAdmin ? ["ALL"] : []
                     };
                     await window.cloudSaveUser(matched);
+                    window.users.push(matched);
                 }
 
                 window.currentUser = matched;
-
-                // Immediately hide login modal overlay
-                const overlay = document.getElementById('auth-overlay');
-                if (overlay) overlay.classList.add('hidden');
-
                 unlockPortal();
                 showToast("Welcome", `Logged in as ${matched.name}`);
 
@@ -770,19 +766,23 @@
         }
 
         function unlockPortal() {
-            // Force hide the auth overlay modal at start
-            const overlay = document.getElementById('auth-overlay');
-            if (overlay) overlay.classList.add('hidden');
-
             if (!currentUser) return;
-
+            
             if (currentUser.role === "Pending") {
                 showError("Your account is pending admin approval.");
                 logout(); 
                 return;
             }
 
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.classList.add('hidden');
+
             applyPermissions();
+            populateFilterOptions();
+            renderDashboard();
+            renderControlCenter();
+            renderTemplates();
+            renderActiveTasks();
         }
 
         function applyPermissions() {
