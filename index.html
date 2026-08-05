@@ -718,7 +718,8 @@
                   signInAnonymously, 
                   onAuthStateChanged,
                   signInWithEmailAndPassword,
-                  updatePassword
+                  updatePassword,
+                  signOut
                 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
                 import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -750,6 +751,7 @@
             window.auth = auth;
             window.signInWithEmailAndPassword = signInWithEmailAndPassword;
             window.updatePassword = updatePassword;
+            window.signOut = signOut;
             
             // Authentication Step
             const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -793,7 +795,6 @@
             onSnapshot(groupsRef, (snapshot) => {
                 if (!snapshot.empty) {
                     window.groups = snapshot.docs.map(doc => doc.data().name);
-                    window.saveToLocalStorage();
                     window.renderGroupPills();
                     window.renderTerritoryCheckboxes();
                     window.populateFilterOptions();
@@ -805,7 +806,6 @@
             onSnapshot(seasonsRef, (snapshot) => {
                 if (!snapshot.empty) {
                     window.seasons = snapshot.docs.map(doc => doc.data());
-                    window.saveToLocalStorage();
                     window.populateFilterOptions();
                     window.renderControlCenter();
                     window.renderMasterTasks();
@@ -818,7 +818,6 @@
             onSnapshot(tasksRef, (snapshot) => {
                 if (!snapshot.empty) {
                     window.masterTasks = snapshot.docs.map(doc => doc.data());
-                    window.saveToLocalStorage();
                     window.renderMasterTasks();
                     window.renderDashboard();
                 }
@@ -829,8 +828,16 @@
             onSnapshot(usersRef, (snapshot) => {
                 if (!snapshot.empty) {
                     window.users = snapshot.docs.map(doc => doc.data());
-                    window.saveToLocalStorage();
                     window.renderUsersTable();
+                    
+                    // Cloud-Based Session Restore: Check if Firebase verified a login, but the UI is locked
+                    if (auth.currentUser && !auth.currentUser.isAnonymous && !window.currentUser) {
+                        const matchedUser = window.users.find(u => u.username.toLowerCase() === auth.currentUser.email.toLowerCase());
+                        if (matchedUser) {
+                            window.currentUser = matchedUser;
+                            window.unlockPortal();
+                        }
+                    }
                 } else {
                     // Seed default admin account to Cloud if empty
                     window.users.forEach(u => window.cloudSaveUser(u));
@@ -953,62 +960,21 @@
 
         // INITIALIZATION
         // Map local functions to the window so the Firebase module can trigger them
-window.saveToLocalStorage = saveToLocalStorage;
-window.renderGroupPills = renderGroupPills;
-window.renderTerritoryCheckboxes = renderTerritoryCheckboxes;
-window.populateFilterOptions = populateFilterOptions;
-window.renderControlCenter = renderControlCenter;
-window.renderMasterTasks = renderMasterTasks;
-window.renderDashboard = renderDashboard;
-window.renderUsersTable = renderUsersTable;
-window.applyBrandingUI = applyBrandingUI;
+        window.renderGroupPills = renderGroupPills;
+        window.renderTerritoryCheckboxes = renderTerritoryCheckboxes;
+        window.populateFilterOptions = populateFilterOptions;
+        window.renderControlCenter = renderControlCenter;
+        window.renderMasterTasks = renderMasterTasks;
+        window.renderDashboard = renderDashboard;
+        window.renderUsersTable = renderUsersTable;
+        window.applyBrandingUI = applyBrandingUI;
+        window.unlockPortal = unlockPortal; // Allow Cloud Sync to trigger unlock
+        
         window.addEventListener('DOMContentLoaded', () => {
-            loadFromLocalStorage();
+            users = [...DEFAULT_USERS]; // Set default users array in memory until cloud overwrites it
             applyBrandingUI();
-            checkExistingSession();
+            document.getElementById('auth-overlay').classList.remove('hidden'); // Default lock screen
         });
-
-        function loadFromLocalStorage() {
-            // Load Branding
-            const savedBranding = localStorage.getItem('i9_portal_branding');
-            if (savedBranding) currentBranding = JSON.parse(savedBranding);
-
-            // Load Users
-            const savedUsers = localStorage.getItem('i9_portal_users');
-            users = savedUsers ? JSON.parse(savedUsers) : [...DEFAULT_USERS];
-
-            // Load Groups (Territories)
-            const savedGroups = localStorage.getItem('i9_portal_groups');
-            groups = savedGroups ? JSON.parse(savedGroups) : [];
-
-            // Load Seasons
-            const savedSeasons = localStorage.getItem('i9_portal_seasons');
-            seasons = savedSeasons ? JSON.parse(savedSeasons) : [];
-
-            // Load Master Tasks
-            const savedTasks = localStorage.getItem('i9_portal_tasks');
-            masterTasks = savedTasks ? JSON.parse(savedTasks) : [];
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('i9_portal_users', JSON.stringify(users));
-            localStorage.setItem('i9_portal_groups', JSON.stringify(groups));
-            localStorage.setItem('i9_portal_seasons', JSON.stringify(seasons));
-            localStorage.setItem('i9_portal_tasks', JSON.stringify(masterTasks));
-        }
-
-        function checkExistingSession() {
-            const savedSession = localStorage.getItem('i9_portal_session');
-            if (savedSession) {
-                const user = users.find(u => u.username === savedSession);
-                if (user) {
-                    currentUser = user;
-                    unlockPortal();
-                    return;
-                }
-            }
-            document.getElementById('auth-overlay').classList.remove('hidden');
-        }
 
         async function login(e) {
             if (e) e.preventDefault();
@@ -1016,24 +982,13 @@ window.applyBrandingUI = applyBrandingUI;
             const password = document.getElementById('login-password').value.trim();
         
             try {
-                // 1. Authenticate with Firebase
+                // 1. Authenticate with Firebase Cloud
                 await window.signInWithEmailAndPassword(window.auth, email, password);
                 
-                // 2. Match with local application user to get roles/territories
-                const matchedUser = users.find(u => u.username.toLowerCase() === email.toLowerCase());
-                if (!matchedUser) {
-                    throw new Error("Account verified, but user profile not found in system directory.");
-                }
-                
-                // 3. Set standard user, save session, and unlock UI
-                currentUser = matchedUser;
-                localStorage.setItem('i9_portal_session', currentUser.username); 
-                
-                document.getElementById('auth-overlay').classList.add('hidden');
-                showToast("Success", `Welcome back, ${currentUser.name}!`);
-                
-                unlockPortal(); 
-                initRealtimeSync();
+                // Note: We don't unlock the portal here manually anymore. 
+                // The onAuthStateChanged listener will fire initRealtimeSync(), 
+                // which pulls the users directory, finds the role, and calls unlockPortal().
+                showToast("Success", "Verifying credentials with cloud...");
                 
             } catch (error) {
                 const errorBox = document.getElementById('login-error');
@@ -1042,11 +997,15 @@ window.applyBrandingUI = applyBrandingUI;
             }
         }
 
-        function logout() {
+        async function logout() {
             currentUser = null;
-            localStorage.removeItem('i9_portal_session');
+            if (window.auth) await window.signOut(window.auth);
+            
+            // Clear memory arrays to prevent data bleed
+            masterTasks = []; seasons = []; groups = [];
+            
             document.getElementById('auth-overlay').classList.remove('hidden');
-            showToast("Signed Out", "You have been logged out of the portal.");
+            showToast("Signed Out", "You have securely disconnected from the cloud.");
         }
 
         function unlockPortal() {
@@ -1148,7 +1107,6 @@ window.applyBrandingUI = applyBrandingUI;
                 secondaryColor: document.getElementById('branding-color-secondary').value
             };
 
-            localStorage.setItem('i9_portal_branding', JSON.stringify(currentBranding));
             if (window.cloudSaveBranding) window.cloudSaveBranding(currentBranding);
             applyBrandingUI();
             closeBrandingModal();
@@ -1157,7 +1115,6 @@ window.applyBrandingUI = applyBrandingUI;
 
         function resetBrandingToDefault() {
             currentBranding = { ...DEFAULT_BRANDING };
-            localStorage.removeItem('i9_portal_branding');
             if (window.cloudSaveBranding) window.cloudSaveBranding(DEFAULT_BRANDING);
             applyBrandingUI();
             closeBrandingModal();
@@ -1364,7 +1321,6 @@ window.applyBrandingUI = applyBrandingUI;
                 task.completedBy = "";
             }
 
-            saveToLocalStorage();
             if (window.cloudSaveTask) window.cloudSaveTask(task);
             renderMasterTasks();
             renderDashboard();
@@ -1462,7 +1418,6 @@ function promptGenerateYear() {
     });
 
     if (addedCount > 0) {
-        saveToLocalStorage();
         populateFilterOptions();
         renderControlCenter();
         showToast("Year Generated", `Successfully added ${addedCount} programs for ${selectedGroup}.`);
@@ -1568,7 +1523,6 @@ function promptGenerateYear() {
 
             if (groupName && !groups.includes(groupName)) {
                 groups.push(groupName);
-                saveToLocalStorage();
                 if (window.cloudSaveGroup) window.cloudSaveGroup(groupName);
                 groupNameInput.value = '';
                 renderGroupPills();
@@ -1581,7 +1535,6 @@ function promptGenerateYear() {
         function removeGroup(groupName) {
             if (confirm(`Remove group "${groupName}"? Associated seasons and tasks will be hidden.`)) {
                 groups = groups.filter(g => g !== groupName);
-                saveToLocalStorage();
                 if (window.cloudDeleteGroup) window.cloudDeleteGroup(groupName);
                 renderGroupPills();
                 renderTerritoryCheckboxes();
@@ -1648,7 +1601,6 @@ function promptGenerateYear() {
                 users.push(newUserObj);
             }
 
-            saveToLocalStorage();
             if (window.cloudSaveUser) window.cloudSaveUser(newUserObj);
             renderUsersTable();
             toggleAddUserForm();
@@ -1662,7 +1614,6 @@ function promptGenerateYear() {
             }
             if (confirm(`Delete user account ${username}?`)) {
                 users = users.filter(u => u.username !== username);
-                saveToLocalStorage();
                 if (window.cloudDeleteUser) window.cloudDeleteUser(username);
                 renderUsersTable();
                 showToast("User Removed", `Account ${username} deleted.`);
@@ -1757,7 +1708,6 @@ function promptGenerateYear() {
                             
                             // Update Local State
                             currentUser.password = newPass;
-                            saveToLocalStorage();
                             if (window.cloudSaveUser) window.cloudSaveUser(currentUser);
         
                             closeChangePasswordModal();
@@ -1830,7 +1780,6 @@ function promptGenerateYear() {
                         seasons.push(newSeason);
                     }
         
-                    saveToLocalStorage();
                     if (window.cloudSaveSeason) window.cloudSaveSeason(newSeason);
                     populateFilterOptions();
                     renderControlCenter();
@@ -1843,7 +1792,6 @@ function promptGenerateYear() {
                     if (confirm(`Delete season ${key} and its tasks?`)) {
                         seasons = seasons.filter(s => s.key !== key);
                         masterTasks = masterTasks.filter(t => t.seasonKey !== key);
-                        saveToLocalStorage();
                         if (window.cloudDeleteSeason) window.cloudDeleteSeason(key);
                         populateFilterOptions();
                         renderControlCenter();
@@ -1919,7 +1867,6 @@ function promptGenerateYear() {
                 masterTasks.push(taskData);
             }
 
-            saveToLocalStorage();
             if (window.cloudSaveTask) window.cloudSaveTask(taskData);
             renderMasterTasks();
             closeTaskModal();
@@ -1929,7 +1876,6 @@ function promptGenerateYear() {
         function deleteTask(id) {
             if (confirm("Delete this task?")) {
                 masterTasks = masterTasks.filter(t => t.id !== id);
-                saveToLocalStorage();
                 if (window.cloudDeleteTask) window.cloudDeleteTask(id);
                 renderMasterTasks();
                 showToast("Task Deleted", `Task removed.`);
