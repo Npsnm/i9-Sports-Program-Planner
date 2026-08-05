@@ -377,15 +377,12 @@
                             <label><input type="radio" name="signup-action" value="create" onchange="toggleSignupAction()"> Create New</label>
                         </div>
                         <div id="signup-join-fields">
-                            <input type="text" id="signup-join-id" placeholder="Enter Group ID (e.g. 123)" class="w-full p-2 border rounded bg-white">
+                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
                             <p class="text-[10px] text-gray-500 mt-1">Sends a request to the Group Admin for approval.</p>
                         </div>
                         <div id="signup-create-fields" class="hidden">
-                            <div class="flex gap-2 mb-1">
-                                <input type="text" id="signup-create-id" placeholder="Group ID" class="w-1/3 p-2 border rounded bg-white">
-                                <input type="text" id="signup-create-name" placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
-                            </div>
-                            <p class="text-[10px] text-gray-500">Registers this Franchise ID and sets you as Group Owner.</p>
+                            <input type="text" id="signup-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Generates a new Franchise ID and sets you as Group Owner.</p>
                         </div>
                     </div>
 
@@ -414,21 +411,12 @@
                 <!-- LEFT COLUMN: GROUPS & INVITES -->
                 <div class="space-y-6">
                     <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
-                        <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1"><i class="fa-solid fa-sitemap"></i> Franchise Groups Directory</h4>
-                        <form onsubmit="addGroup(event)" class="flex flex-col gap-2 text-xs">
-                            <div class="flex gap-2">
-                                <input type="text" id="new-group-id" required placeholder="Group ID" class="w-1/3 p-2 border rounded bg-white">
-                                <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
-                            </div>
-                            <div class="flex gap-2">
-                                <select id="new-group-owner" class="flex-grow p-2 border rounded bg-white text-gray-700 font-semibold">
-                                    <option value="">-- Assign Group Owner (Optional) --</option>
-                                </select>
-                                <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded shadow-sm">+ Add Group</button>
-                            </div>
+                        <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
+                        <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                            <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
+                            <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
                         </form>
-                        <!-- Group Directory Listing -->
-                        <div id="group-pill-list" class="space-y-2 max-h-64 overflow-y-auto pr-1 mt-3"></div>
+                        <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
                     </div>
                     
                     <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 space-y-3">
@@ -499,7 +487,8 @@
         </div>
     </div>
 
-    <!-- TEMPLATE RULE MODAL -->
+    <!-- MODALS (Program, Template, Active Task, Branding) -->
+    
     <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue">Add Template Rule</h3>
@@ -542,7 +531,6 @@
         </div>
     </div>
 
-    <!-- PROGRAM MODAL -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue">Add New Program</h3>
@@ -569,7 +557,6 @@
         </div>
     </div>
 
-    <!-- ACTIVE TASK MODAL -->
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue" id="active-task-title">Edit Active Task</h3>
@@ -591,7 +578,6 @@
         </div>
     </div>
 
-    <!-- BRANDING MODAL -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
             <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -602,7 +588,6 @@
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATIONS -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
@@ -665,7 +650,6 @@
                 window.users = snap.docs.map(d => d.data()); 
                 window.renderUsersTable();
                 window.checkPendingAlerts(); 
-                if(window.populateOwnerSelects) window.populateOwnerSelects();
                 
                 if (auth.currentUser) {
                     const em = auth.currentUser.email.toLowerCase();
@@ -722,25 +706,11 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.4.4";
+        const APP_VERSION = "1.4.1";
         document.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
             if(versionEl) versionEl.textContent = APP_VERSION;
         });
-
-        function populateOwnerSelects() {
-            const sel = document.getElementById('new-group-owner');
-            if(!sel) return;
-            const currentVal = sel.value;
-            sel.innerHTML = '<option value="">-- Assign Group Owner (Optional) --</option>';
-            if(window.users) {
-                window.users.filter(u => u.role !== 'Pending').forEach(u => {
-                    sel.innerHTML += `<option value="${u.username}">${u.name} (${u.role})</option>`;
-                });
-            }
-            if(currentVal) sel.value = currentVal;
-        }
-        window.populateOwnerSelects = populateOwnerSelects;
 
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -761,6 +731,7 @@
             }, 3000);
         }
 
+        // Toggle password visibility function
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
             const icon = btn.querySelector('i');
@@ -796,7 +767,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             applyBrandingUI();
             updateSubcats();
-            populateOwnerSelects();
         });
 
         function toggleAuthMode(mode) {
@@ -934,10 +904,8 @@
             const uObj = { username: em, name: fullName, firstName: fName, lastName: lName, phone: phone, role: 'Pending', territories: [] };
 
             if(action === 'create') {
-                const newId = document.getElementById('signup-create-id').value.trim();
-                if(!newId) return showError("Please enter a Group ID.");
-                if(window.groups.find(g => g.id === newId)) return showError("This Group ID is already in use.");
-                
+                const maxId = window.groups.length > 0 ? Math.max(...window.groups.map(g => parseInt(g.id))) : 8764;
+                const newId = (maxId + 1).toString();
                 const gName = document.getElementById('signup-create-name').value.trim();
                 const gFullName = `${newId} - ${gName}`;
                 window.cloudSaveGroup({ id: newId, name: gName, fullName: gFullName, status: 'Active' });
@@ -1441,25 +1409,9 @@
             ct.innerHTML = '';
             const ag = getAuthorizedGroups();
             ag.forEach(g => {
-                const owners = window.users.filter(u => (u.territories.includes(g.id) || u.territories.includes('ALL')) && u.role.includes('Owner')).map(u => u.name);
-                const ownerText = owners.length > 0 ? `<div class="text-[9px] text-gray-500">Owners: ${owners.join(', ')}</div>` : `<div class="text-[9px] text-amber-500">No Owner Assigned</div>`;
-
-                ct.innerHTML += `
-                    <div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm">
-                        <div>
-                            <span class="font-bold text-i9blue">${g.fullName}</span>
-                            ${ownerText}
-                        </div> 
-                        <div class="flex flex-col gap-1 items-end">
-                            <div class="flex gap-2">
-                                <button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button> 
-                                <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
+                ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm"><span class="font-bold text-i9blue">${g.fullName}</span> <div><button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button> <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button></div></div>`;
             });
         }
-
         function renderTerritoryCheckboxes() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -1467,48 +1419,21 @@
             ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
             getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
         }
-        
         function addGroup(e) { 
             e.preventDefault(); 
-            const newId = document.getElementById('new-group-id').value.trim();
             const gName = document.getElementById('new-group-name').value.trim();
-            const ownerEmail = document.getElementById('new-group-owner').value;
-
-            if(newId && gName) {
-                if(window.groups.find(g => g.id === newId)) {
-                    alert("This Group ID already exists.");
-                    return;
-                }
-                
+            if(gName) {
+                const maxId = window.groups.length > 0 ? Math.max(...window.groups.map(g => parseInt(g.id))) : 8764;
+                const newId = (maxId + 1).toString();
                 window.cloudSaveGroup({ id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' });
-                
-                if(ownerEmail) {
-                    const owner = window.users.find(u => u.username === ownerEmail);
-                    if(owner) {
-                        if(!owner.territories.includes(newId) && !owner.territories.includes('ALL')) {
-                            owner.territories.push(newId);
-                        }
-                        if(owner.role === 'Staff' || owner.role === 'Pending') {
-                            owner.role = 'Group Owner';
-                        }
-                        window.cloudSaveUser(owner);
-                        showToast("Group Added", `Created ${newId} and assigned owner.`);
-                    }
-                } else {
-                    if(currentUser && !currentUser.territories.includes('ALL')) { 
-                        currentUser.territories.push(newId); 
-                        window.currentUser = currentUser;
-                        window.cloudSaveUser(currentUser); 
-                    }
-                    showToast("Group Added", `Group ${newId} has been created.`);
+                if(currentUser && !currentUser.territories.includes('ALL')) { 
+                    currentUser.territories.push(newId); 
+                    window.currentUser = currentUser;
+                    window.cloudSaveUser(currentUser); 
                 }
-                
-                document.getElementById('new-group-id').value=''; 
                 document.getElementById('new-group-name').value=''; 
-                document.getElementById('new-group-owner').value=''; 
             }
         }
-        
         function archiveGroup(id) { const g = window.groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); } }
         function deleteGroup(id) { if(confirm("Permanently destroy this group?")) window.cloudDeleteGroup(id); }
 
