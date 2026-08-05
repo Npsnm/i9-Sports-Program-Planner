@@ -1029,8 +1029,10 @@ window.applyBrandingUI = applyBrandingUI;
                 currentUser = matchedUser;
                 localStorage.setItem('i9_portal_session', currentUser.username); 
                 
-                unlockPortal(); 
+                document.getElementById('auth-overlay').classList.add('hidden');
                 showToast("Success", `Welcome back, ${currentUser.name}!`);
+                
+                unlockPortal(); 
                 initRealtimeSync();
                 
             } catch (error) {
