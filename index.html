@@ -214,19 +214,25 @@
 
         <!-- TAB 3: TEMPLATE BUILDER -->
         <section id="view-templates" class="tab-view hidden space-y-4">
-            <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-3">
-                <div>
-                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Master Template Builder</h2>
-                    <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2 font-semibold">
-                        <option value="ALL">All Program Types</option>
-                        <option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
-                    </select>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+                <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Master Template Builder</h2>
+                        <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
+                    </div>
                     <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
                         <i class="fa-solid fa-plus text-i9gold"></i> Add Template Rule
                     </button>
+                </div>
+                
+                <div class="flex flex-wrap gap-2">
+                    <select id="filter-template-group" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <option value="ALL">All Authorized Groups</option>
+                    </select>
+                    <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <option value="ALL">All Program Types</option>
+                        <option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
+                    </select>
                 </div>
             </div>
 
@@ -234,7 +240,8 @@
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-4 py-3 font-bold">Type / Subcat</th>
+                            <th class="px-4 py-3 font-bold">Group Scope</th>
+                            <th class="px-4 py-3 font-bold">Type & Pre-Header</th>
                             <th class="px-4 py-3 font-bold">Task Name</th>
                             <th class="px-4 py-3 font-bold">Seasons</th>
                             <th class="px-4 py-3 font-bold">Offset Rule</th>
@@ -608,9 +615,15 @@
             <h3 class="text-sm font-bold text-i9blue">Add/Edit Master Template Rule</h3>
             <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="tpl-edit-id">
+                
+                <div>
+                    <label class="block font-bold mb-1 text-emerald-700">Apply to Group</label>
+                    <select id="tpl-group" required class="w-full p-2 border rounded bg-emerald-50 font-semibold"></select>
+                </div>
+                
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Program Type</label><select id="tpl-type" required onchange="updateSubcats()" class="w-full p-2 border rounded bg-gray-50 font-semibold"><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option></select></div>
-                    <div><label class="block font-bold mb-1">Subcat Phase</label><select id="tpl-subcat" required class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
+                    <div><label class="block font-bold mb-1">Program Type</label><select id="tpl-type" required onchange="updateTplPreHeaderOptions()" class="w-full p-2 border rounded bg-gray-50 font-semibold"><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option></select></div>
+                    <div><label class="block font-bold mb-1">Pre-Header (Optional)</label><select id="tpl-preheader" class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
                 </div>
                 <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="tpl-name" required class="w-full p-2 border rounded bg-gray-50"></div>
                 <div><label class="block font-bold mb-1">Description (Optional)</label><textarea id="tpl-desc" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
@@ -789,7 +802,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.5.0";
+        const APP_VERSION = "1.5.1";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -817,13 +830,6 @@
             else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
         }
 
-        const SUBCATS = {
-            "League": ["Early", "Late"],
-            "Camp": ["Early", "Late"],
-            "Training/Clinic": ["Pre-Season", "In-Season", "Early", "Late"],
-            "School": ["In", "After"]
-        };
-
         const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
         const DEFAULT_PERMISSIONS = {
             "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
@@ -841,7 +847,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
             if(versionEl) versionEl.textContent = APP_VERSION;
-            applyBrandingUI(); updateSubcats();
+            applyBrandingUI(); updateTplPreHeaderOptions();
         });
 
         /* --- AUTHENTICATION & USER MANAGEMENT --- */
@@ -1038,13 +1044,19 @@
             const ag = getAuthorizedGroups();
             const pGroup = document.getElementById('prog-group');
             const atGroup = document.getElementById('at-program');
+            const tplGroup = document.getElementById('tpl-group');
             
             if(pGroup) pGroup.innerHTML = ''; if(atGroup) atGroup.innerHTML = '';
-            ag.forEach(g => { if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`; });
+            if(tplGroup) tplGroup.innerHTML = '<option value="ALL">ALL GROUPS (Network-Wide)</option>';
+            
+            ag.forEach(g => { 
+                if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                if(tplGroup) tplGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+            });
 
             programs.forEach(p => { if (ag.some(g=>g.id===p.groupId)) { if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} - ${p.type}</option>`; } });
 
-            const filters = ['filter-prog-group', 'filter-task-group'];
+            const filters = ['filter-prog-group', 'filter-task-group', 'filter-template-group'];
             filters.forEach(f => {
                 const el = document.getElementById(f);
                 if(el) { el.innerHTML = '<option value="ALL">All Authorized Groups</option>'; ag.forEach(g => el.innerHTML += `<option value="${g.id}">${g.fullName}</option>`); }
@@ -1136,7 +1148,19 @@
             if (type === 'School') { container.classList.add('hidden'); } else { container.classList.remove('hidden'); ['Early', 'Late', 'Pre-Season', 'In-Season'].forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`); }
         }
 
-        function openAddProgramModal() { document.getElementById('prog-edit-id').value = ''; updateProgPreHeaderOptions(); document.getElementById('program-modal').classList.remove('hidden'); }
+        function openAddProgramModal() { 
+            document.getElementById('prog-edit-id').value = ''; 
+            updateProgPreHeaderOptions();
+            
+            // Clear visual form fields to prevent showing previous entry
+            document.getElementById('prog-date-start').value = '';
+            document.getElementById('prog-date-final').value = '';
+            document.getElementById('prog-date-early').value = '';
+            document.getElementById('prog-date-offseason').value = '';
+            document.getElementById('prog-venue').value = '';
+            
+            document.getElementById('program-modal').classList.remove('hidden'); 
+        }
         
         function openEditProgramModal(id) {
             const p = programs.find(x => x.id === id); if(!p) return;
@@ -1145,7 +1169,7 @@
             document.getElementById('prog-year').value = p.year;
             document.querySelector(`input[name="prog-type-radio"][value="${p.type}"]`).checked = true;
             updateProgPreHeaderOptions();
-            document.getElementById('prog-pre').value = p.preHeader;
+            document.getElementById('prog-pre').value = p.preHeader || '';
             document.getElementById('prog-season').value = p.season;
             document.getElementById('prog-date-start').value = p.dateStart || '';
             document.getElementById('prog-date-final').value = p.dateFinal || '';
@@ -1180,24 +1204,35 @@
         function cloneProgram(id) { const p = programs.find(x => x.id === id); if(!p) return; const clone = {...p, id: generateId('PRG')}; window.cloudSaveProgram(clone); showToast("Cloned", "Program duplicated successfully."); }
 
         /* --- TEMPLATES --- */
-        function updateSubcats() {
+        function updateTplPreHeaderOptions() {
             const typeEl = document.getElementById('tpl-type'); if(!typeEl) return;
-            const sel = document.getElementById('tpl-subcat'); if(!sel) return; sel.innerHTML = '';
-            (SUBCATS[typeEl.value] || []).forEach(sc => sel.innerHTML += `<option value="${sc}">${sc}</option>`);
+            const sel = document.getElementById('tpl-preheader'); if(!sel) return; sel.innerHTML = '<option value="">-- None (Blank) --</option>';
+            if (typeEl.value !== 'School') { ['Early', 'Late', 'Pre-Season', 'In-Season'].forEach(opt => sel.innerHTML += `<option value="${opt}">${opt}</option>`); }
         }
 
         function renderTemplates() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const tb = document.getElementById('template-table-body'); if(!tb) return;
-            const f = document.getElementById('filter-template-type').value; tb.innerHTML = '';
+            const f = document.getElementById('filter-template-type').value; 
+            const fGrp = document.getElementById('filter-template-group').value; 
+            tb.innerHTML = '';
             const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
             const isManager = currentUser && (currentUser.role === 'System Admin' || perms.editTemplates);
+            
+            const agIds = getAuthorizedGroups().map(g=>g.id);
 
-            templates.filter(t => f === 'ALL' || t.type === f).forEach(t => {
+            templates.filter(t => {
+                if (fGrp !== 'ALL' && t.groupId !== fGrp) return false;
+                if (fGrp === 'ALL' && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return false;
+                if (f !== 'ALL' && t.type !== f) return false;
+                return true;
+            }).forEach(t => {
+                const grpDisplay = t.groupId === 'ALL' ? '<span class="text-i9blue font-bold">ALL (Network)</span>' : `<span class="text-gray-800 font-bold">${t.groupId}</span>`;
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 font-bold text-gray-800">${t.type}<br><span class="text-gray-500 font-normal">${t.subcat}</span></td>
+                        <td class="px-4 py-2 text-[11px]">${grpDisplay}</td>
+                        <td class="px-4 py-2 font-bold text-gray-800">${t.type}<br><span class="text-gray-500 font-normal">${t.preHeader || 'Any Pre-Header'}</span></td>
                         <td class="px-4 py-2 text-i9blue font-medium">${t.name}</td>
                         <td class="px-4 py-2 text-[10px] text-gray-500">${t.seasons.join(', ')}</td>
                         <td class="px-4 py-2 text-gray-700 font-mono text-[10px]">${t.offsetNum} Days ${t.offsetDir} ${t.anchor.replace('date','')}</td>
@@ -1213,27 +1248,44 @@
             });
         }
 
-        function openAddTemplateModal() { document.getElementById('tpl-edit-id').value = ''; document.getElementById('template-modal').classList.remove('hidden'); updateSubcats(); }
+        function openAddTemplateModal() { 
+            document.getElementById('tpl-edit-id').value = ''; 
+            
+            // Clear visual inputs properly to prevent showing old data
+            document.getElementById('tpl-name').value = '';
+            document.getElementById('tpl-desc').value = '';
+            document.getElementById('tpl-offset-num').value = '0';
+            document.getElementById('tpl-role').value = '';
+            document.getElementById('tpl-group').value = 'ALL';
+            
+            updateTplPreHeaderOptions();
+            document.getElementById('template-modal').classList.remove('hidden'); 
+        }
+        
         function openEditTemplate(id) {
             const t = templates.find(x=>x.id===id); if(!t) return;
             document.getElementById('tpl-edit-id').value = t.id;
-            document.getElementById('tpl-type').value = t.type; updateSubcats(); document.getElementById('tpl-subcat').value = t.subcat;
+            document.getElementById('tpl-group').value = t.groupId || 'ALL';
+            document.getElementById('tpl-type').value = t.type; updateTplPreHeaderOptions(); 
+            document.getElementById('tpl-preheader').value = t.preHeader || '';
             document.getElementById('tpl-name').value = t.name; document.getElementById('tpl-desc').value = t.desc || '';
             document.querySelectorAll('.tpl-season-cb').forEach(cb => cb.checked = t.seasons.includes(cb.value));
             document.getElementById('tpl-offset-num').value = t.offsetNum; document.getElementById('tpl-offset-dir').value = t.offsetDir;
             document.getElementById('tpl-anchor').value = t.anchor; document.getElementById('tpl-role').value = t.role;
             document.getElementById('template-modal').classList.remove('hidden');
         }
+        
         function cloneTemplate(id) { const t = templates.find(x => x.id === id); if(!t) return; window.cloudSaveTemplate({...t, id: generateId('TPL')}); showToast("Cloned", "Template rule duplicated."); }
+        
         function saveTemplate(e) {
             e.preventDefault();
             const id = document.getElementById('tpl-edit-id').value || generateId('TPL');
             const seasons = Array.from(document.querySelectorAll('.tpl-season-cb:checked')).map(cb=>cb.value);
             const t = {
-                id: id, type: document.getElementById('tpl-type').value, subcat: document.getElementById('tpl-subcat').value,
-                name: document.getElementById('tpl-name').value, desc: document.getElementById('tpl-desc').value, seasons: seasons,
-                offsetNum: parseInt(document.getElementById('tpl-offset-num').value), offsetDir: document.getElementById('tpl-offset-dir').value,
-                anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value
+                id: id, groupId: document.getElementById('tpl-group').value, type: document.getElementById('tpl-type').value, 
+                preHeader: document.getElementById('tpl-preheader').value, name: document.getElementById('tpl-name').value, 
+                desc: document.getElementById('tpl-desc').value, seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
+                offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value
             };
             window.cloudSaveTemplate(t); closeModals(); showToast("Template Saved", "Master list updated.");
         }
@@ -1252,14 +1304,22 @@
             const p = programs.find(x => x.id === progId); if(!p) return;
             const existing = activeTasks.filter(t => t.programId === progId);
             if(existing.length > 0) { if(!confirm(`Warning: Found ${existing.length} existing tasks. Generating will add duplicates unless cleared manually. Proceed?`)) return; }
-            const tpls = templates.filter(t => t.type === p.type && t.seasons.includes(p.season));
+            
+            // Only pull templates that apply to this program's group (or all) AND preheader (or blank preheader)
+            const tpls = templates.filter(t => 
+                t.type === p.type && 
+                t.seasons.includes(p.season) && 
+                (t.groupId === 'ALL' || t.groupId === p.groupId) &&
+                (t.preHeader === '' || t.preHeader === p.preHeader)
+            );
+            
             let count = 0;
             tpls.forEach(t => {
                 const tgt = calculateNewTargetDate(p, t);
                 if(tgt !== "TBD") {
                     window.cloudSaveActiveTask({
                         id: generateId('ATK'), programId: p.id, templateId: t.id, groupId: p.groupId, type: p.type,
-                        subcat: t.subcat, name: t.name, desc: t.desc, assignee: "", defaultRole: t.role, targetDate: tgt, status: "Pending", isOneOff: false
+                        preHeader: t.preHeader, name: t.name, desc: t.desc, assignee: "", defaultRole: t.role, targetDate: tgt, status: "Pending", isOneOff: false
                     });
                     count++;
                 }
@@ -1322,7 +1382,20 @@
             });
         }
         function updateActiveTaskStatus(id, st) { const t = activeTasks.find(x => x.id === id); if(t) { t.status = st; window.cloudSaveActiveTask(t); } }
-        function openAddOneOffTaskModal() { document.getElementById('at-edit-id').value = ''; document.getElementById('at-is-oneoff').value = 'true'; document.getElementById('at-program-select-container').classList.remove('hidden'); document.getElementById('active-task-title').textContent = "Add One-Off Task"; document.getElementById('active-task-modal').classList.remove('hidden'); }
+        
+        function openAddOneOffTaskModal() { 
+            // Crucial fix: Clear hidden ID value out and fields so it correctly creates a new entry instead of overwriting a blank ID
+            document.getElementById('at-edit-id').value = ''; 
+            document.getElementById('at-is-oneoff').value = 'true'; 
+            document.getElementById('at-name').value = ''; 
+            document.getElementById('at-date').value = ''; 
+            document.getElementById('at-assignee').value = ''; 
+            
+            document.getElementById('at-program-select-container').classList.remove('hidden'); 
+            document.getElementById('active-task-title').textContent = "Add One-Off Task"; 
+            document.getElementById('active-task-modal').classList.remove('hidden'); 
+        }
+        
         function openEditActiveTask(id) {
             const t = activeTasks.find(x => x.id === id); if(!t) return;
             document.getElementById('at-edit-id').value = t.id; document.getElementById('at-is-oneoff').value = t.isOneOff.toString();
@@ -1330,6 +1403,7 @@
             document.getElementById('at-name').value = t.name; document.getElementById('at-date').value = t.targetDate; document.getElementById('at-assignee').value = t.assignee || '';
             document.getElementById('active-task-title').textContent = "Edit Assigned Task"; document.getElementById('active-task-modal').classList.remove('hidden');
         }
+        
         function saveActiveTask(e) {
             e.preventDefault(); const id = document.getElementById('at-edit-id').value; const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
             if(id) {
@@ -1338,11 +1412,12 @@
             } else if (isOneOff) {
                 const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
                 if(p) {
-                    window.cloudSaveActiveTask({ id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, subcat: "One-Off", name: document.getElementById('at-name').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), defaultRole: "Custom", targetDate: document.getElementById('at-date').value, status: "Pending", isOneOff: true });
+                    window.cloudSaveActiveTask({ id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", name: document.getElementById('at-name').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), defaultRole: "Custom", targetDate: document.getElementById('at-date').value, status: "Pending", isOneOff: true });
                 }
             }
             closeModals();
         }
+        
         function cloneTask(id) { const t = activeTasks.find(x=>x.id===id); if(t) { window.cloudSaveActiveTask({...t, id: generateId('ATK')}); showToast("Cloned", "Task duplicated successfully."); } }
 
         /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
