@@ -488,7 +488,6 @@
     </div>
 
     <!-- MODALS (Program, Template, Active Task, Branding) -->
-    <!-- (Existing Modals remain unchanged, collapsed for brevity in mental model but fully written here) -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue">Add New Program</h3>
@@ -861,13 +860,20 @@
             const fullName = `${fName} ${lName}`;
             const uObj = { username: em, name: fullName, firstName: fName, lastName: lName, phone: phone, role: 'Pending', territories: [] };
 
+            let newGroupData = null;
+
             if(action === 'create') {
-                const maxId = groups.length > 0 ? Math.max(...groups.map(g => parseInt(g.id))) : 8764;
+                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                const maxId = validIds.length > 0 ? Math.max(...validIds) : 8764;
                 const newId = (maxId + 1).toString();
+                
                 const gName = document.getElementById('signup-create-name').value.trim();
                 const gFullName = `${newId} - ${gName}`;
-                window.cloudSaveGroup({ id: newId, name: gName, fullName: gFullName, status: 'Active' });
-                uObj.role = 'Group Owner'; uObj.territories = [newId];
+                
+                newGroupData = { id: newId, name: gName, fullName: gFullName, status: 'Active' };
+                
+                uObj.role = 'Group Owner'; 
+                uObj.territories = [newId];
             } else {
                 const joinId = document.getElementById('signup-join-id').value.trim();
                 if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
@@ -877,8 +883,15 @@
             try {
                 showToast("Registering", "Creating secure account...");
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
+                
+                if (newGroupData) {
+                    window.cloudSaveGroup(newGroupData);
+                }
+                
                 window.cloudSaveUser(uObj);
-            } catch (error) { showError(error.message); }
+            } catch (error) { 
+                showError(error.message); 
+            }
         }
 
         async function loginWithGoogle() {
@@ -1382,7 +1395,8 @@
             e.preventDefault(); 
             const gName = document.getElementById('new-group-name').value.trim();
             if(gName) {
-                const maxId = groups.length > 0 ? Math.max(...groups.map(g => parseInt(g.id))) : 8764;
+                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                const maxId = validIds.length > 0 ? Math.max(...validIds) : 8764;
                 const newId = (maxId + 1).toString();
                 window.cloudSaveGroup({ id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' });
                 if(currentUser && !currentUser.territories.includes('ALL')) { 
