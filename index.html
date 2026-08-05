@@ -761,8 +761,7 @@
 
             onAuthStateChanged(auth, (user) => {
               if (user && !user.isAnonymous) {
-                currentUser = user;
-                document.getElementById('loginModal').style.display = 'none';
+                // Only trigger sync; the login() function will handle the UI and currentUser object
                 initRealtimeSync();
               } else if (!user) {
                 signInAnonymously(auth).catch(err => console.error("Anon auth error:", err));
@@ -1012,25 +1011,34 @@ window.applyBrandingUI = applyBrandingUI;
         }
 
         async function login(e) {
-                  if (e) e.preventDefault();
-                  const email = document.getElementById('login-username').value.trim();
-                  const password = document.getElementById('login-password').value.trim();
+            if (e) e.preventDefault();
+            const email = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+        
+            try {
+                // 1. Authenticate with Firebase
+                await window.signInWithEmailAndPassword(window.auth, email, password);
                 
-                  try {
-                    const userCredential = await window.signInWithEmailAndPassword(window.auth, email, password);
-                    currentUser = userCredential.user;
-                    
-                    document.getElementById('auth-overlay').classList.add('hidden');
-                    showToast("Success", `Welcome back, ${currentUser.email}!`);
-                    
-                    // Re-initialize app data for logged in user
-                    initRealtimeSync();
-                  } catch (error) {
-                    const errorBox = document.getElementById('login-error');
-                    document.getElementById('login-error-text').textContent = "Login failed: " + error.message;
-                    errorBox.classList.remove('hidden');
-                  }
+                // 2. Match with local application user to get roles/territories
+                const matchedUser = users.find(u => u.username.toLowerCase() === email.toLowerCase());
+                if (!matchedUser) {
+                    throw new Error("Account verified, but user profile not found in system directory.");
                 }
+                
+                // 3. Set standard user, save session, and unlock UI
+                currentUser = matchedUser;
+                localStorage.setItem('i9_portal_session', currentUser.username); 
+                
+                unlockPortal(); 
+                showToast("Success", `Welcome back, ${currentUser.name}!`);
+                initRealtimeSync();
+                
+            } catch (error) {
+                const errorBox = document.getElementById('login-error');
+                document.getElementById('login-error-text').textContent = "Login failed: " + error.message;
+                errorBox.classList.remove('hidden');
+            }
+        }
 
         function logout() {
             currentUser = null;
