@@ -340,11 +340,12 @@
                             <label class="block text-xs font-bold text-gray-700">Password</label>
                             <button type="button" onclick="triggerPasswordReset()" class="text-i9blue text-[10px] font-bold hover:underline">Forgot Password?</button>
                         </div>
-                        <input type="password" id="login-password" required class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Shop Password</label>
-                        <input type="password" id="login-shop-password" class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs" placeholder="(Optional)">
+                        <div class="relative">
+                            <input type="password" id="login-password" required class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
+                            <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
                 </form>
@@ -353,7 +354,16 @@
                 <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden text-xs">
                     <div><label class="block font-bold text-gray-700 mb-1">Full Name</label><input type="text" id="signup-name" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
                     <div><label class="block font-bold text-gray-700 mb-1">Email Address</label><input type="email" id="signup-email" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
-                    <div><label class="block font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label><input type="password" id="signup-password" required minlength="6" class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label>
+                        <div class="relative">
+                            <input type="password" id="signup-password" required minlength="6" class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
+                            <button type="button" onclick="togglePasswordVisibility('signup-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
                     
                     <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
                         <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
@@ -631,6 +641,21 @@
             }, 3000);
         }
 
+        // Toggle password visibility function
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
         const SUBCATS = {
             "League": ["Early", "Late"],
             "Training/Clinic": ["Pre-Season", "In-Season", "Early", "Late"],
@@ -686,7 +711,6 @@
             e.preventDefault();
             const em = document.getElementById('login-email').value.trim().toLowerCase();
             const pw = document.getElementById('login-password').value.trim();
-            const shopPw = document.getElementById('login-shop-password').value.trim();
             
             try {
                 showToast("Connecting", "Verifying credentials...");
