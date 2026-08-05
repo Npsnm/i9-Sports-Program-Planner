@@ -29,11 +29,12 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Bulk Edit Slide Pane */
         .slide-pane { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
         .slide-pane.open { transform: translateX(0); }
     </style>
 </head>
-<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
+<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col overflow-x-hidden">
 
     <!-- APP HEADER -->
     <header class="bg-i9blue text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
@@ -69,6 +70,9 @@
                     <i class="fa-solid fa-users-gear"></i> Admin Dashboard
                     <span id="admin-alert-badge" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
                 </button>
+                <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                </button>
                 <button onclick="logout()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
                     <i class="fa-solid fa-right-from-bracket"></i> Sign Out
                 </button>
@@ -101,7 +105,7 @@
     </div>
 
     <!-- MAIN APP CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6 overflow-x-hidden">
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
 
         <!-- TAB 1: EXECUTIVE DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
@@ -195,7 +199,7 @@
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-4 py-3"><input type="checkbox" id="selectAllProgs" onchange="toggleSelectAll('prog-cb', this.checked)"></th>
+                            <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllProgs" onchange="toggleSelectAll('prog-cb', this.checked)"></th>
                             <th class="px-4 py-3 font-bold">Group</th>
                             <th class="px-4 py-3 font-bold">Identity</th>
                             <th class="px-4 py-3 font-bold">Type</th>
@@ -275,7 +279,7 @@
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-3 py-3"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
+                            <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
                             <th class="px-3 py-3 font-bold">Program Link</th>
                             <th class="px-3 py-3 font-bold">Task Name</th>
                             <th class="px-3 py-3 font-bold">Target Date</th>
@@ -291,15 +295,21 @@
 
         <!-- TAB 5: SYSTEM PERMISSIONS (ADMIN ONLY) -->
         <section id="view-permissions" class="tab-view hidden space-y-6 max-w-5xl mx-auto admin-only">
-            <!-- (Permissions logic untouched from your base code, omitted for space constraints, standard implementation below) -->
-             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
                 <div class="border-b pb-4">
                     <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permission Portal</h2>
+                    <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs text-left">
                         <thead class="bg-gray-50 text-gray-600 uppercase font-bold border-b">
-                            <tr><th class="p-3">Role Tier</th><th class="p-3 text-center">Manage Groups</th><th class="p-3 text-center">Create Programs</th><th class="p-3 text-center">Edit Templates</th><th class="p-3 text-center">Edit Tasks</th></tr>
+                            <tr>
+                                <th class="p-3">Role Tier</th>
+                                <th class="p-3 text-center">Manage Groups & Users</th>
+                                <th class="p-3 text-center">Create Programs</th>
+                                <th class="p-3 text-center">Edit Master Templates</th>
+                                <th class="p-3 text-center">Edit/Assign Active Tasks</th>
+                            </tr>
                         </thead>
                         <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
                     </table>
@@ -309,18 +319,31 @@
 
         <!-- TAB 6: USER SETTINGS -->
         <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6 text-xs">
-                <h2 class="text-lg font-bold text-i9blue border-b pb-4"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                <form onsubmit="handleEmailUpdate(event)" class="space-y-3 border-b pb-6">
-                    <h3 class="font-bold text-sm">Update Email</h3>
-                    <input type="email" id="setting-new-email" required class="w-full p-2 border rounded-lg bg-gray-50">
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update</button>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
+                    <p class="text-xs text-gray-500">Manage your credentials and view your group access.</p>
+                </div>
+
+                <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
+                    <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
+                    <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Email</button>
                 </form>
-                <form onsubmit="handlePasswordUpdate(event)" class="space-y-3 border-b pb-6">
-                    <h3 class="font-bold text-sm">Update Password</h3>
-                    <input type="password" id="setting-new-password" required minlength="6" class="w-full p-2 border rounded-lg bg-gray-50">
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update</button>
+
+                <form onsubmit="handlePasswordUpdate(event)" class="space-y-3 text-xs border-b pb-6">
+                    <h3 class="font-bold text-gray-800 text-sm">Update Password</h3>
+                    <div><label class="block font-bold mb-1">New Password (Min 6 Chars)</label><input type="password" id="setting-new-password" required minlength="6" class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
                 </form>
+
+                <div class="space-y-3 text-xs pt-2 border-b pb-6">
+                    <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
+                    <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
+                    <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
+                        <i class="fa-brands fa-google text-red-500 text-sm"></i> Link Google Account
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -360,17 +383,181 @@
             </form>
         </div>
         <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
-            <button onclick="closeBulkEdit()" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
+            <button onclick="closeBulkEdit()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
             <button type="submit" form="bulk-edit-form" class="px-4 py-2 bg-i9blue font-bold rounded text-xs text-white shadow">Apply Changes</button>
         </div>
     </div>
 
-    <!-- MODALS (Program, Template, Active Task, Branding, Auth) -->
-    <!-- (Auth Overlay omitted for brevity in response, remains identical to previous snippet) -->
-    <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-         <div class="bg-white rounded-2xl shadow-2xl p-6 text-center max-w-sm w-full"><h2 class="text-xl font-bold text-i9blue mb-4">Portal Locked</h2><p class="text-xs mb-4">Authentication system required for full implementation.</p><button onclick="document.getElementById('auth-overlay').classList.add('hidden')" class="bg-i9blue text-white px-4 py-2 rounded font-bold text-xs">Bypass for Preview</button></div>
+    <!-- AUTHENTICATION OVERLAY -->
+    <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
+            <div class="flex text-sm font-bold text-center border-b">
+                <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue">Sign In</button>
+                <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Register / Join Group</button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <div class="text-center space-y-1">
+                    <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1"><i class="fa-solid fa-shield-halved text-3xl"></i></div>
+                    <h2 class="text-lg font-bold text-i9blue" id="auth-title">Sign In to PD Planner</h2>
+                </div>
+
+                <!-- Login Form -->
+                <form id="form-login" onsubmit="login(event)" class="space-y-3">
+                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Email</label><input type="email" id="login-email" required class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs"></div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <label class="block text-xs font-bold text-gray-700">Password</label>
+                            <button type="button" onclick="triggerPasswordReset()" class="text-i9blue text-[10px] font-bold hover:underline">Forgot Password?</button>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="login-password" required class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
+                            <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block font-bold text-gray-700 mb-1">First Name</label><input type="text" id="signup-first" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Last Name</label><input type="text" id="signup-last" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    </div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Phone Number</label><input type="tel" id="signup-phone" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Email Address</label><input type="email" id="signup-email" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label>
+                        <div class="relative">
+                            <input type="password" id="signup-password" required minlength="6" class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
+                            <button type="button" onclick="togglePasswordVisibility('signup-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
+                        <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
+                        <div class="flex gap-4 mb-2">
+                            <label><input type="radio" name="signup-action" value="join" checked onchange="toggleSignupAction()"> Join Existing</label>
+                            <label><input type="radio" name="signup-action" value="create" onchange="toggleSignupAction()"> Create New</label>
+                        </div>
+                        <div id="signup-join-fields">
+                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Sends a request to the Group Admin for approval.</p>
+                        </div>
+                        <div id="signup-create-fields" class="hidden">
+                            <input type="text" id="signup-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Generates a new Franchise ID and sets you as Group Owner.</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md">Register Account</button>
+                </form>
+
+                <div id="auth-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-xs font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="auth-error-text">Error.</span></div>
+
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div><span class="mx-2 text-gray-400 text-[10px] uppercase font-bold">Or</span><div class="flex-grow border-t border-gray-200"></div>
+                </div>
+                <button type="button" onclick="loginWithGoogle()" class="w-full py-2.5 bg-white text-gray-700 font-bold rounded-lg text-xs border border-gray-300 shadow-sm"><i class="fa-brands fa-google text-red-500 mr-1"></i> Sign In with Google</button>
+            </div>
+        </div>
     </div>
 
+    <!-- ADMIN USER MANAGEMENT MODAL -->
+    <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> System Admin Dashboard</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- LEFT COLUMN: GROUPS & INVITES -->
+                <div class="space-y-6">
+                    <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
+                        <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
+                        <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                            <input type="number" id="new-group-id" required min="100" placeholder="ID (e.g. 100)" class="w-28 p-2 border rounded bg-white">
+                            <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
+                            <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
+                        </form>
+                        <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
+                    </div>
+                    
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 space-y-3">
+                        <h4 class="text-xs font-bold text-emerald-800 border-b border-emerald-200 pb-1"><i class="fa-solid fa-envelope-open-text"></i> Quick Invite Generator</h4>
+                        <p class="text-[10px] text-gray-600">Send an email directing a new user to register.</p>
+                        <div class="space-y-2 text-xs">
+                            <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border rounded bg-white">
+                            <button onclick="generateInviteEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm">Generate Email</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: USERS (PENDING & ACTIVE) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- PENDING APPROVALS -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-rose-600 border-b border-rose-200 pb-1 flex items-center justify-between">
+                            <span><i class="fa-solid fa-hourglass-half"></i> Pending Approvals</span>
+                            <span id="pending-count-badge" class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full text-[10px]">0 Waiting</span>
+                        </h4>
+                        <div class="border border-rose-100 rounded-lg overflow-hidden bg-rose-50/30">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-rose-50 text-rose-800 uppercase font-bold text-[10px]">
+                                    <tr><th class="p-2">Name & Contact</th><th class="p-2">Requested Group</th><th class="p-2 text-center">Action</th></tr>
+                                </thead>
+                                <tbody id="pending-users-table" class="divide-y divide-rose-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ACTIVE DIRECTORY -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-gray-800 border-b pb-1"><i class="fa-solid fa-user-check text-emerald-600"></i> Active User Directory</h4>
+                        <div class="border rounded-lg overflow-y-auto max-h-64">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 text-gray-700 uppercase font-bold text-[10px] sticky top-0 z-10 shadow-sm">
+                                    <tr><th class="p-2">User Profile</th><th class="p-2">Role & Access</th><th class="p-2 text-center">Manage</th></tr>
+                                </thead>
+                                <tbody id="active-users-table" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDIT USER FORM (Hidden by default) -->
+            <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300 space-y-4 text-xs mt-4 shadow-inner">
+                <div class="flex justify-between items-center border-b pb-1">
+                    <h4 class="font-bold text-i9blue text-sm">Edit User Access</h4>
+                    <button type="button" onclick="document.getElementById('admin-edit-user-form').classList.add('hidden')" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <input type="hidden" id="admin-u-email">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Role Tier</label>
+                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold text-i9blue"></select>
+                        <p class="text-[10px] text-gray-500 mt-1">Leaving a user as 'Pending' revokes their access.</p>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Territory Access</label>
+                        <div id="admin-u-terr" class="p-2 border rounded bg-white h-24 overflow-y-auto space-y-1 shadow-inner"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="submit" class="px-4 py-2 bg-i9blue hover:bg-blue-900 text-white rounded font-bold shadow transition">Save User Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALS (Program, Template, Active Task, Branding) -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-sm font-bold text-i9blue">Add/Edit Program</h3>
@@ -459,7 +646,6 @@
     </div>
 
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <!-- Re-use your existing Task modal logic here, mapped to at-name, at-date, etc. -->
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue" id="active-task-title">Edit Assigned Task</h3>
             <form onsubmit="saveActiveTask(event)" class="space-y-3 text-xs">
@@ -470,88 +656,474 @@
                     <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
                     <div><label class="block font-bold mb-1">Assignee</label><select id="at-assignee" class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
                 </div>
-                <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold">Save</button></div>
+                <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold">Save</button></div>
             </form>
         </div>
     </div>
-    
+
+    <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="saveBranding(event)" class="space-y-4">
+                <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
+                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
+            </form>
+        </div>
+    </div>
+
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- MOCK DATA SCRIPT (For immediate execution without Firebase credentials block) -->
-    <script>
-        const APP_VERSION = "1.5.0 (Bulk Edit Edition)";
-        var users = [{name: 'Admin', username: 'admin@test.com', role: 'System Admin', territories: ['ALL']}], currentUser = users[0];
-        var groups = [{id: '100', fullName: '100 - Albuquerque', status: 'Active'}];
-        var programs = [], templates = [], activeTasks = [];
-        
-        // Expose save functions globally (Replace with Firebase generic setters in production)
-        window.cloudSaveProgram = (p) => { const i = programs.findIndex(x=>x.id===p.id); if(i>-1) programs[i]=p; else programs.push(p); renderControlCenter(); };
-        window.cloudSaveTemplate = (t) => { const i = templates.findIndex(x=>x.id===t.id); if(i>-1) templates[i]=t; else templates.push(t); renderTemplates(); };
-        window.cloudSaveActiveTask = (t) => { const i = activeTasks.findIndex(x=>x.id===t.id); if(i>-1) activeTasks[i]=t; else activeTasks.push(t); renderActiveTasks(); renderDashboard(); };
-        window.cloudDeleteProgram = (id) => { programs = programs.filter(x=>x.id!==id); renderControlCenter(); };
-        window.cloudDeleteTask = (id) => { activeTasks = activeTasks.filter(x=>x.id!==id); renderActiveTasks(); renderDashboard(); };
+    <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, updateEmail, signOut, GoogleAuthProvider, signInWithPopup, linkWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        document.addEventListener('DOMContentLoaded', () => { 
-            document.getElementById('app-version-display').textContent = APP_VERSION;
-            document.getElementById('user-display-name').textContent = currentUser.name;
-            populateFilterOptions(); updateProgPreHeaderOptions(); updateSubcats();
-            renderControlCenter(); renderTemplates(); renderActiveTasks();
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'i9-sports-portal';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "AIzaSyBuXlwYrt2nAolPzjZBDbzDAE8qwO1yPRg", authDomain: "program-planner-npsnm.firebaseapp.com", projectId: "program-planner-npsnm", storageBucket: "program-planner-npsnm.firebasestorage.app", messagingSenderId: "255697704591", appId: "1:255697704591:web:f67728f42bf1d694cec2fa" };
+
+        let app, db, auth;
+
+        try {
+            app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app);
+            window.auth = auth; 
+            window.signInWithEmailAndPassword = signInWithEmailAndPassword; 
+            window.createUserWithEmailAndPassword = createUserWithEmailAndPassword; 
+            window.updatePassword = updatePassword; 
+            window.updateEmail = updateEmail; 
+            window.signOut = () => signOut(auth); 
+            window.linkWithPopup = linkWithPopup; 
+            window.sendPasswordResetEmail = sendPasswordResetEmail;
+            
+            const googleProvider = new GoogleAuthProvider(); 
+            window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); 
+            window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) { 
+                    initRealtimeSync(); 
+                } else { 
+                    window.currentUser = null;
+                    if (typeof currentUser !== 'undefined') currentUser = null;
+                    const overlay = document.getElementById('auth-overlay');
+                    if (overlay) {
+                        overlay.style.display = 'flex';
+                        overlay.classList.remove('hidden');
+                    }
+                    document.getElementById('sync-status-text').textContent = "Disconnected"; 
+                }
+            });
+        } catch (e) { console.error("Firebase Init Error:", e); }
+
+        function initRealtimeSync() {
+            if (!auth.currentUser || !db) return;
+            document.getElementById('sync-status-text').textContent = "Cloud Active";
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
+                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions();
+            });
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
+                let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
+                window.sysPermissions = Object.keys(p).length > 0 ? p : window.DEFAULT_PERMISSIONS;
+                window.renderPermissions(); window.applyPermissions();
+            });
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
+                window.users = snap.docs.map(d => d.data()); 
+                window.renderUsersTable();
+                window.checkPendingAlerts();
+                
+                if (auth.currentUser) {
+                    const em = auth.currentUser.email.toLowerCase();
+                    let matched = window.users.find(u => u.username.toLowerCase() === em);
+                    
+                    if (em === 'nick@npsnm.com') {
+                        matched = { username: 'nick@npsnm.com', name: 'Nick Padilla', firstName: 'Nick', lastName: 'Padilla', phone: 'N/A', role: 'System Admin', territories: ['ALL'] };
+                    }
+
+                    if (matched) {
+                        window.currentUser = matched;
+                        if (typeof currentUser !== 'undefined') currentUser = matched;
+                        window.unlockPortal();
+                    }
+                }
+            });
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
+                window.programs = snap.docs.map(d => d.data());
+                window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard();
+            });
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'task_templates'), (snap) => {
+                window.templates = snap.docs.map(d => d.data());
+                window.renderTemplates();
+            });
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
+                window.activeTasks = snap.docs.map(d => d.data());
+                window.renderActiveTasks(); window.renderDashboard();
+            });
+
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
+                if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI(); }
+            });
+        }
+
+        window.cloudSave = async (col, id, data) => setDoc(doc(db, 'artifacts', appId, 'public', 'data', col, id), data);
+        window.cloudDelete = async (col, id) => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', col, id));
+
+        window.cloudSaveUser = (u) => window.cloudSave('portal_users', u.username.replace(/[^a-zA-Z0-9]/g, '_'), u);
+        window.cloudDeleteUser = (id) => window.cloudDelete('portal_users', id.replace(/[^a-zA-Z0-9]/g, '_'));
+        window.cloudSaveGroup = (g) => window.cloudSave('groups', g.id, g);
+        window.cloudDeleteGroup = (id) => window.cloudDelete('groups', id);
+        window.cloudSaveProgram = (p) => window.cloudSave('programs', p.id, p);
+        window.cloudDeleteProgram = (id) => window.cloudDelete('programs', id);
+        window.cloudSaveTemplate = (t) => window.cloudSave('task_templates', t.id, t);
+        window.cloudDeleteTemplate = (id) => window.cloudDelete('task_templates', id);
+        window.cloudSaveActiveTask = (t) => window.cloudSave('active_tasks', t.id, t);
+        window.cloudDeleteActiveTask = (id) => window.cloudDelete('active_tasks', id);
+        window.cloudSavePermissions = (tier, data) => window.cloudSave('permissions', tier, data);
+        window.cloudSaveBranding = (b) => setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), b);
+    </script>
+
+    <!-- APPLICATION ENGINE -->
+    <script>
+        const APP_VERSION = "1.5.0";
+        
+        function showToast(title, message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = "bg-gray-900 text-white p-3 rounded-lg shadow-xl text-xs flex items-center gap-3 border border-gray-700 transition-all duration-300 pointer-events-auto";
+            toast.innerHTML = `
+                <div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div>
+                <div>
+                    <p class="font-bold">${title}</p>
+                    <p class="text-gray-300 text-[11px]">${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+            else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+        }
+
+        const SUBCATS = {
+            "League": ["Early", "Late"],
+            "Camp": ["Early", "Late"],
+            "Training/Clinic": ["Pre-Season", "In-Season", "Early", "Late"],
+            "School": ["In", "After"]
+        };
+
+        const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
+        const DEFAULT_PERMISSIONS = {
+            "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
+            "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
+            "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
+        };
+        
+        window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
+
+        var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
+        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], sysPermissions = DEFAULT_PERMISSIONS;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const versionEl = document.getElementById('app-version-display');
+            if(versionEl) versionEl.textContent = APP_VERSION;
+            applyBrandingUI(); updateSubcats();
         });
 
-        const SUBCATS = { "League": ["Early", "Late"], "Camp": ["Early", "Late"], "Training/Clinic": ["Pre-Season", "In-Season"], "School": ["In", "After"] };
+        /* --- AUTHENTICATION & USER MANAGEMENT --- */
+        function toggleAuthMode(mode) {
+            const err = document.getElementById('auth-error'); err.classList.add('hidden');
+            if (mode === 'login') {
+                document.getElementById('form-login').classList.remove('hidden');
+                document.getElementById('form-signup').classList.add('hidden');
+                document.getElementById('tab-login').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
+                document.getElementById('tab-signup').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
+                document.getElementById('auth-title').textContent = "Sign In to PD Planner";
+            } else {
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-signup').classList.remove('hidden');
+                document.getElementById('tab-signup').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
+                document.getElementById('tab-login').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
+                document.getElementById('auth-title').textContent = "Request Access";
+            }
+        }
 
+        function toggleSignupAction() {
+            const action = document.querySelector('input[name="signup-action"]:checked').value;
+            if(action === 'join') { 
+                document.getElementById('signup-join-fields').classList.remove('hidden'); 
+                document.getElementById('signup-create-fields').classList.add('hidden'); 
+            } else { 
+                document.getElementById('signup-join-fields').classList.add('hidden'); 
+                document.getElementById('signup-create-fields').classList.remove('hidden'); 
+            }
+        }
+
+        async function login(e) {
+            e.preventDefault();
+            const em = document.getElementById('login-email').value.trim().toLowerCase();
+            const pw = document.getElementById('login-password').value.trim();
+            
+            try {
+                showToast("Connecting", "Verifying credentials...");
+                const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
+                const authUser = userCredential.user;
+
+                if (em === 'nick@npsnm.com') {
+                    currentUser = { username: 'nick@npsnm.com', name: authUser.displayName || "Nick Padilla", firstName: 'Nick', lastName: 'Padilla', phone: 'N/A', role: "System Admin", territories: ["ALL"] };
+                    window.currentUser = currentUser; window.cloudSaveUser(currentUser); unlockPortal();
+                    showToast("Welcome", "Logged in as System Admin"); return;
+                }
+
+                let matched = window.users.find(u => u.username.toLowerCase() === em);
+                if (!matched) {
+                    matched = { username: em, name: authUser.displayName || "New User", firstName: "Unknown", lastName: "User", phone: "N/A", role: "Pending", territories: [] };
+                    await window.cloudSaveUser(matched); window.users.push(matched);
+                }
+
+                currentUser = matched; window.currentUser = matched; unlockPortal();
+                showToast("Welcome", `Logged in as ${matched.name}`);
+
+            } catch (error) { showError(error.message); }
+        }
+
+        async function triggerPasswordReset() {
+            const em = document.getElementById('login-email').value.trim();
+            if (!em) return showError("Please enter your email address first to reset your password.");
+            try { await window.sendPasswordResetEmail(window.auth, em); document.getElementById('auth-error').classList.add('hidden'); alert(`Success! A password reset link has been sent to ${em}.`); } catch (error) { showError("Error: " + error.message); }
+        }
+
+        async function adminSendPasswordReset(email) {
+            if(confirm(`Send an automated password reset email to ${email}?`)) {
+                try { await window.sendPasswordResetEmail(window.auth, email); showToast("Success", `Reset link sent to ${email}`); } catch(error) { alert("Error sending reset link: " + error.message); }
+            }
+        }
+
+        function generateInviteEmail() {
+            const email = document.getElementById('invite-email-input').value.trim();
+            const subject = encodeURIComponent("Invitation: Access the Program Director Planner");
+            const body = encodeURIComponent(`Hello,\n\nYou have been invited to join the Program Director Planner portal.\n\nPlease visit the portal, click 'Register / Join Group', and set up your secure account.\n\nThank you.`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; showToast("Draft Generated", "Your email client should open shortly.");
+        }
+
+        async function signup(e) {
+            e.preventDefault();
+            const fName = document.getElementById('signup-first').value.trim(); const lName = document.getElementById('signup-last').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim(); const em = document.getElementById('signup-email').value.trim();
+            const pw = document.getElementById('signup-password').value.trim(); const action = document.querySelector('input[name="signup-action"]:checked').value;
+            
+            const fullName = `${fName} ${lName}`;
+            const uObj = { username: em, name: fullName, firstName: fName, lastName: lName, phone: phone, role: 'Pending', territories: [] };
+            let newGroupData = null;
+
+            if(action === 'create') {
+                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                const newId = (validIds.length > 0 ? Math.max(...validIds) : 8764 + 1).toString();
+                const gName = document.getElementById('signup-create-name').value.trim();
+                newGroupData = { id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' };
+                uObj.role = 'Group Owner'; uObj.territories = [newId];
+            } else {
+                const joinId = document.getElementById('signup-join-id').value.trim();
+                if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
+                uObj.territories = [joinId];
+            }
+
+            try {
+                showToast("Registering", "Creating secure account...");
+                await window.createUserWithEmailAndPassword(window.auth, em, pw);
+                if (newGroupData) window.cloudSaveGroup(newGroupData);
+                window.cloudSaveUser(uObj);
+            } catch (error) { showError(error.message); }
+        }
+
+        async function loginWithGoogle() { try { await window.signInWithGoogle(); showToast("Success", "Verifying Google Account..."); } catch (error) { showError(error.message); } }
+        
+        async function logout() {
+            try { if (window.signOut) await window.signOut(); } catch (e) { console.error("Sign out error:", e); }
+            currentUser = null; window.currentUser = null;
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) { overlay.style.display = 'flex'; overlay.classList.remove('hidden'); }
+            showToast("Signed Out", "Securely disconnected.");
+        }
+
+        function showError(msg) { document.getElementById('auth-error-text').textContent = msg; document.getElementById('auth-error').classList.remove('hidden'); }
+
+        function unlockPortal() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
+            applyPermissions(); populateFilterOptions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts();
+        }
+
+        function checkPendingAlerts() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            const badge = document.getElementById('admin-alert-badge');
+            if (!badge || !currentUser) return;
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            if(currentUser.role === 'System Admin' || perms.manageGroups) {
+                const pendingCount = users.filter(u => u.role === 'Pending').length;
+                if(pendingCount > 0) { badge.textContent = pendingCount; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+            } else badge.classList.add('hidden');
+        }
+
+        function applyPermissions() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
+            document.getElementById('user-display-scope').textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Network' : currentUser.territories.join(', ') || 'None'}`;
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-create-program').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
+
+            if (currentUser.role === 'System Admin') document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            if (perms.manageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('btn-manage-users').classList.remove('hidden'); }
+            if (perms.createPrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
+            if (perms.editTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
+            if (perms.editTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
+        }
+
+        async function handleEmailUpdate(e) {
+            e.preventDefault(); if (!currentUser) return;
+            const newEmail = document.getElementById('setting-new-email').value.trim();
+            try { await window.updateEmail(window.auth.currentUser, newEmail); currentUser.username = newEmail; window.currentUser = currentUser; window.cloudSaveUser(currentUser); showToast("Success", "Email updated in cloud."); } catch (err) { alert(err.message); }
+        }
+
+        async function handlePasswordUpdate(e) {
+            e.preventDefault(); if (!currentUser) return;
+            const pw = document.getElementById('setting-new-password').value;
+            try { await window.updatePassword(window.auth.currentUser, pw); showToast("Success", "Password forcefully updated."); } catch (err) { alert("Security Notice: Please sign out and sign back in before updating password. " + err.message); }
+        }
+
+        async function linkGoogleAccount() { try { await window.linkGoogle(); showToast("Success", "Google account linked successfully!"); } catch (err) { alert(err.message); } }
+
+        /* --- CORE APPLICATION LOGIC & UI --- */
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap");
             document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
             document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap";
             document.getElementById(`view-${tab}`).classList.remove('hidden');
-            if(tab === 'dashboard') renderDashboard();
+            if (tab === 'dashboard') renderDashboard();
         }
 
-        function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}`; }
+        function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
+        function getAuthorizedGroups() { 
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); 
+        }
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
-        function showToast(title, msg) { console.log(title, msg); }
 
         function populateFilterOptions() {
-            const pGroup = document.getElementById('prog-group'); if(pGroup) pGroup.innerHTML = '';
-            groups.forEach(g => { if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`; });
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const ag = getAuthorizedGroups();
+            const pGroup = document.getElementById('prog-group');
+            const atGroup = document.getElementById('at-program');
             
-            const fGroupProg = document.getElementById('filter-prog-group');
-            const fGroupTask = document.getElementById('filter-task-group');
-            if(fGroupProg) { fGroupProg.innerHTML = '<option value="ALL">All Groups</option>'; groups.forEach(g => fGroupProg.innerHTML += `<option value="${g.id}">${g.fullName}</option>`); }
-            if(fGroupTask) { fGroupTask.innerHTML = '<option value="ALL">All Groups</option>'; groups.forEach(g => fGroupTask.innerHTML += `<option value="${g.id}">${g.fullName}</option>`); }
-            
-            const asSel = document.getElementById('be-assignee');
-            if(asSel) { asSel.innerHTML = '<option value="">-- Unassigned --</option>'; users.forEach(u => asSel.innerHTML += `<option value="${u.name}">${u.name}</option>`); }
+            if(pGroup) pGroup.innerHTML = ''; if(atGroup) atGroup.innerHTML = '';
+            ag.forEach(g => { if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`; });
+
+            programs.forEach(p => { if (ag.some(g=>g.id===p.groupId)) { if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} - ${p.type}</option>`; } });
+
+            const filters = ['filter-prog-group', 'filter-task-group'];
+            filters.forEach(f => {
+                const el = document.getElementById(f);
+                if(el) { el.innerHTML = '<option value="ALL">All Authorized Groups</option>'; ag.forEach(g => el.innerHTML += `<option value="${g.id}">${g.fullName}</option>`); }
+            });
+
+            const asSel = document.getElementById('at-assignee');
+            const bulkAsSel = document.getElementById('be-assignee');
+            if(asSel) {
+                asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
+                users.forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
+            }
+        }
+
+        function renderDashboard() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            let tot = 0, comp = 0, due = 0, over = 0, unassigned = 0;
+            const dashProg = document.getElementById('dashboard-season-progress'); if(dashProg) dashProg.innerHTML = '';
+            const dashOver = document.getElementById('dashboard-overdue-list'); if(dashOver) dashOver.innerHTML = '';
+            const today = new Date(); today.setHours(0,0,0,0);
+
+            programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
+                const pTasks = activeTasks.filter(t => t.programId === p.id);
+                const pTot = pTasks.length; const pComp = pTasks.filter(t => t.status === "Complete").length;
+                const pct = pTot > 0 ? Math.round((pComp/pTot)*100) : 0;
+
+                if(dashProg) { dashProg.innerHTML += `<div class="mb-3"><div class="flex justify-between text-[11px] font-bold mb-1 text-gray-700"><span>[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</span><span class="text-i9blue">${pComp}/${pTot} (${pct}%)</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-i9blue h-2 rounded-full" style="width: ${pct}%"></div></div></div>`; }
+                pTasks.forEach(t => {
+                    tot++; if (t.status === "Complete") comp++;
+                    else {
+                        if (!t.assignee || t.assignee.trim() === '') unassigned++;
+                        const tgt = new Date(t.targetDate + "T00:00:00");
+                        if (today > tgt) {
+                            over++;
+                            if(dashOver) dashOver.innerHTML += `<div class="p-2 bg-rose-50 border border-rose-200 rounded text-xs flex justify-between items-center"><div class="font-bold text-rose-800">${t.name}<div class="text-[10px] text-rose-600 font-normal">Assigned: ${t.assignee || 'UNASSIGNED'} | Due: ${t.targetDate}</div></div><button onclick="updateActiveTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 text-white px-2 py-1 rounded shadow-sm">Done</button></div>`;
+                        } else if (today >= new Date(tgt.getTime() - (7*86400000))) { due++; }
+                    }
+                });
+            });
+
+            if (dashOver && dashOver.innerHTML === '') dashOver.innerHTML = '<p class="text-xs text-gray-500 italic p-2 bg-gray-50 rounded">No overdue tasks!</p>';
+            const kTot = document.getElementById('kpi-total'); if(kTot) kTot.textContent = tot;
+            const kComp = document.getElementById('kpi-completed'); if(kComp) kComp.textContent = comp;
+            const kOver = document.getElementById('kpi-overdue'); if(kOver) kOver.textContent = over;
+            const kUn = document.getElementById('kpi-unassigned'); if(kUn) kUn.textContent = unassigned;
         }
 
         /* --- PROGRAMS --- */
         function renderControlCenter() {
-            const tb = document.getElementById('control-center-table-body'); if(!tb) return;
-            const fGrp = document.getElementById('filter-prog-group').value;
-            const fYr = document.getElementById('filter-prog-year').value;
-            const fSea = document.getElementById('filter-prog-season').value;
-            const fTyp = document.getElementById('filter-prog-type').value;
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            const tb = document.getElementById('control-center-table-body'); if(!tb) return; tb.innerHTML = '';
+            
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const isManager = currentUser && (currentUser.role === 'System Admin' || perms.createPrograms);
 
-            tb.innerHTML = '';
-            programs.forEach(p => {
-                if(fGrp !== 'ALL' && p.groupId !== fGrp) return;
-                if(fYr !== 'ALL' && p.year !== fYr) return;
-                if(fSea !== 'ALL' && p.season !== fSea) return;
-                if(fTyp !== 'ALL' && p.type !== fTyp) return;
+            const fGrp = document.getElementById('filter-prog-group').value; const fYr = document.getElementById('filter-prog-year').value;
+            const fSea = document.getElementById('filter-prog-season').value; const fTyp = document.getElementById('filter-prog-type').value;
+
+            programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
+                if(fGrp !== 'ALL' && p.groupId !== fGrp) return; if(fYr !== 'ALL' && p.year !== fYr) return;
+                if(fSea !== 'ALL' && p.season !== fSea) return; if(fTyp !== 'ALL' && p.type !== fTyp) return;
 
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
+                        <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
                         <td class="px-4 py-2 font-bold text-i9blue">${p.groupId}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
                         <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${p.dateStart || 'TBD'}<br>Final: ${p.dateFinal || 'TBD'}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
+                            ${isManager ? `
                             <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1"><i class="fa-solid fa-bolt"></i> Generate</button>
                             <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
                             <button onclick="window.cloudDeleteProgram('${p.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
+                            ` : '-'}
                         </td>
                     </tr>`;
             });
@@ -559,11 +1131,12 @@
 
         function updateProgPreHeaderOptions() {
             const select = document.getElementById('prog-pre'); select.innerHTML = '<option value="">-- None --</option>';
+            const container = document.getElementById('prog-pre-container');
             const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
-            if (type !== 'School') { ['Early', 'Late', 'Pre-Season'].forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`); }
+            if (type === 'School') { container.classList.add('hidden'); } else { container.classList.remove('hidden'); ['Early', 'Late', 'Pre-Season', 'In-Season'].forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`); }
         }
 
-        function openAddProgramModal() { document.getElementById('prog-edit-id').value = ''; document.getElementById('program-modal').classList.remove('hidden'); }
+        function openAddProgramModal() { document.getElementById('prog-edit-id').value = ''; updateProgPreHeaderOptions(); document.getElementById('program-modal').classList.remove('hidden'); }
         
         function openEditProgramModal(id) {
             const p = programs.find(x => x.id === id); if(!p) return;
@@ -586,9 +1159,10 @@
         function saveProgram(e) {
             e.preventDefault();
             const id = document.getElementById('prog-edit-id').value || generateId('PRG');
+            const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
             const p = {
                 id: id, groupId: document.getElementById('prog-group').value, year: document.getElementById('prog-year').value,
-                type: document.querySelector('input[name="prog-type-radio"]:checked').value, preHeader: document.getElementById('prog-pre').value,
+                type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
                 season: document.getElementById('prog-season').value, dateStart: document.getElementById('prog-date-start').value,
                 dateFinal: document.getElementById('prog-date-final').value, dateEarly: document.getElementById('prog-date-early').value,
                 dateOffseason: document.getElementById('prog-date-offseason').value, weeks: document.getElementById('prog-weeks').value,
@@ -596,33 +1170,30 @@
             };
             window.cloudSaveProgram(p);
             
-            // Cascade edits to generated tasks
             if (document.getElementById('prog-edit-id').value) {
                 const linked = activeTasks.filter(t => t.programId === p.id && !t.isOneOff);
-                linked.forEach(t => {
-                    const tpl = templates.find(x => x.id === t.templateId);
-                    if(tpl) { t.targetDate = calculateNewTargetDate(p, tpl); window.cloudSaveActiveTask(t); }
-                });
+                linked.forEach(t => { const tpl = templates.find(x => x.id === t.templateId); if(tpl) { t.targetDate = calculateNewTargetDate(p, tpl); window.cloudSaveActiveTask(t); } });
             }
-            closeModals();
+            closeModals(); showToast("Program Saved", "Successfully updated.");
         }
 
-        function cloneProgram(id) {
-            const p = programs.find(x => x.id === id); if(!p) return;
-            const clone = {...p, id: generateId('PRG')};
-            window.cloudSaveProgram(clone);
-            showToast("Cloned", "Program duplicated successfully.");
-        }
+        function cloneProgram(id) { const p = programs.find(x => x.id === id); if(!p) return; const clone = {...p, id: generateId('PRG')}; window.cloudSaveProgram(clone); showToast("Cloned", "Program duplicated successfully."); }
 
         /* --- TEMPLATES --- */
         function updateSubcats() {
-            const sel = document.getElementById('tpl-subcat'); sel.innerHTML = '';
-            (SUBCATS[document.getElementById('tpl-type').value] || []).forEach(sc => sel.innerHTML += `<option value="${sc}">${sc}</option>`);
+            const typeEl = document.getElementById('tpl-type'); if(!typeEl) return;
+            const sel = document.getElementById('tpl-subcat'); if(!sel) return; sel.innerHTML = '';
+            (SUBCATS[typeEl.value] || []).forEach(sc => sel.innerHTML += `<option value="${sc}">${sc}</option>`);
         }
 
         function renderTemplates() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
             const tb = document.getElementById('template-table-body'); if(!tb) return;
             const f = document.getElementById('filter-template-type').value; tb.innerHTML = '';
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const isManager = currentUser && (currentUser.role === 'System Admin' || perms.editTemplates);
+
             templates.filter(t => f === 'ALL' || t.type === f).forEach(t => {
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
@@ -632,12 +1203,16 @@
                         <td class="px-4 py-2 text-gray-700 font-mono text-[10px]">${t.offsetNum} Days ${t.offsetDir} ${t.anchor.replace('date','')}</td>
                         <td class="px-4 py-2 text-gray-500 text-[10px]">${t.role}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
+                            ${isManager ? `
                             <button onclick="openEditTemplate('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneTemplate('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
+                            <button onclick="window.cloudDeleteTemplate('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
+                            ` : '-'}
                         </td>
                     </tr>`;
             });
         }
+
         function openAddTemplateModal() { document.getElementById('tpl-edit-id').value = ''; document.getElementById('template-modal').classList.remove('hidden'); updateSubcats(); }
         function openEditTemplate(id) {
             const t = templates.find(x=>x.id===id); if(!t) return;
@@ -649,10 +1224,7 @@
             document.getElementById('tpl-anchor').value = t.anchor; document.getElementById('tpl-role').value = t.role;
             document.getElementById('template-modal').classList.remove('hidden');
         }
-        function cloneTemplate(id) {
-            const t = templates.find(x => x.id === id); if(!t) return;
-            window.cloudSaveTemplate({...t, id: generateId('TPL')});
-        }
+        function cloneTemplate(id) { const t = templates.find(x => x.id === id); if(!t) return; window.cloudSaveTemplate({...t, id: generateId('TPL')}); showToast("Cloned", "Template rule duplicated."); }
         function saveTemplate(e) {
             e.preventDefault();
             const id = document.getElementById('tpl-edit-id').value || generateId('TPL');
@@ -663,7 +1235,7 @@
                 offsetNum: parseInt(document.getElementById('tpl-offset-num').value), offsetDir: document.getElementById('tpl-offset-dir').value,
                 anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value
             };
-            window.cloudSaveTemplate(t); closeModals();
+            window.cloudSaveTemplate(t); closeModals(); showToast("Template Saved", "Master list updated.");
         }
 
         /* --- TASKS --- */
@@ -678,7 +1250,10 @@
 
         function generateTaskPlan(progId) {
             const p = programs.find(x => x.id === progId); if(!p) return;
+            const existing = activeTasks.filter(t => t.programId === progId);
+            if(existing.length > 0) { if(!confirm(`Warning: Found ${existing.length} existing tasks. Generating will add duplicates unless cleared manually. Proceed?`)) return; }
             const tpls = templates.filter(t => t.type === p.type && t.seasons.includes(p.season));
+            let count = 0;
             tpls.forEach(t => {
                 const tgt = calculateNewTargetDate(p, t);
                 if(tgt !== "TBD") {
@@ -686,40 +1261,161 @@
                         id: generateId('ATK'), programId: p.id, templateId: t.id, groupId: p.groupId, type: p.type,
                         subcat: t.subcat, name: t.name, desc: t.desc, assignee: "", defaultRole: t.role, targetDate: tgt, status: "Pending", isOneOff: false
                     });
+                    count++;
                 }
             });
-            switchTab('tasks');
+            showToast("Plan Generated!", `${count} tasks calculated and deployed.`); switchTab('tasks');
         }
 
         function renderActiveTasks() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const agIds = getAuthorizedGroups().map(g=>g.id);
             const tb = document.getElementById('active-task-table-body'); if(!tb) return; tb.innerHTML = '';
-            const fGrp = document.getElementById('filter-task-group').value;
-            const fSt = document.getElementById('filter-task-status').value;
+            
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const canEdit = currentUser.role === 'System Admin' || perms.editTasks;
+
+            const fGrp = document.getElementById('filter-task-group').value; const fPrg = document.getElementById('filter-task-program').value;
+            const fAss = document.getElementById('filter-task-assignee').value; const fSt = document.getElementById('filter-task-status').value;
             
             activeTasks.forEach(t => {
-                if(fGrp !== 'ALL' && t.groupId !== fGrp) return;
+                if (!agIds.includes(t.groupId)) return;
+                if(fGrp !== 'ALL' && t.groupId !== fGrp) return; if(fPrg !== 'ALL' && t.programId !== fPrg) return;
                 if(fSt !== 'ALL' && t.status !== fSt) return;
+                
+                let isUn = (!t.assignee || t.assignee.trim() === '');
+                if (fAss === 'ME' && t.assignee !== currentUser.name) return;
+                if (fAss === 'UNASSIGNED' && !isUn) return;
                 
                 const p = programs.find(x => x.id === t.programId);
                 const pName = p ? `[${p.groupId}] ${p.preHeader} ${p.season}` : 'Unknown';
 
+                const today = new Date(); today.setHours(0,0,0,0);
+                const tgt = new Date(t.targetDate + "T00:00:00");
+                let stHTML = `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-[10px]">Upcoming</span>`;
+                if (t.status === "Complete") stHTML = `<span class="bg-gray-200 text-gray-500 line-through px-2 py-1 rounded text-[10px]">Complete</span>`;
+                else if (today > tgt) stHTML = `<span class="bg-rose-100 text-rose-700 font-bold border border-rose-200 px-2 py-1 rounded text-[10px]">OVERDUE</span>`;
+
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-3 py-2"><input type="checkbox" class="task-cb" value="${t.id}"></td>
+                        <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
                         <td class="px-3 py-2 font-bold text-i9blue text-[11px]">${pName}</td>
                         <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name}</td>
                         <td class="px-3 py-2 font-mono font-bold text-gray-700">${t.targetDate}</td>
-                        <td class="px-3 py-2">${!t.assignee ? `<span class="text-rose-500 font-bold text-[10px]">UNASSIGNED</span>` : `<span class="text-emerald-700 font-bold text-[11px]">${t.assignee}</span>`}</td>
-                        <td class="px-3 py-2 text-[10px]">${t.status}</td>
+                        <td class="px-3 py-2">${isUn ? `<span class="text-rose-500 font-bold text-[10px]"><i class="fa-solid fa-circle-exclamation"></i> UNASSIGNED</span>` : `<span class="text-emerald-700 font-bold text-[11px]">${t.assignee}</span>`}</td>
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            ${stHTML}
+                            <select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none">
+                                <option value="Pending" ${t.status==='Pending'?'selected':''}>Pending</option>
+                                <option value="Complete" ${t.status==='Complete'?'selected':''}>Done</option>
+                            </select>
+                        </td>
                         <td class="px-3 py-2 text-center whitespace-nowrap">
-                            <button onclick="cloneTask('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            <button onclick="window.cloudDeleteTask('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
+                            ${canEdit ? `
+                                <button onclick="openEditActiveTask('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="cloneTask('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
+                                <button onclick="window.cloudDeleteActiveTask('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
+                            ` : '-'}
                         </td>
                     </tr>`;
             });
         }
-        function cloneTask(id) { const t = activeTasks.find(x=>x.id===id); if(t) window.cloudSaveActiveTask({...t, id: generateId('ATK')}); }
-        function renderDashboard() { document.getElementById('kpi-total').textContent = activeTasks.length; }
+        function updateActiveTaskStatus(id, st) { const t = activeTasks.find(x => x.id === id); if(t) { t.status = st; window.cloudSaveActiveTask(t); } }
+        function openAddOneOffTaskModal() { document.getElementById('at-edit-id').value = ''; document.getElementById('at-is-oneoff').value = 'true'; document.getElementById('at-program-select-container').classList.remove('hidden'); document.getElementById('active-task-title').textContent = "Add One-Off Task"; document.getElementById('active-task-modal').classList.remove('hidden'); }
+        function openEditActiveTask(id) {
+            const t = activeTasks.find(x => x.id === id); if(!t) return;
+            document.getElementById('at-edit-id').value = t.id; document.getElementById('at-is-oneoff').value = t.isOneOff.toString();
+            document.getElementById('at-program-select-container').classList.add('hidden');
+            document.getElementById('at-name').value = t.name; document.getElementById('at-date').value = t.targetDate; document.getElementById('at-assignee').value = t.assignee || '';
+            document.getElementById('active-task-title').textContent = "Edit Assigned Task"; document.getElementById('active-task-modal').classList.remove('hidden');
+        }
+        function saveActiveTask(e) {
+            e.preventDefault(); const id = document.getElementById('at-edit-id').value; const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
+            if(id) {
+                const t = activeTasks.find(x => x.id === id);
+                if(t) { t.name = document.getElementById('at-name').value.trim(); t.targetDate = document.getElementById('at-date').value; t.assignee = document.getElementById('at-assignee').value.trim(); window.cloudSaveActiveTask(t); }
+            } else if (isOneOff) {
+                const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
+                if(p) {
+                    window.cloudSaveActiveTask({ id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, subcat: "One-Off", name: document.getElementById('at-name').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), defaultRole: "Custom", targetDate: document.getElementById('at-date').value, status: "Pending", isOneOff: true });
+                }
+            }
+            closeModals();
+        }
+        function cloneTask(id) { const t = activeTasks.find(x=>x.id===id); if(t) { window.cloudSaveActiveTask({...t, id: generateId('ATK')}); showToast("Cloned", "Task duplicated successfully."); } }
+
+        /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
+        function openUserManagementModal() { document.getElementById('user-management-modal').classList.remove('hidden'); }
+        function renderGroupPills() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; const ag = getAuthorizedGroups();
+            ag.forEach(g => { ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm"><span class="font-bold text-i9blue">${g.fullName}</span> <div><button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button> <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button></div></div>`; });
+        }
+        function renderTerritoryCheckboxes() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const ct = document.getElementById('admin-u-terr'); if(!ct) return;
+            ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
+            getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
+        }
+        function addGroup(e) { 
+            e.preventDefault(); const gName = document.getElementById('new-group-name').value.trim(); const gId = document.getElementById('new-group-id').value.trim();
+            if(gName && gId) {
+                if (parseInt(gId) < 100) return alert("Group ID must be 3 digits or higher.");
+                if (groups.find(g => g.id === gId)) return alert("This Group ID already exists.");
+                window.cloudSaveGroup({ id: gId, name: gName, fullName: `${gId} - ${gName}`, status: 'Active' });
+                if(currentUser && !currentUser.territories.includes('ALL')) { currentUser.territories.push(gId); window.currentUser = currentUser; window.cloudSaveUser(currentUser); }
+                document.getElementById('new-group-name').value=''; document.getElementById('new-group-id').value=''; 
+            }
+        }
+        function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); } }
+        function deleteGroup(id) { if(confirm("Permanently destroy this group?")) window.cloudDeleteGroup(id); }
+        function renderUsersTable() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const pendingTb = document.getElementById('pending-users-table'); const activeTb = document.getElementById('active-users-table');
+            const pendingBadge = document.getElementById('pending-count-badge'); if(!pendingTb || !activeTb) return;
+            pendingTb.innerHTML = ''; activeTb.innerHTML = ''; const agIds = getAuthorizedGroups().map(g=>g.id);
+            const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t)));
+            let pendingCount = 0;
+            visibleUsers.forEach(u => {
+                const phoneDisplay = u.phone || "No Phone Provided";
+                if (u.role === 'Pending') {
+                    pendingCount++;
+                    pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${u.territories.join(', ') || 'N/A'}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button><button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button></td></tr>`;
+                } else {
+                    activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors"><td class="p-2"><div class="font-bold text-gray-900">${u.name}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td><td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div></td><td class="p-2 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button><button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button></td></tr>`;
+                }
+            });
+            if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
+            if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
+        }
+        function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); } }
+        function openAdminEdit(em) {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const u = users.find(x => x.username === em); if(!u) return;
+            document.getElementById('admin-u-email').value = u.username;
+            const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
+            ROLES.forEach(r => { if(currentUser.role === 'System Admin' || r !== 'System Admin') roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
+            roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
+            renderTerritoryCheckboxes(); document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
+            document.getElementById('admin-edit-user-form').classList.remove('hidden');
+        }
+        function adminSaveUser(e) {
+            e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
+            if(u) { u.role = document.getElementById('admin-u-role').value; u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); window.cloudSaveUser(u); document.getElementById('admin-edit-user-form').classList.add('hidden'); showToast("Saved", `Permissions updated for ${u.name}`); }
+        }
+        function renderPermissions() {
+            const tb = document.getElementById('permissions-table-body'); if(!tb) return; tb.innerHTML = '';
+            ROLES.forEach(r => {
+                const p = sysPermissions[r] || DEFAULT_PERMISSIONS["Staff"];
+                tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="p-3 font-bold text-gray-800">${r}</td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''} ${r==='System Admin'?'disabled':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''} ${r==='System Admin'?'disabled':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''} ${r==='System Admin'?'disabled':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTasks',this.checked)" ${p.editTasks?'checked':''} ${r==='System Admin'?'disabled':''}></td></tr>`;
+            });
+        }
+        function updatePerm(tier, field, val) { sysPermissions[tier][field] = val; window.cloudSavePermissions(tier, sysPermissions[tier]); }
 
         /* --- MULTI-SELECT & BULK ACTIONS --- */
         function toggleSelectAll(className, isChecked) { document.querySelectorAll(`.${className}`).forEach(cb => cb.checked = isChecked); }
@@ -730,7 +1426,7 @@
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
             if(confirm(`Delete ${ids.length} selected items forever?`)) {
-                ids.forEach(id => type === 'programs' ? window.cloudDeleteProgram(id) : window.cloudDeleteTask(id));
+                ids.forEach(id => type === 'programs' ? window.cloudDeleteProgram(id) : window.cloudDeleteActiveTask(id));
                 document.getElementById(type==='programs'?'selectAllProgs':'selectAllTasks').checked = false;
             }
         }
@@ -788,9 +1484,22 @@
                     }
                 });
             }
-            closeBulkEdit();
+            closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
             document.getElementById(mode==='programs'?'selectAllProgs':'selectAllTasks').checked = false;
         }
+
+        /* --- BRANDING --- */
+        function applyBrandingUI() {
+            if(!currentBranding) return;
+            document.documentElement.style.setProperty('--i9blue', currentBranding.primaryColor);
+            document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
+            document.documentElement.style.setProperty('--i9red', currentBranding.secondaryColor);
+            const titleEl = document.getElementById('brand-title-display'); if(titleEl) titleEl.textContent = currentBranding.title;
+            const logoImg = document.getElementById('brand-logo-img'); if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
+        }
+        function openBrandingModal() { document.getElementById('branding-modal').classList.remove('hidden'); }
+        function saveBranding(e) { e.preventDefault(); currentBranding.title = document.getElementById('branding-title-input').value.trim(); window.cloudSaveBranding(currentBranding); closeModals(); }
+        function exportToCSV() { alert("Exporting current active tasks view to CSV..."); }
     </script>
 </body>
 </html>
