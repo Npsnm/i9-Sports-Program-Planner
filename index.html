@@ -712,8 +712,21 @@
 
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
+        import { 
+        getAuth, 
+        signInWithEmailAndPassword, 
+        updatePassword 
+        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        
+        const auth = getAuth(app);
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+          getAuth, 
+          signInAnonymously, 
+          onAuthStateChanged,
+          signInWithEmailAndPassword,
+          updatePassword
+        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Environment Variables Resolution
@@ -749,13 +762,13 @@
             }
 
             onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    isCloudActive = true;
-                    updateCloudBadge(true, "Live Cloud Sync");
-                    initRealtimeSync();
-                } else {
-                    updateCloudBadge(false, "Offline Local Cache");
-                }
+              if (user && !user.isAnonymous) {
+                currentUser = user;
+                document.getElementById('loginModal').style.display = 'none';
+                initRealtimeSync();
+              } else if (!user) {
+                signInAnonymously(auth).catch(err => console.error("Anon auth error:", err));
+              }
             });
         } catch (e) {
             console.warn("Firestore initialization fallback to LocalStorage:", e);
@@ -1000,23 +1013,23 @@ window.applyBrandingUI = applyBrandingUI;
             document.getElementById('auth-overlay').classList.remove('hidden');
         }
 
-        function login(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('login-username').value.trim();
-            const passwordInput = document.getElementById('login-password').value.trim();
-
-            const user = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
-
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('i9_portal_session', user.username);
-                document.getElementById('login-error').classList.add('hidden');
-                unlockPortal();
-                showToast("Welcome Back", `Logged in as ${user.name} (${user.role})`);
-            } else {
-                document.getElementById('login-error-text').textContent = "Invalid username or password.";
-                document.getElementById('login-error').classList.remove('hidden');
-            }
+        async function login(e) {
+          if (e) e.preventDefault();
+          const email = document.getElementById('usernameInput').value.trim();
+          const password = document.getElementById('passwordInput').value.trim();
+        
+          try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            currentUser = userCredential.user;
+            
+            document.getElementById('loginModal').style.display = 'none';
+            showToast(`Welcome back, ${currentUser.email}!`);
+            
+            // Re-initialize app data for logged in user
+            initRealtimeSync();
+          } catch (error) {
+            alert("Login failed: " + error.message);
+          }
         }
 
         function logout() {
@@ -1726,10 +1739,19 @@ function promptGenerateYear() {
             }
 
             // Update Password in Memory
-            currentUser.password = newPass;
-            const uIdx = users.findIndex(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-            if (uIdx !== -1) {
-                users[uIdx].password = newPass;
+            async function changePassword(newPassword) {
+              const user = auth.currentUser;
+            
+              if (user) {
+                try {
+                  await updatePassword(user, newPassword);
+                  showToast("Password updated successfully in the cloud!");
+                } catch (error) {
+                  alert("Error updating password: " + error.message);
+                }
+              } else {
+                alert("You must be logged in to change your password.");
+              }
             }
 
             // Save to LocalStorage & Sync to Firebase Cloud
