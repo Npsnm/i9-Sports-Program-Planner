@@ -813,7 +813,7 @@
             "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
         };
         
-        // ADDED THIS LINE: Expose defaults to the window object for Firebase
+        // Expose defaults to the window object for Firebase
         window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
@@ -1260,28 +1260,28 @@
             });
         }
 
-           function updateProgPreHeaderOptions() {
-        const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
-        const container = document.getElementById('prog-pre-container');
-        const select = document.getElementById('prog-pre');
-        
-        // Set the initial choice as blank/none
-        select.innerHTML = '<option value="">-- None (Optional) --</option>';
-        
-        if (type === 'School') {
-            container.classList.add('hidden');
-            select.value = '';
-        } else {
-            container.classList.remove('hidden');
-            let options = [];
-            if (type === 'League' || type === 'Camp') {
-                options = ['Early', 'Late'];
-            } else if (type === 'Training/Clinic') {
-                options = ['Pre-Season', 'In-Season', 'Late', 'Early'];
+        function updateProgPreHeaderOptions() {
+            const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
+            const container = document.getElementById('prog-pre-container');
+            const select = document.getElementById('prog-pre');
+            
+            // Set the initial choice as blank/none
+            select.innerHTML = '<option value="">-- None (Optional) --</option>';
+            
+            if (type === 'School') {
+                container.classList.add('hidden');
+                select.value = '';
+            } else {
+                container.classList.remove('hidden');
+                let options = [];
+                if (type === 'League' || type === 'Camp') {
+                    options = ['Early', 'Late'];
+                } else if (type === 'Training/Clinic') {
+                    options = ['Pre-Season', 'In-Season', 'Late', 'Early'];
+                }
+                options.forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`);
             }
-            options.forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`);
         }
-    }
 
         function openAddProgramModal() { 
             document.getElementById('program-modal').classList.remove('hidden');
@@ -1315,6 +1315,7 @@
             closeModals(); 
             showToast("Program Created", "Ready for task generation.");
         }
+
         function renderTemplates() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
