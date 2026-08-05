@@ -540,7 +540,7 @@
                         window.currentUser = matched;
                         window.unlockPortal();
                     } else if (auth.currentUser.email) {
-                        // User exists in Auth but not DB. Auto-create pending profile.
+                        // User exists in Auth but not DB. Auto-create profile.
                         let assignRole = "Pending";
                         let assignTerr = [];
                         let assignName = "New User";
@@ -768,6 +768,7 @@
         }
 
         function unlockPortal() {
+            if (!currentUser) return;
             if (currentUser.role === "Pending") {
                 showError("Your account is pending admin approval.");
                 logout(); return;
@@ -813,6 +814,7 @@
         // --- USER SETTINGS ---
         async function handleEmailUpdate(e) {
             e.preventDefault();
+            if (!currentUser) return;
             const newEmail = document.getElementById('setting-new-email').value.trim();
             try {
                 await window.updateEmail(window.auth.currentUser, newEmail);
@@ -824,6 +826,7 @@
 
         async function handlePasswordUpdate(e) {
             e.preventDefault();
+            if (!currentUser) return;
             const pw = document.getElementById('setting-new-password').value;
             try {
                 await window.updatePassword(window.auth.currentUser, pw);
@@ -843,14 +846,16 @@
         function getAuthorizedGroups() { return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); }
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
         function updateSubcats() {
-            const type = document.getElementById('tpl-type').value;
-            const sel = document.getElementById('tpl-subcat');
+            const typeEl = document.getElementById('tpl-type'); if(!typeEl) return;
+            const type = typeEl.value;
+            const sel = document.getElementById('tpl-subcat'); if(!sel) return;
             sel.innerHTML = '';
             (SUBCATS[type] || []).forEach(sc => sel.innerHTML += `<option value="${sc}">${sc}</option>`);
         }
 
         // --- DATA RENDERING ---
         function populateFilterOptions() {
+            if (!currentUser) return;
             const ag = getAuthorizedGroups();
             const pGroup = document.getElementById('prog-group');
             const atGroup = document.getElementById('at-program');
@@ -883,6 +888,7 @@
         }
 
         function renderDashboard() {
+            if (!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
             let tot = 0, comp = 0, due = 0, over = 0, unassigned = 0;
             
@@ -932,6 +938,7 @@
 
         // --- PROGRAM CONTROLS ---
         function renderControlCenter() {
+            if (!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
             const tb = document.getElementById('control-center-table-body'); if(!tb) return;
             tb.innerHTML = '';
@@ -980,6 +987,7 @@
 
         // --- TEMPLATES ---
         function renderTemplates() {
+            if (!currentUser) return;
             const f = document.getElementById('filter-template-type'); if(!f) return;
             const filterVal = f.value;
             const tb = document.getElementById('template-table-body'); if(!tb) return;
@@ -1055,6 +1063,7 @@
 
         // --- ACTIVE TASKS EXECUTION ---
         function renderActiveTasks() {
+            if (!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
             const fGroup = document.getElementById('filter-task-group'); if(!fGroup) return;
             const fAssignee = document.getElementById('filter-task-assignee');
@@ -1171,6 +1180,7 @@
         function openUserManagementModal() { document.getElementById('user-management-modal').classList.remove('hidden'); }
         
         function renderGroupPills() {
+            if (!currentUser) return;
             const ct = document.getElementById('group-pill-list'); if(!ct) return;
             ct.innerHTML = '';
             const ag = getAuthorizedGroups();
@@ -1179,6 +1189,7 @@
             });
         }
         function renderTerritoryCheckboxes() {
+            if (!currentUser) return;
             const ct = document.getElementById('admin-u-terr'); if(!ct) return;
             ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
             getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
@@ -1190,7 +1201,7 @@
                 const maxId = groups.length > 0 ? Math.max(...groups.map(g => parseInt(g.id))) : 8764;
                 const newId = (maxId + 1).toString();
                 window.cloudSaveGroup({ id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' });
-                if(!currentUser.territories.includes('ALL')) { currentUser.territories.push(newId); window.cloudSaveUser(currentUser); }
+                if(currentUser && !currentUser.territories.includes('ALL')) { currentUser.territories.push(newId); window.cloudSaveUser(currentUser); }
                 document.getElementById('new-group-name').value=''; 
             }
         }
@@ -1198,6 +1209,7 @@
         function deleteGroup(id) { if(confirm("Permanently destroy this group?")) window.cloudDeleteGroup(id); }
 
         function renderUsersTable() {
+            if (!currentUser) return;
             const tb = document.getElementById('users-table-body'); if(!tb) return;
             tb.innerHTML = '';
             const agIds = getAuthorizedGroups().map(g=>g.id);
@@ -1206,6 +1218,7 @@
             });
         }
         function openAdminEdit(em) {
+            if (!currentUser) return;
             const u = users.find(x => x.username === em); if(!u) return;
             document.getElementById('admin-u-email').value = u.username;
             
