@@ -63,8 +63,9 @@
                 <button id="btn-manage-branding" onclick="openBrandingModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm hidden">
                     <i class="fa-solid fa-palette text-i9gold"></i> Branding
                 </button>
-                <button id="btn-manage-users" onclick="openUserManagementModal()" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm hidden">
-                    <i class="fa-solid fa-users-gear"></i> Admin & Users
+                <button id="btn-manage-users" onclick="openUserManagementModal()" class="relative bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm hidden">
+                    <i class="fa-solid fa-users-gear"></i> Admin Dashboard
+                    <span id="admin-alert-badge" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
                 </button>
                 <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-file-excel"></i> Export CSV
@@ -352,7 +353,11 @@
 
                 <!-- Signup Form -->
                 <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden text-xs">
-                    <div><label class="block font-bold text-gray-700 mb-1">Full Name</label><input type="text" id="signup-name" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block font-bold text-gray-700 mb-1">First Name</label><input type="text" id="signup-first" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Last Name</label><input type="text" id="signup-last" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    </div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Phone Number</label><input type="tel" id="signup-phone" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
                     <div><label class="block font-bold text-gray-700 mb-1">Email Address</label><input type="email" id="signup-email" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
                     
                     <div>
@@ -394,7 +399,96 @@
         </div>
     </div>
 
-    <!-- MODALS -->
+    <!-- ADMIN USER MANAGEMENT MODAL -->
+    <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> System Admin Dashboard</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- LEFT COLUMN: GROUPS & INVITES -->
+                <div class="space-y-6">
+                    <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
+                        <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
+                        <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                            <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
+                            <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
+                        </form>
+                        <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
+                    </div>
+                    
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 space-y-3">
+                        <h4 class="text-xs font-bold text-emerald-800 border-b border-emerald-200 pb-1"><i class="fa-solid fa-envelope-open-text"></i> Quick Invite Generator</h4>
+                        <p class="text-[10px] text-gray-600">Send an email directing a new user to register.</p>
+                        <div class="space-y-2 text-xs">
+                            <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border rounded bg-white">
+                            <button onclick="generateInviteEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm">Generate Email</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: USERS (PENDING & ACTIVE) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- PENDING APPROVALS -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-rose-600 border-b border-rose-200 pb-1 flex items-center justify-between">
+                            <span><i class="fa-solid fa-hourglass-half"></i> Pending Approvals</span>
+                            <span id="pending-count-badge" class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full text-[10px]">0 Waiting</span>
+                        </h4>
+                        <div class="border border-rose-100 rounded-lg overflow-hidden bg-rose-50/30">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-rose-50 text-rose-800 uppercase font-bold text-[10px]">
+                                    <tr><th class="p-2">Name & Contact</th><th class="p-2">Requested Group</th><th class="p-2 text-center">Action</th></tr>
+                                </thead>
+                                <tbody id="pending-users-table" class="divide-y divide-rose-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ACTIVE DIRECTORY -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-gray-800 border-b pb-1"><i class="fa-solid fa-user-check text-emerald-600"></i> Active User Directory</h4>
+                        <div class="border rounded-lg overflow-y-auto max-h-64">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-100 text-gray-700 uppercase font-bold text-[10px] sticky top-0 z-10 shadow-sm">
+                                    <tr><th class="p-2">User Profile</th><th class="p-2">Role & Access</th><th class="p-2 text-center">Manage</th></tr>
+                                </thead>
+                                <tbody id="active-users-table" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDIT USER FORM (Hidden by default) -->
+            <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300 space-y-4 text-xs mt-4 shadow-inner">
+                <div class="flex justify-between items-center border-b pb-1">
+                    <h4 class="font-bold text-i9blue text-sm">Edit User Access</h4>
+                    <button type="button" onclick="document.getElementById('admin-edit-user-form').classList.add('hidden')" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <input type="hidden" id="admin-u-email">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Role Tier</label>
+                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold text-i9blue"></select>
+                        <p class="text-[10px] text-gray-500 mt-1">Leaving a user as 'Pending' revokes their access.</p>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Territory Access</label>
+                        <div id="admin-u-terr" class="p-2 border rounded bg-white h-24 overflow-y-auto space-y-1 shadow-inner"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="submit" class="px-4 py-2 bg-i9blue hover:bg-blue-900 text-white rounded font-bold shadow transition">Save User Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALS (Program, Template, Active Task, Branding) -->
+    <!-- (Existing Modals remain unchanged, collapsed for brevity in mental model but fully written here) -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue">Add New Program</h3>
@@ -438,54 +532,6 @@
                 </div>
                 <div><label class="block font-bold mb-1">Notes</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
                 <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Task</button></div>
-            </form>
-        </div>
-    </div>
-
-    <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> Group & User Directory</h3>
-                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
-                    <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1">Franchise Groups</h4>
-                    <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
-                        <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
-                        <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
-                    </form>
-                    <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
-                </div>
-
-                <div class="md:col-span-2 space-y-3">
-                    <h4 class="text-xs font-bold text-gray-800 border-b pb-1">System Users in Your Groups</h4>
-                    <div class="border rounded-lg overflow-y-auto max-h-64">
-                        <table class="w-full text-xs text-left">
-                            <thead class="bg-gray-100 text-gray-700 uppercase font-bold sticky top-0">
-                                <tr><th class="p-2">User</th><th class="p-2">Role Tier</th><th class="p-2">Assigned Groups</th><th class="p-2 text-center">Actions</th></tr>
-                            </thead>
-                            <tbody id="users-table-body" class="divide-y"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300 space-y-4 text-xs mt-4">
-                <h4 class="font-bold text-i9blue text-sm border-b pb-1">Edit User Access</h4>
-                <input type="hidden" id="admin-u-email">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold mb-1">Role Tier</label>
-                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold"></select>
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1">Territory Access</label>
-                        <div id="admin-u-terr" class="p-2 border rounded bg-white h-24 overflow-y-auto space-y-1"></div>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t"><button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow-sm">Save User Settings</button></div>
             </form>
         </div>
     </div>
@@ -559,14 +605,16 @@
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
-                window.users = snap.docs.map(d => d.data()); window.renderUsersTable();
+                window.users = snap.docs.map(d => d.data()); 
+                window.renderUsersTable();
+                window.checkPendingAlerts(); // Update alerts on user change
                 
                 if (auth.currentUser) {
                     const em = auth.currentUser.email.toLowerCase();
                     let matched = window.users.find(u => u.username.toLowerCase() === em);
                     
                     if (em === 'nick@npsnm.com') {
-                        matched = { username: 'nick@npsnm.com', name: 'Nick Padilla', role: 'System Admin', territories: ['ALL'] };
+                        matched = { username: 'nick@npsnm.com', name: 'Nick Padilla', firstName: 'Nick', lastName: 'Padilla', phone: 'N/A', role: 'System Admin', territories: ['ALL'] };
                     }
 
                     if (matched) {
@@ -616,7 +664,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.3.2";
+        const APP_VERSION = "1.4.0";
         document.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
             if(versionEl) versionEl.textContent = APP_VERSION;
@@ -721,6 +769,9 @@
                     currentUser = {
                         username: 'nick@npsnm.com',
                         name: authUser.displayName || "Nick Padilla",
+                        firstName: 'Nick',
+                        lastName: 'Padilla',
+                        phone: 'N/A',
                         role: "System Admin",
                         territories: ["ALL"]
                     };
@@ -737,6 +788,9 @@
                     matched = {
                         username: em,
                         name: authUser.displayName || "New User",
+                        firstName: "Unknown",
+                        lastName: "User",
+                        phone: "N/A",
                         role: "Pending",
                         territories: []
                     };
@@ -750,7 +804,6 @@
                 showToast("Welcome", `Logged in as ${matched.name}`);
 
             } catch (error) {
-                // Map common Firebase auth errors to the requested generic message
                 const genericErrors = ['auth/wrong-password', 'auth/user-not-found', 'auth/invalid-credential', 'auth/invalid-email'];
                 if (genericErrors.includes(error.code)) {
                     showError("Non-matching username and password.");
@@ -776,13 +829,37 @@
             }
         }
 
+        async function adminSendPasswordReset(email) {
+            if(confirm(`Send an automated password reset email to ${email}?`)) {
+                try {
+                    await window.sendPasswordResetEmail(window.auth, email);
+                    showToast("Success", `Reset link sent to ${email}`);
+                } catch(error) {
+                    alert("Error sending reset link: " + error.message);
+                }
+            }
+        }
+
+        function generateInviteEmail() {
+            const email = document.getElementById('invite-email-input').value.trim();
+            const subject = encodeURIComponent("Invitation: Access the Program Director Planner");
+            const body = encodeURIComponent(`Hello,\n\nYou have been invited to join the Program Director Planner portal.\n\nPlease visit the portal, click 'Register / Join Group', and set up your secure account. Once registered, an Admin will approve your access level.\n\nThank you.`);
+            
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            showToast("Draft Generated", "Your email client should open shortly.");
+        }
+
         async function signup(e) {
             e.preventDefault();
-            const name = document.getElementById('signup-name').value.trim();
+            const fName = document.getElementById('signup-first').value.trim();
+            const lName = document.getElementById('signup-last').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
             const em = document.getElementById('signup-email').value.trim();
             const pw = document.getElementById('signup-password').value.trim();
             const action = document.querySelector('input[name="signup-action"]:checked').value;
-            const uObj = { username: em, name: name, role: 'Pending', territories: [] };
+            
+            const fullName = `${fName} ${lName}`;
+            const uObj = { username: em, name: fullName, firstName: fName, lastName: lName, phone: phone, role: 'Pending', territories: [] };
 
             if(action === 'create') {
                 const maxId = groups.length > 0 ? Math.max(...groups.map(g => parseInt(g.id))) : 8764;
@@ -854,6 +931,29 @@
             renderControlCenter();
             renderTemplates();
             renderActiveTasks();
+            checkPendingAlerts();
+        }
+
+        function checkPendingAlerts() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            const badge = document.getElementById('admin-alert-badge');
+            if (!badge || !currentUser) return;
+
+            // Only show alert badge to users who have user-management permissions
+            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            const isManager = currentUser.role === 'System Admin' || perms.manageGroups;
+            
+            if(isManager) {
+                const pendingCount = users.filter(u => u.role === 'Pending').length;
+                if(pendingCount > 0) {
+                    badge.textContent = pendingCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            } else {
+                badge.classList.add('hidden');
+            }
         }
 
         function applyPermissions() {
@@ -1299,13 +1399,69 @@
         function renderUsersTable() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
-            const tb = document.getElementById('users-table-body'); if(!tb) return;
-            tb.innerHTML = '';
+            
+            const pendingTb = document.getElementById('pending-users-table');
+            const activeTb = document.getElementById('active-users-table');
+            const pendingBadge = document.getElementById('pending-count-badge');
+            
+            if(!pendingTb || !activeTb) return;
+            
+            pendingTb.innerHTML = '';
+            activeTb.innerHTML = '';
+            
             const agIds = getAuthorizedGroups().map(g=>g.id);
-            users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t))).forEach(u => {
-                tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="p-2 font-mono font-bold">${u.username}</td><td class="p-2">${u.name}</td><td class="p-2 font-bold ${u.role==='Pending'?'text-rose-500':'text-i9blue'}">${u.role}</td><td class="p-2 text-xs">${u.territories.includes('ALL')?'All':u.territories.join(', ')}</td><td class="p-2 text-center"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 px-2 rounded shadow-sm">Manage</button></td></tr>`;
+            const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t)));
+            
+            let pendingCount = 0;
+
+            visibleUsers.forEach(u => {
+                const phoneDisplay = u.phone || "No Phone Provided";
+                
+                if (u.role === 'Pending') {
+                    pendingCount++;
+                    pendingTb.innerHTML += `
+                        <tr class="hover:bg-rose-100 transition-colors">
+                            <td class="p-2 border-b border-rose-100">
+                                <div class="font-bold text-rose-900">${u.name}</div>
+                                <div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div>
+                            </td>
+                            <td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${u.territories.join(', ') || 'N/A'}</td>
+                            <td class="p-2 border-b border-rose-100 text-center space-x-1">
+                                <button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button>
+                                <button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button>
+                            </td>
+                        </tr>`;
+                } else {
+                    activeTb.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-2">
+                                <div class="font-bold text-gray-900">${u.name}</div>
+                                <div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div>
+                            </td>
+                            <td class="p-2">
+                                <span class="font-bold text-i9blue">${u.role}</span>
+                                <div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div>
+                            </td>
+                            <td class="p-2 text-center space-x-1">
+                                <button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button>
+                                <button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button>
+                            </td>
+                        </tr>`;
+                }
             });
+
+            if (pendingCount === 0) {
+                pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
+            }
+            if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
         }
+
+        function deleteUserRow(em) {
+            if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) {
+                window.cloudDeleteUser(em);
+            }
+        }
+
         function openAdminEdit(em) {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -1321,6 +1477,7 @@
             document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
             document.getElementById('admin-edit-user-form').classList.remove('hidden');
         }
+
         function adminSaveUser(e) {
             e.preventDefault();
             const em = document.getElementById('admin-u-email').value;
