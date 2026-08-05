@@ -540,23 +540,20 @@
                         window.currentUser = matched;
                         window.unlockPortal();
                     } else if (auth.currentUser.email) {
-                        // User exists in Auth but not DB. Auto-create profile.
                         let assignRole = "Pending";
                         let assignTerr = [];
                         let assignName = "New User";
                         
-                        // AUTO-BOOTSTRAP ROOT ADMIN: Prevent the owner from getting locked out
                         if (window.users.length === 0 || auth.currentUser.email.toLowerCase() === 'nick@npsnm.com') {
                             assignRole = "System Admin";
                             assignTerr = ["ALL"];
-                            assignName = "System Admin";
+                            assignName = "Nick Padilla";
                         }
                         
                         const newU = { username: auth.currentUser.email, name: assignName, role: assignRole, territories: assignTerr };
                         window.cloudSaveUser(newU);
                     }
                 } else if (window.currentUser) {
-                    // Update live UI if role changes
                     const matched = window.users.find(u => u.username.toLowerCase() === window.currentUser.username.toLowerCase());
                     if (matched) { window.currentUser = matched; window.applyPermissions(); }
                 }
@@ -688,7 +685,7 @@
                     const isRootAdmin = (em === 'nick@npsnm.com' || window.users.length === 0);
                     matched = {
                         username: em,
-                        name: authUser.displayName || (isRootAdmin ? "System Admin" : "New User"),
+                        name: authUser.displayName || (isRootAdmin ? "Nick Padilla" : "New User"),
                         role: isRootAdmin ? "System Admin" : "Pending",
                         territories: isRootAdmin ? ["ALL"] : []
                     };
@@ -696,6 +693,11 @@
                 }
 
                 window.currentUser = matched;
+
+                // Immediately hide login modal overlay
+                const overlay = document.getElementById('auth-overlay');
+                if (overlay) overlay.classList.add('hidden');
+
                 unlockPortal();
                 showToast("Welcome", `Logged in as ${matched.name}`);
 
@@ -768,12 +770,18 @@
         }
 
         function unlockPortal() {
+            // Force hide the auth overlay modal at start
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.classList.add('hidden');
+
             if (!currentUser) return;
+
             if (currentUser.role === "Pending") {
                 showError("Your account is pending admin approval.");
-                logout(); return;
+                logout(); 
+                return;
             }
-            document.getElementById('auth-overlay').classList.add('hidden');
+
             applyPermissions();
         }
 
