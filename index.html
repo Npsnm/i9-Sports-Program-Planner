@@ -413,6 +413,7 @@
                     <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
                         <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
                         <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                            <input type="number" id="new-group-id" required min="100" placeholder="ID (e.g. 100)" class="w-28 p-2 border rounded bg-white">
                             <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
                             <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
                         </form>
@@ -718,8 +719,8 @@
             "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
         };
 
-        let currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
-        let users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], sysPermissions = DEFAULT_PERMISSIONS;
+        var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
+        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], sysPermissions = DEFAULT_PERMISSIONS;
 
         window.addEventListener('DOMContentLoaded', () => {
             applyBrandingUI();
@@ -1394,17 +1395,29 @@
         function addGroup(e) { 
             e.preventDefault(); 
             const gName = document.getElementById('new-group-name').value.trim();
-            if(gName) {
-                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
-                const maxId = validIds.length > 0 ? Math.max(...validIds) : 8764;
-                const newId = (maxId + 1).toString();
-                window.cloudSaveGroup({ id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' });
+            const gId = document.getElementById('new-group-id').value.trim();
+            
+            if(gName && gId) {
+                if (parseInt(gId) < 100) {
+                    alert("Group ID must be 3 digits or higher.");
+                    return;
+                }
+
+                if (groups.find(g => g.id === gId)) {
+                    alert("This Group ID already exists. Please choose a different number.");
+                    return;
+                }
+
+                window.cloudSaveGroup({ id: gId, name: gName, fullName: `${gId} - ${gName}`, status: 'Active' });
+                
                 if(currentUser && !currentUser.territories.includes('ALL')) { 
-                    currentUser.territories.push(newId); 
+                    currentUser.territories.push(gId); 
                     window.currentUser = currentUser;
                     window.cloudSaveUser(currentUser); 
                 }
+                
                 document.getElementById('new-group-name').value=''; 
+                document.getElementById('new-group-id').value=''; 
             }
         }
         function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); } }
