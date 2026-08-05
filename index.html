@@ -530,7 +530,7 @@
                 window.renderPermissions(); window.applyPermissions();
             });
 
-           onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
                 window.users = snap.docs.map(d => d.data()); window.renderUsersTable();
                 
                 // Session Restore / Auth Verify
@@ -561,6 +561,7 @@
                     if (matched) { window.currentUser = matched; window.applyPermissions(); }
                 }
             });
+
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
                 window.programs = snap.docs.map(d => d.data());
                 window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard();
@@ -600,6 +601,25 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
+        function showToast(title, message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = "bg-gray-900 text-white p-3 rounded-lg shadow-xl text-xs flex items-center gap-3 border border-gray-700 transition-all duration-300 pointer-events-auto";
+            toast.innerHTML = `
+                <div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div>
+                <div>
+                    <p class="font-bold">${title}</p>
+                    <p class="text-gray-300 text-[11px]">${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         const SUBCATS = {
             "League": ["Early", "Late"],
             "Training/Clinic": ["Pre-Season", "In-Season", "Early", "Late"],
@@ -612,7 +632,7 @@
             "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
             "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
             "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
-            "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false } // Staff can only mark status Complete
+            "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
         };
 
         let currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
@@ -654,12 +674,34 @@
 
         async function login(e) {
             e.preventDefault();
-            const em = document.getElementById('login-email').value.trim();
+            const em = document.getElementById('login-email').value.trim().toLowerCase();
             const pw = document.getElementById('login-password').value.trim();
+            
             try {
                 showToast("Connecting", "Verifying credentials...");
-                await window.signInWithEmailAndPassword(window.auth, em, pw);
-            } catch (error) { showError(error.message); }
+                const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
+                const authUser = userCredential.user;
+
+                let matched = window.users.find(u => u.username.toLowerCase() === em);
+                
+                if (!matched) {
+                    const isRootAdmin = (em === 'nick@npsnm.com' || window.users.length === 0);
+                    matched = {
+                        username: em,
+                        name: authUser.displayName || (isRootAdmin ? "System Admin" : "New User"),
+                        role: isRootAdmin ? "System Admin" : "Pending",
+                        territories: isRootAdmin ? ["ALL"] : []
+                    };
+                    await window.cloudSaveUser(matched);
+                }
+
+                window.currentUser = matched;
+                unlockPortal();
+                showToast("Welcome", `Logged in as ${matched.name}`);
+
+            } catch (error) {
+                showError(error.message);
+            }
         }
 
         async function triggerPasswordReset() {
@@ -696,14 +738,13 @@
             } else {
                 const joinId = document.getElementById('signup-join-id').value.trim();
                 if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
-                uObj.territories = [joinId]; // Requested territory
+                uObj.territories = [joinId];
             }
 
             try {
                 showToast("Registering", "Creating secure account...");
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
                 window.cloudSaveUser(uObj);
-                // Auth listener will handle the rest
             } catch (error) { showError(error.message); }
         }
 
@@ -742,19 +783,16 @@
 
             const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
             
-            // Reset UI Visibility
             document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.permission-create-program').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
-            // Apply System Admin overrides
             if (currentUser.role === 'System Admin') {
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
             } 
             
-            // Apply granular permissions
             if (perms.manageGroups) { 
                 document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); 
                 document.getElementById('btn-manage-users').classList.remove('hidden'); 
@@ -828,7 +866,6 @@
                 }
             });
 
-            // Filters
             const filters = ['filter-group', 'filter-task-group'];
             filters.forEach(f => {
                 const el = document.getElementById(f);
@@ -1002,7 +1039,7 @@
                     type: p.type,
                     subcat: t.subcat,
                     desc: t.desc,
-                    assignee: "", // Forces Unassigned
+                    assignee: "",
                     defaultRole: t.role,
                     targetDate: tgt,
                     status: "Pending",
@@ -1039,7 +1076,6 @@
                 const p = programs.find(x => x.id === t.programId);
                 const pName = p ? `[${p.groupId}] ${p.preHeader} ${p.season}` : 'Unknown Program';
                 
-                // Status Logic
                 const today = new Date(); today.setHours(0,0,0,0);
                 const tgt = new Date(t.targetDate + "T00:00:00");
                 let stHTML = `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-[10px]">Upcoming</span>`;
@@ -1104,7 +1140,7 @@
             const id = document.getElementById('at-edit-id').value;
             const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
 
-            if(id) { // Edit
+            if(id) {
                 const t = activeTasks.find(x => x.id === id);
                 if(t) {
                     t.desc = document.getElementById('at-desc').value.trim();
@@ -1113,7 +1149,7 @@
                     t.notes = document.getElementById('at-notes').value.trim();
                     window.cloudSaveActiveTask(t);
                 }
-            } else if (isOneOff) { // New One-off
+            } else if (isOneOff) {
                 const progId = document.getElementById('at-program').value;
                 const p = programs.find(x => x.id === progId);
                 if(p) {
@@ -1131,6 +1167,110 @@
             closeModals();
         }
 
+        // --- GROUP & USER ADMIN ---
+        function openUserManagementModal() { document.getElementById('user-management-modal').classList.remove('hidden'); }
+        
+        function renderGroupPills() {
+            const ct = document.getElementById('group-pill-list'); if(!ct) return;
+            ct.innerHTML = '';
+            const ag = getAuthorizedGroups();
+            ag.forEach(g => {
+                ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm"><span class="font-bold text-i9blue">${g.fullName}</span> <div><button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button> <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button></div></div>`;
+            });
+        }
+        function renderTerritoryCheckboxes() {
+            const ct = document.getElementById('admin-u-terr'); if(!ct) return;
+            ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
+            getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
+        }
+        function addGroup(e) { 
+            e.preventDefault(); 
+            const gName = document.getElementById('new-group-name').value.trim();
+            if(gName) {
+                const maxId = groups.length > 0 ? Math.max(...groups.map(g => parseInt(g.id))) : 8764;
+                const newId = (maxId + 1).toString();
+                window.cloudSaveGroup({ id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' });
+                if(!currentUser.territories.includes('ALL')) { currentUser.territories.push(newId); window.cloudSaveUser(currentUser); }
+                document.getElementById('new-group-name').value=''; 
+            }
+        }
+        function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); } }
+        function deleteGroup(id) { if(confirm("Permanently destroy this group?")) window.cloudDeleteGroup(id); }
+
+        function renderUsersTable() {
+            const tb = document.getElementById('users-table-body'); if(!tb) return;
+            tb.innerHTML = '';
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t))).forEach(u => {
+                tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="p-2 font-mono font-bold">${u.username}</td><td class="p-2">${u.name}</td><td class="p-2 font-bold ${u.role==='Pending'?'text-rose-500':'text-i9blue'}">${u.role}</td><td class="p-2 text-xs">${u.territories.includes('ALL')?'All':u.territories.join(', ')}</td><td class="p-2 text-center"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 px-2 rounded shadow-sm">Manage</button></td></tr>`;
+            });
+        }
+        function openAdminEdit(em) {
+            const u = users.find(x => x.username === em); if(!u) return;
+            document.getElementById('admin-u-email').value = u.username;
+            
+            const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
+            ROLES.forEach(r => { if(currentUser.role === 'System Admin' || r !== 'System Admin') roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
+            roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`;
+            roleSel.value = u.role;
+
+            renderTerritoryCheckboxes();
+            document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
+            document.getElementById('admin-edit-user-form').classList.remove('hidden');
+        }
+        function adminSaveUser(e) {
+            e.preventDefault();
+            const em = document.getElementById('admin-u-email').value;
+            const u = users.find(x => x.username === em);
+            if(u) {
+                u.role = document.getElementById('admin-u-role').value;
+                u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value);
+                window.cloudSaveUser(u);
+                document.getElementById('admin-edit-user-form').classList.add('hidden');
+                showToast("Saved", `Permissions updated for ${u.name}`);
+            }
+        }
+
+        // --- PERMISSIONS PORTAL ---
+        function renderPermissions() {
+            const tb = document.getElementById('permissions-table-body'); if(!tb) return;
+            tb.innerHTML = '';
+            ROLES.forEach(r => {
+                const p = sysPermissions[r] || DEFAULT_PERMISSIONS["Staff"];
+                tb.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 font-bold text-gray-800">${r}</td>
+                        <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''} ${r==='System Admin'?'disabled':''}></td>
+                        <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''} ${r==='System Admin'?'disabled':''}></td>
+                        <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''} ${r==='System Admin'?'disabled':''}></td>
+                        <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTasks',this.checked)" ${p.editTasks?'checked':''} ${r==='System Admin'?'disabled':''}></td>
+                    </tr>`;
+            });
+        }
+        function updatePerm(tier, field, val) { sysPermissions[tier][field] = val; window.cloudSavePermissions(tier, sysPermissions[tier]); }
+
+        function calculateTargetDate(startStr, offsetDays, byeStr) {
+            const d = new Date(startStr + "T00:00:00"); d.setDate(d.getDate() + offsetDays);
+            if (byeStr) { const byes = byeStr.split(',').map(s=>s.trim()); if (byes.includes(d.toISOString().split('T')[0])) d.setDate(d.getDate() + 7); }
+            return d.toISOString().split('T')[0];
+        }
+
+        function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
+        function applyBrandingUI() {
+            if(!currentBranding) return;
+            document.documentElement.style.setProperty('--i9blue', currentBranding.primaryColor);
+            document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
+            document.documentElement.style.setProperty('--i9red', currentBranding.secondaryColor);
+            const titleEl = document.getElementById('brand-title-display'); if(titleEl) titleEl.textContent = currentBranding.title;
+            const logoImg = document.getElementById('brand-logo-img'); if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
+        }
+        function openBrandingModal() { document.getElementById('branding-modal').classList.remove('hidden'); }
+        function saveBranding(e) {
+            e.preventDefault();
+            currentBranding.title = document.getElementById('branding-title-input').value.trim();
+            window.cloudSaveBranding(currentBranding); closeModals();
+        }
+        function exportToCSV() { alert("Exporting current active tasks view to CSV..."); }
     </script>
 </body>
 </html>
