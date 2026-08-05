@@ -520,7 +520,7 @@
     
                 <div class="grid grid-cols-2 gap-4">
                     <div id="prog-pre-container">
-                        <label class="block font-bold mb-1">Pre-Header</label>
+                        <label class="block font-bold mb-1">Pre-Header <span class="text-gray-400 font-normal">(Optional)</span></label>
                         <select id="prog-pre" class="w-full p-2 border rounded bg-gray-50"></select>
                     </div>
                     <div>
@@ -1215,27 +1215,28 @@
             });
         }
 
-       function updateProgPreHeaderOptions() {
-            const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
-            const container = document.getElementById('prog-pre-container');
-            const select = document.getElementById('prog-pre');
-            
-            select.innerHTML = '';
-            
-            if (type === 'School') {
-                container.classList.add('hidden'); // Hide for School
-                select.value = '';
-            } else {
-                container.classList.remove('hidden');
-                let options = [];
-                if (type === 'League' || type === 'Camp') {
-                    options = ['Early', 'Late'];
-                } else if (type === 'Training/Clinic') {
-                    options = ['Pre-Season', 'In-Season', 'Late', 'Early'];
-                }
-                options.forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`);
+           function updateProgPreHeaderOptions() {
+        const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
+        const container = document.getElementById('prog-pre-container');
+        const select = document.getElementById('prog-pre');
+        
+        // Set the initial choice as blank/none
+        select.innerHTML = '<option value="">-- None (Optional) --</option>';
+        
+        if (type === 'School') {
+            container.classList.add('hidden');
+            select.value = '';
+        } else {
+            container.classList.remove('hidden');
+            let options = [];
+            if (type === 'League' || type === 'Camp') {
+                options = ['Early', 'Late'];
+            } else if (type === 'Training/Clinic') {
+                options = ['Pre-Season', 'In-Season', 'Late', 'Early'];
             }
+            options.forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`);
         }
+    }
 
         function openAddProgramModal() { 
             document.getElementById('program-modal').classList.remove('hidden');
