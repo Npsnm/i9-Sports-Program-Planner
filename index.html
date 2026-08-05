@@ -530,7 +530,7 @@
                 window.renderPermissions(); window.applyPermissions();
             });
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
+           onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
                 window.users = snap.docs.map(d => d.data()); window.renderUsersTable();
                 
                 // Session Restore / Auth Verify
@@ -541,7 +541,18 @@
                         window.unlockPortal();
                     } else if (auth.currentUser.email) {
                         // User exists in Auth but not DB. Auto-create pending profile.
-                        const newU = { username: auth.currentUser.email, name: "New User", role: "Pending", territories: [] };
+                        let assignRole = "Pending";
+                        let assignTerr = [];
+                        let assignName = "New User";
+                        
+                        // AUTO-BOOTSTRAP ROOT ADMIN: Prevent the owner from getting locked out
+                        if (window.users.length === 0 || auth.currentUser.email.toLowerCase() === 'nick@npsnm.com') {
+                            assignRole = "System Admin";
+                            assignTerr = ["ALL"];
+                            assignName = "System Admin";
+                        }
+                        
+                        const newU = { username: auth.currentUser.email, name: assignName, role: assignRole, territories: assignTerr };
                         window.cloudSaveUser(newU);
                     }
                 } else if (window.currentUser) {
@@ -550,7 +561,6 @@
                     if (matched) { window.currentUser = matched; window.applyPermissions(); }
                 }
             });
-
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
                 window.programs = snap.docs.map(d => d.data());
                 window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard();
