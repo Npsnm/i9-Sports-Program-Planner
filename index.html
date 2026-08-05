@@ -496,8 +496,18 @@
 
         try {
             app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app);
-            window.auth = auth; window.signInWithEmailAndPassword = signInWithEmailAndPassword; window.createUserWithEmailAndPassword = createUserWithEmailAndPassword; window.updatePassword = updatePassword; window.updateEmail = updateEmail; window.signOut = signOut; window.linkWithPopup = linkWithPopup; window.sendPasswordResetEmail = sendPasswordResetEmail;
-            const googleProvider = new GoogleAuthProvider(); window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
+            window.auth = auth; 
+            window.signInWithEmailAndPassword = signInWithEmailAndPassword; 
+            window.createUserWithEmailAndPassword = createUserWithEmailAndPassword; 
+            window.updatePassword = updatePassword; 
+            window.updateEmail = updateEmail; 
+            window.signOut = () => signOut(auth); 
+            window.linkWithPopup = linkWithPopup; 
+            window.sendPasswordResetEmail = sendPasswordResetEmail;
+            
+            const googleProvider = new GoogleAuthProvider(); 
+            window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); 
+            window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
 
             onAuthStateChanged(auth, (user) => {
                 if (user) { 
@@ -505,8 +515,11 @@
                 } else { 
                     window.currentUser = null;
                     if (typeof currentUser !== 'undefined') currentUser = null;
-                    document.getElementById('auth-overlay').style.display = 'flex';
-                    document.getElementById('auth-overlay').classList.remove('hidden'); 
+                    const overlay = document.getElementById('auth-overlay');
+                    if (overlay) {
+                        overlay.style.display = 'flex';
+                        overlay.classList.remove('hidden');
+                    }
                     document.getElementById('sync-status-text').textContent = "Disconnected"; 
                 }
             });
@@ -753,7 +766,11 @@
         }
 
         async function logout() {
-            if (window.auth) await window.signOut();
+            try {
+                if (window.signOut) await window.signOut();
+            } catch (e) {
+                console.error("Sign out error:", e);
+            }
             currentUser = null;
             window.currentUser = null;
             const overlay = document.getElementById('auth-overlay');
@@ -779,7 +796,6 @@
                 return;
             }
 
-            // Force hide auth overlay through CSS class AND direct DOM styling
             const overlay = document.getElementById('auth-overlay');
             if (overlay) {
                 overlay.classList.add('hidden');
