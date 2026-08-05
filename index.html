@@ -204,6 +204,7 @@
                             <th class="px-4 py-3 font-bold">Identity</th>
                             <th class="px-4 py-3 font-bold">Type</th>
                             <th class="px-4 py-3 font-bold">Milestone Deadlines</th>
+                            <th class="px-4 py-3 font-bold">Logistics</th>
                             <th class="px-4 py-3 font-bold text-center">Actions</th>
                         </tr>
                     </thead>
@@ -220,9 +221,17 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Master Template Builder</h2>
                         <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
                     </div>
-                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
-                        <i class="fa-solid fa-plus text-i9gold"></i> Add Template Rule
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
+                            <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
+                        </button>
+                        <button onclick="bulkDelete('templates')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
+                            <i class="fa-solid fa-trash"></i> Delete Selected
+                        </button>
+                        <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
+                            <i class="fa-solid fa-plus text-i9gold"></i> Add Template Rule
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="flex flex-wrap gap-2">
@@ -240,6 +249,7 @@
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
+                            <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllTpls" onchange="toggleSelectAll('tpl-cb', this.checked)"></th>
                             <th class="px-4 py-3 font-bold">Group Scope</th>
                             <th class="px-4 py-3 font-bold">Type & Pre-Header</th>
                             <th class="px-4 py-3 font-bold">Task Name</th>
@@ -386,6 +396,42 @@
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-assignee"><div class="flex-grow"><label class="font-bold block text-[10px]">Assignee</label><select id="be-assignee" class="w-full p-1.5 border rounded"></select></div></div>
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-status"><div class="flex-grow"><label class="font-bold block text-[10px]">Status</label><select id="be-status" class="w-full p-1.5 border rounded"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div></div>
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-date"><div class="flex-grow"><label class="font-bold block text-[10px]">Target Date</label><input type="date" id="be-date" class="w-full p-1.5 border rounded"></div></div>
+                </div>
+
+                <!-- Template Bulk Edit Fields -->
+                <div id="bulk-edit-templates-fields" class="hidden space-y-4">
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-tpl-role">
+                        <div class="flex-grow">
+                            <label class="font-bold block text-[10px]">Default Role</label>
+                            <input type="text" id="be-tpl-role" class="w-full p-1.5 border rounded">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-tpl-anchor">
+                        <div class="flex-grow">
+                            <label class="font-bold block text-[10px]">Anchor Deadline</label>
+                            <select id="be-tpl-anchor" class="w-full p-1.5 border rounded">
+                                <option value="dateStart">1. Start Date</option>
+                                <option value="dateFinal">2. Final Deadline</option>
+                                <option value="dateEarly">3. Early Deadline</option>
+                                <option value="dateOffseason">4. Offseason</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-tpl-offset">
+                        <div class="flex-grow flex gap-2">
+                            <div class="w-1/2">
+                                <label class="font-bold block text-[10px]">Offset</label>
+                                <input type="number" id="be-tpl-offset-num" class="w-full p-1.5 border rounded" placeholder="Days">
+                            </div>
+                            <div class="w-1/2">
+                                <label class="font-bold block text-[10px]">Dir</label>
+                                <select id="be-tpl-offset-dir" class="w-full p-1.5 border rounded"><option value="Before">Before</option><option value="After">After</option></select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -586,6 +632,19 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div id="prog-pre-container"><label class="block font-bold mb-1">Pre-Header</label><select id="prog-pre" class="w-full p-2 border rounded bg-gray-50"></select></div>
                     <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
+                </div>
+                
+                <div>
+                    <label class="block font-bold mb-1">Days of Operation</label>
+                    <div class="flex flex-wrap gap-2 p-2 bg-gray-50 border border-gray-200 rounded text-[11px] font-semibold text-gray-700">
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label>
+                    </div>
                 </div>
 
                 <div class="border-t pt-3 mt-3">
@@ -813,7 +872,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.5.2";
+        const APP_VERSION = "1.5.3";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1139,10 +1198,11 @@
                         <td class="px-4 py-2 font-bold text-i9blue">${p.groupId}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
-                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${p.dateStart || 'TBD'} ${p.dateFinal ? `<br>Final: ${p.dateFinal}` : ''}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${p.dateStart || 'TBD'}${p.dateFinal ? `<br>Final: ${p.dateFinal}` : ''}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
-                            <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1"><i class="fa-solid fa-bolt"></i> Generate</button>
+                            <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1 shadow-sm"><i class="fa-solid fa-bolt"></i> Generate</button>
                             <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
                             <button onclick="window.cloudDeleteProgram('${p.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
@@ -1173,6 +1233,8 @@
             document.querySelector(`input[name="prog-deadline-count"][value="4"]`).checked = true;
             updateDeadlineCount();
             
+            document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = false);
+            
             // Clear visual form fields to prevent showing previous entry
             document.getElementById('prog-date-start').value = '';
             document.getElementById('prog-date-final').value = '';
@@ -1198,6 +1260,9 @@
             if(rb) rb.checked = true;
             updateDeadlineCount();
             
+            const dArr = p.days ? p.days.split(', ') : [];
+            document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = dArr.includes(cb.value));
+            
             document.getElementById('prog-date-start').value = p.dateStart || '';
             document.getElementById('prog-date-final').value = p.dateFinal || '';
             document.getElementById('prog-date-early').value = p.dateEarly || '';
@@ -1212,12 +1277,13 @@
             const id = document.getElementById('prog-edit-id').value || generateId('PRG');
             const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
             const dCount = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
+            const days = Array.from(document.querySelectorAll('.prog-day-cb:checked')).map(cb => cb.value).join(', ');
             
             const p = {
                 id: id, groupId: document.getElementById('prog-group').value, year: document.getElementById('prog-year').value,
                 type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
                 season: document.getElementById('prog-season').value, 
-                deadlineCount: dCount,
+                deadlineCount: dCount, days: days,
                 dateStart: document.getElementById('prog-date-start').value,
                 dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
                 dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
@@ -1264,6 +1330,7 @@
                 const grpDisplay = t.groupId === 'ALL' ? '<span class="text-i9blue font-bold">ALL (Network)</span>' : `<span class="text-gray-800 font-bold">${t.groupId}</span>`;
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 text-center"><input type="checkbox" class="tpl-cb" value="${t.id}"></td>
                         <td class="px-4 py-2 text-[11px]">${grpDisplay}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${t.type}${t.preHeader ? `<br><span class="text-gray-500 font-normal">${t.preHeader}</span>` : ''}</td>
                         <td class="px-4 py-2 text-i9blue font-medium">${t.name}</td>
@@ -1274,7 +1341,6 @@
                             ${isManager ? `
                             <button onclick="openEditTemplate('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneTemplate('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            <button onclick="window.cloudDeleteTemplate('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
                             ` : '-'}
                         </td>
                     </tr>`;
@@ -1338,13 +1404,17 @@
             const existing = activeTasks.filter(t => t.programId === progId);
             if(existing.length > 0) { if(!confirm(`Warning: Found ${existing.length} existing tasks. Generating will add duplicates unless cleared manually. Proceed?`)) return; }
             
-            // Only pull templates that apply to this program's group (or all) AND preheader (or blank preheader)
-            const tpls = templates.filter(t => 
-                t.type === p.type && 
-                t.seasons.includes(p.season) && 
-                (t.groupId === 'ALL' || t.groupId === p.groupId) &&
-                (t.preHeader === '' || t.preHeader === p.preHeader)
-            );
+            const tpls = templates.filter(t => {
+                const tGroup = t.groupId || 'ALL';
+                const tPre = t.preHeader || '';
+                const pPre = p.preHeader || '';
+                return t.type === p.type &&
+                       (t.seasons && t.seasons.includes(p.season)) &&
+                       (tGroup === 'ALL' || tGroup === p.groupId) &&
+                       (tPre === '' || tPre === pPre);
+            });
+            
+            if(tpls.length === 0) return alert(`No templates matched this program's Type (${p.type}), Season (${p.season}), and Pre-Header (${p.preHeader || 'None'}). No tasks generated.`);
             
             let count = 0;
             tpls.forEach(t => {
@@ -1352,7 +1422,7 @@
                 if(tgt !== "TBD") {
                     window.cloudSaveActiveTask({
                         id: generateId('ATK'), programId: p.id, templateId: t.id, groupId: p.groupId, type: p.type,
-                        preHeader: t.preHeader, name: t.name, desc: t.desc, assignee: "", defaultRole: t.role, targetDate: tgt, status: "Pending", isOneOff: false
+                        preHeader: t.preHeader || '', name: t.name, desc: t.desc || '', assignee: "", defaultRole: t.role || '', targetDate: tgt, status: "Pending", isOneOff: false
                     });
                     count++;
                 }
@@ -1530,17 +1600,27 @@
         function getSelected(className) { return Array.from(document.querySelectorAll(`.${className}:checked`)).map(cb => cb.value); }
         
         function bulkDelete(type) {
-            const cls = type === 'programs' ? 'prog-cb' : 'task-cb';
+            let cls, action;
+            if(type === 'programs') { cls = 'prog-cb'; action = window.cloudDeleteProgram; }
+            else if(type === 'tasks') { cls = 'task-cb'; action = window.cloudDeleteActiveTask; }
+            else if(type === 'templates') { cls = 'tpl-cb'; action = window.cloudDeleteTemplate; }
+            
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
             if(confirm(`Delete ${ids.length} selected items forever?`)) {
-                ids.forEach(id => type === 'programs' ? window.cloudDeleteProgram(id) : window.cloudDeleteActiveTask(id));
-                document.getElementById(type==='programs'?'selectAllProgs':'selectAllTasks').checked = false;
+                ids.forEach(id => action(id));
+                if(type==='programs') document.getElementById('selectAllProgs').checked=false;
+                if(type==='tasks') document.getElementById('selectAllTasks').checked=false;
+                if(type==='templates') document.getElementById('selectAllTpls').checked=false;
             }
         }
 
         function bulkEditOpen(type) {
-            const cls = type === 'programs' ? 'prog-cb' : 'task-cb';
+            let cls;
+            if(type === 'programs') cls = 'prog-cb';
+            else if(type === 'tasks') cls = 'task-cb';
+            else if(type === 'templates') cls = 'tpl-cb';
+            
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
             
@@ -1549,9 +1629,11 @@
             
             document.getElementById('bulk-edit-programs-fields').classList.add('hidden');
             document.getElementById('bulk-edit-tasks-fields').classList.add('hidden');
+            document.getElementById('bulk-edit-templates-fields').classList.add('hidden');
             
             if(type === 'programs') document.getElementById('bulk-edit-programs-fields').classList.remove('hidden');
             if(type === 'tasks') document.getElementById('bulk-edit-tasks-fields').classList.remove('hidden');
+            if(type === 'templates') document.getElementById('bulk-edit-templates-fields').classList.remove('hidden');
             
             document.getElementById('bulk-edit-overlay').classList.remove('hidden');
             setTimeout(() => document.getElementById('bulk-edit-pane').classList.add('open'), 10);
@@ -1565,9 +1647,10 @@
         function executeBulkEdit(e) {
             e.preventDefault();
             const mode = document.getElementById('bulk-edit-mode').value;
-            const ids = getSelected(mode === 'programs' ? 'prog-cb' : 'task-cb');
+            let ids = [];
             
             if(mode === 'programs') {
+                ids = getSelected('prog-cb');
                 const doYr = document.getElementById('be-cb-year').checked; const yrVal = document.getElementById('be-year').value;
                 const doSea = document.getElementById('be-cb-season').checked; const seaVal = document.getElementById('be-season').value;
                 const doVen = document.getElementById('be-cb-venue').checked; const venVal = document.getElementById('be-venue').value;
@@ -1580,6 +1663,7 @@
                     }
                 });
             } else if (mode === 'tasks') {
+                ids = getSelected('task-cb');
                 const doAss = document.getElementById('be-cb-assignee').checked; const assVal = document.getElementById('be-assignee').value;
                 const doStat = document.getElementById('be-cb-status').checked; const statVal = document.getElementById('be-status').value;
                 const doDate = document.getElementById('be-cb-date').checked; const dateVal = document.getElementById('be-date').value;
@@ -1591,9 +1675,29 @@
                         window.cloudSaveActiveTask(t);
                     }
                 });
+            } else if (mode === 'templates') {
+                ids = getSelected('tpl-cb');
+                const doRole = document.getElementById('be-cb-tpl-role').checked; const roleVal = document.getElementById('be-tpl-role').value;
+                const doAnchor = document.getElementById('be-cb-tpl-anchor').checked; const anchorVal = document.getElementById('be-tpl-anchor').value;
+                const doOffset = document.getElementById('be-cb-tpl-offset').checked; 
+                const offsetNum = parseInt(document.getElementById('be-tpl-offset-num').value || "0"); 
+                const offsetDir = document.getElementById('be-tpl-offset-dir').value;
+                
+                ids.forEach(id => {
+                    const t = templates.find(x=>x.id===id);
+                    if(t) {
+                        if(doRole) t.role = roleVal;
+                        if(doAnchor) t.anchor = anchorVal;
+                        if(doOffset) { t.offsetNum = offsetNum; t.offsetDir = offsetDir; }
+                        window.cloudSaveTemplate(t);
+                    }
+                });
             }
+            
             closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
-            document.getElementById(mode==='programs'?'selectAllProgs':'selectAllTasks').checked = false;
+            if(mode==='programs') document.getElementById('selectAllProgs').checked = false;
+            if(mode==='tasks') document.getElementById('selectAllTasks').checked = false;
+            if(mode==='templates') document.getElementById('selectAllTpls').checked = false;
         }
 
         /* --- BRANDING --- */
