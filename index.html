@@ -584,6 +584,51 @@
         </div>
     </div>
 
+    <!-- TEMPLATE CREATION MODAL -->
+    <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-sm font-bold text-i9blue">Add Master Template Rule</h3>
+            <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold mb-1">Program Type</label>
+                    <select id="tpl-type" required onchange="updateSubcats()" class="w-full p-2 border rounded bg-gray-50 font-semibold">
+                        <option value="League">League</option>
+                        <option value="Camp">Camp</option>
+                        <option value="Training/Clinic">Training/Clinic</option>
+                        <option value="School">School</option>
+                    </select>
+                </div>
+    
+                <div>
+                    <label class="block font-bold mb-1">Subcategory Phase</label>
+                    <select id="tpl-subcat" required class="w-full p-2 border rounded bg-gray-50 font-semibold"></select>
+                </div>
+    
+                <div>
+                    <label class="block font-bold mb-1">Task Description</label>
+                    <input type="text" id="tpl-desc" required placeholder="e.g. Order T-Shirts & Equipment" class="w-full p-2 border rounded bg-gray-50">
+                </div>
+    
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Target Offset (Days)</label>
+                        <input type="number" id="tpl-offset" required placeholder="-30 (Before Kickoff) or 7 (After)" class="w-full p-2 border rounded bg-gray-50">
+                        <p class="text-[10px] text-gray-500 mt-0.5">Use negative numbers for pre-kickoff tasks.</p>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Default Assignee Role</label>
+                        <input type="text" id="tpl-role" required placeholder="e.g. Program Director" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                </div>
+    
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Template Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+        
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
             <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
