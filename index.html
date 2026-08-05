@@ -84,7 +84,7 @@
                 <i class="fa-solid fa-chart-pie"></i> Executive Dashboard
             </button>
             <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-calendar-days"></i> Program Control Center
+                <i class="fa-solid fa-calendar-days"></i> Programs
             </button>
             <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-layer-group"></i> Template Builder
@@ -153,12 +153,11 @@
             </div>
         </section>
 
-        <!-- TAB 2: PROGRAM CONTROL CENTER -->
+        <!-- TAB 2: PROGRAMS -->
         <section id="view-control" class="tab-view hidden space-y-4">
             <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-3">
                 <div>
-                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-calendar-days text-i9gold"></i> Program Control Center</h2>
-                    <p class="text-xs text-gray-500">Establish program dates, bye-weeks, and generate task lists from templates.</p>
+                <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-calendar-days text-i9gold"></i> Programs</h2>                    <p class="text-xs text-gray-500">Establish program dates, bye-weeks, and generate task lists from templates.</p>
                 </div>
                 <div class="flex items-center gap-2 permission-create-program hidden">
                     <button onclick="openAddProgramModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
@@ -490,27 +489,76 @@
 
     <!-- MODALS (Program, Template, Active Task, Branding) -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-sm font-bold text-i9blue">Add New Program</h3>
-            <form onsubmit="saveProgram(event)" class="space-y-3 text-xs">
+            <form onsubmit="saveProgram(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="prog-edit-id">
-                <div class="grid grid-cols-2 gap-2">
+                
+                <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold mb-1">Group / Franchise</label><select id="prog-group" required class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
-                    <div><label class="block font-bold mb-1">Year</label><input type="number" id="prog-year" required value="2026" class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div>
+                        <label class="block font-bold mb-1">Year</label>
+                        <select id="prog-year" required class="w-full p-2 border rounded bg-gray-50 font-semibold">
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div><label class="block font-bold mb-1">Pre-Header</label><input type="text" id="prog-pre" placeholder="e.g. SP26" class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
-                    <div><label class="block font-bold mb-1">Program Type</label><select id="prog-type" class="w-full p-2 border rounded bg-gray-50"><option value="League">League</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option></select></div>
+    
+                <div>
+                    <label class="block font-bold mb-1">Program Type</label>
+                    <div class="flex flex-wrap gap-3 p-2 bg-gray-50 border border-gray-200 rounded font-semibold text-gray-700">
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="prog-type-radio" value="League" checked onchange="updateProgPreHeaderOptions()"> League</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="prog-type-radio" value="Camp" onchange="updateProgPreHeaderOptions()"> Camp</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="prog-type-radio" value="Training/Clinic" onchange="updateProgPreHeaderOptions()"> Clinic/Training</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="prog-type-radio" value="School" onchange="updateProgPreHeaderOptions()"> School</label>
+                    </div>
                 </div>
-                <div class="grid grid-cols-3 gap-2">
+    
+                <div class="grid grid-cols-2 gap-4">
+                    <div id="prog-pre-container">
+                        <label class="block font-bold mb-1">Pre-Header</label>
+                        <select id="prog-pre" class="w-full p-2 border rounded bg-gray-50"></select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Season</label>
+                        <select id="prog-season" class="w-full p-2 border rounded bg-gray-50">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                </div>
+    
+                <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold mb-1">Start (Mon)</label><input type="date" id="prog-start" required class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Days of Op</label><input type="text" id="prog-days" placeholder="Sat/Sun" class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Weeks</label><input type="number" id="prog-weeks" value="7" class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div><label class="block font-bold mb-1">Program Length (Weeks)</label><input type="number" id="prog-weeks" value="7" required class="w-full p-2 border rounded bg-gray-50"></div>
                 </div>
+    
+                <div>
+                    <label class="block font-bold mb-1">Days of Operation</label>
+                    <div class="flex flex-wrap gap-2.5 p-2 bg-gray-50 border border-gray-200 rounded text-[11px] font-semibold text-gray-700">
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label>
+                    </div>
+                </div>
+    
+                <div><label class="block font-bold mb-1 text-rose-600">Bye-Weeks (Optional, comma separated dates)</label><input type="text" id="prog-byes" placeholder="2026-07-04, 2026-09-01" class="w-full p-2 border rounded bg-rose-50 text-rose-800"></div>
                 <div><label class="block font-bold mb-1">Venue (Optional)</label><input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50"></div>
-                <div><label class="block font-bold mb-1 text-rose-600">Bye-Weeks (Comma separated dates)</label><input type="text" id="prog-byes" placeholder="2026-07-04, 2026-09-01" class="w-full p-2 border rounded bg-rose-50 text-rose-800"></div>
-                <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save</button></div>
+                
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save</button>
+                </div>
             </form>
         </div>
     </div>
@@ -706,6 +754,7 @@
 
         const SUBCATS = {
             "League": ["Early", "Late"],
+            "Camp": ["Early", "Late"],
             "Training/Clinic": ["Pre-Season", "In-Season", "Early", "Late"],
             "School": ["In", "After"]
         };
@@ -1166,26 +1215,60 @@
             });
         }
 
-        function openAddProgramModal() { document.getElementById('program-modal').classList.remove('hidden'); }
+       function updateProgPreHeaderOptions() {
+            const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
+            const container = document.getElementById('prog-pre-container');
+            const select = document.getElementById('prog-pre');
+            
+            select.innerHTML = '';
+            
+            if (type === 'School') {
+                container.classList.add('hidden'); // Hide for School
+                select.value = '';
+            } else {
+                container.classList.remove('hidden');
+                let options = [];
+                if (type === 'League' || type === 'Camp') {
+                    options = ['Early', 'Late'];
+                } else if (type === 'Training/Clinic') {
+                    options = ['Pre-Season', 'In-Season', 'Late', 'Early'];
+                }
+                options.forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`);
+            }
+        }
+
+        function openAddProgramModal() { 
+            document.getElementById('program-modal').classList.remove('hidden');
+            updateProgPreHeaderOptions(); // Force populate dropdown on open
+        }
+
         function saveProgram(e) {
             e.preventDefault();
+            
+            const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
+            const preHeader = type === 'School' ? '' : document.getElementById('prog-pre').value;
+            
+            // Gather all checked days into a comma-separated string
+            const dayCheckboxes = document.querySelectorAll('.prog-day-cb:checked');
+            const days = Array.from(dayCheckboxes).map(cb => cb.value).join(', ');
+
             const p = {
                 id: generateId('PRG'),
                 groupId: document.getElementById('prog-group').value,
                 year: document.getElementById('prog-year').value,
-                preHeader: document.getElementById('prog-pre').value.trim(),
+                preHeader: preHeader,
                 season: document.getElementById('prog-season').value,
-                type: document.getElementById('prog-type').value,
+                type: type,
                 start: document.getElementById('prog-start').value,
-                days: document.getElementById('prog-days').value.trim(),
+                days: days || "TBD", // Fallback if no days checked
                 weeks: parseInt(document.getElementById('prog-weeks').value),
                 venue: document.getElementById('prog-venue').value.trim(),
                 byes: document.getElementById('prog-byes').value.trim()
             };
             window.cloudSaveProgram(p);
-            closeModals(); showToast("Program Created", "Ready for task generation.");
+            closeModals(); 
+            showToast("Program Created", "Ready for task generation.");
         }
-
         function renderTemplates() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
