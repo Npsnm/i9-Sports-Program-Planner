@@ -710,7 +710,7 @@
             "School": ["In", "After"]
         };
 
-        const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
+       const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
         const DEFAULT_PERMISSIONS = {
             "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
             "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
@@ -718,6 +718,9 @@
             "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
             "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
         };
+        
+        // ADDED THIS LINE: Expose defaults to the window object for Firebase
+        window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
         var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], sysPermissions = DEFAULT_PERMISSIONS;
