@@ -200,6 +200,10 @@
                         <label for="view-day" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/day:bg-white peer-checked/day:text-i9blue peer-checked/day:shadow z-10">Day</label>
                     </div>
 
+                    <!-- Filter Options -->
+                    <select id="filter-cal-group" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                        <option value="ALL">All Authorized Groups</option>
+                    </select>
                     <select id="filter-cal-prog-type" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
                         <option value="ALL">All Program Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option>
                     </select>
@@ -294,7 +298,7 @@
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
-                            <th class="px-3 py-3 font-bold">Program Link</th>
+                            <th class="px-3 py-3 font-bold">Program Link / Group</th>
                             <th class="px-3 py-3 font-bold">Level</th>
                             <th class="px-3 py-3 font-bold">Task Name & Desc</th>
                             <th class="px-3 py-3 font-bold">Target Date</th>
@@ -728,7 +732,7 @@
         </div>
     </div>
 
-    <!-- PROGRAM MODAL (ADDED) -->
+    <!-- PROGRAM MODAL -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -802,7 +806,7 @@
         </div>
     </div>
 
-    <!-- TASK TEMPLATE / PROFILE MODAL (ADDED) -->
+    <!-- TASK TEMPLATE / PROFILE MODAL -->
     <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -848,7 +852,7 @@
         </div>
     </div>
 
-    <!-- ACTIVE TASK MODAL (ADDED) -->
+    <!-- ACTIVE TASK MODAL -->
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -1383,13 +1387,18 @@
             const tplGroup = document.getElementById('tpl-group');
             const calProgramFilter = document.getElementById('filter-cal-program');
             
+            // New Calendar Group Filter Check
+            const calGroupFilter = document.getElementById('filter-cal-group');
+            
             if(pGroup) pGroup.innerHTML = ''; if(atGroup) atGroup.innerHTML = '';
             if(tplGroup) tplGroup.innerHTML = '<option value="ALL">ALL GROUPS (Network-Wide)</option>';
             if(calProgramFilter) calProgramFilter.innerHTML = '<option value="ALL">All Specific Programs</option>';
+            if(calGroupFilter) calGroupFilter.innerHTML = '<option value="ALL">All Authorized Groups</option>';
             
             ag.forEach(g => { 
                 if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
                 if(tplGroup) tplGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                if(calGroupFilter) calGroupFilter.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
             });
 
             programs.forEach(p => { 
@@ -1469,6 +1478,7 @@
             const view = document.querySelector('input[name="cal-view-type"]:checked').value;
             
             // Read standard filters
+            const fGroup = document.getElementById('filter-cal-group') ? document.getElementById('filter-cal-group').value : 'ALL';
             const fProgType = document.getElementById('filter-cal-prog-type').value;
             const fProgramId = document.getElementById('filter-cal-program').value;
             const fSeason = document.getElementById('filter-cal-season').value;
@@ -1502,7 +1512,7 @@
                 for(let d=1; d<=daysInMonth; d++) {
                     const renderDate = new Date(y, m, d);
                     const dayStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    grid.innerHTML += generateCalendarDayCell(dayStr, d, renderDate, today, agIds, fProgType, fProgramId, fSeason, "h-28", view);
+                    grid.innerHTML += generateCalendarDayCell(dayStr, d, renderDate, today, agIds, fGroup, fProgType, fProgramId, fSeason, "h-28", view);
                 }
 
             } else if (view === 'week') {
@@ -1528,7 +1538,7 @@
                     headerGrid.innerHTML += `<div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">${days[i]} ${currentDay.getDate()}</div>`;
                     
                     const dayStr = `${currentDay.getFullYear()}-${String(currentDay.getMonth()+1).padStart(2,'0')}-${String(currentDay.getDate()).padStart(2,'0')}`;
-                    grid.innerHTML += generateCalendarDayCell(dayStr, currentDay.getDate(), currentDay, today, agIds, fProgType, fProgramId, fSeason, "h-64", view);
+                    grid.innerHTML += generateCalendarDayCell(dayStr, currentDay.getDate(), currentDay, today, agIds, fGroup, fProgType, fProgramId, fSeason, "h-64", view);
                 }
 
             } else if (view === 'day') {
@@ -1542,12 +1552,12 @@
                 if(displayEl) displayEl.textContent = calendarDate.toLocaleDateString('en-US', {month: 'long', day:'numeric', year: 'numeric'});
 
                 const dayStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(calendarDate.getDate()).padStart(2,'0')}`;
-                grid.innerHTML += generateCalendarDayCell(dayStr, calendarDate.getDate(), calendarDate, today, agIds, fProgType, fProgramId, fSeason, "min-h-[400px]", view);
+                grid.innerHTML += generateCalendarDayCell(dayStr, calendarDate.getDate(), calendarDate, today, agIds, fGroup, fProgType, fProgramId, fSeason, "min-h-[400px]", view);
             }
         }
 
         // Helper function for Calendar Cells
-        function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agIds, fProgType, fProgramId, fSeason, heightClass = "h-28", view = "month") {
+        function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agIds, fGroup, fProgType, fProgramId, fSeason, heightClass = "h-28", view = "month") {
             renderDate.setHours(0,0,0,0);
             const isToday = renderDate.getTime() === todayDate.getTime();
             const holidayName = getUSHoliday(renderDate);
@@ -1556,6 +1566,7 @@
             const dayTasks = activeTasks.filter(t => {
                 if(t.targetDate !== dayStr) return false;
                 if(!agIds.includes(t.groupId)) return false;
+                if(fGroup !== 'ALL' && t.groupId !== fGroup) return false; // Check new group filter
                 
                 const isComplete = t.status === 'Complete';
                 const isInProgress = t.status === 'In Progress';
@@ -1588,6 +1599,7 @@
             if(calFilters.milestones !== false) {
                 const dayPrograms = programs.filter(p => {
                     if(!agIds.includes(p.groupId)) return false;
+                    if(fGroup !== 'ALL' && p.groupId !== fGroup) return false; // Check new group filter
                     if(fProgramId !== 'ALL' && p.id !== fProgramId) return false;
                     if(fProgType !== 'ALL' && p.type !== fProgType) return false;
                     if(fSeason !== 'ALL' && p.season !== fSeason) return false;
@@ -1631,7 +1643,8 @@
 
                 const icon = isOverdue ? `<i class="fa-solid fa-triangle-exclamation text-[8px] text-rose-600 mr-1"></i>` : '';
 
-                return `<div onclick="openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="${t.name}\nStatus: ${t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}${t.name}</div>`;
+                // ADDED: Display the groupId visually on the task pill
+                return `<div onclick="openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="Group: ${t.groupId}\nTask: ${t.name}\nStatus: ${t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}<span class="font-bold opacity-60 mr-1">[${t.groupId}]</span>${t.name}</div>`;
             }).join('');
 
             return `<div class="${heightClass} border ${cellHighlight} rounded p-1 overflow-y-auto bg-white flex flex-col relative group transition-colors">
@@ -1664,10 +1677,11 @@
                 const borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
                 const levelIcon = t.level === 'Marketing' ? '<i class="fa-solid fa-bullhorn text-emerald-600"></i>' : '<i class="fa-solid fa-gears text-i9blue"></i>';
 
+                // ADDED: Added group ID tag directly inside the dashboard task lists
                 el.innerHTML += `
                 <div class="p-2.5 bg-gray-50 border border-gray-200 rounded ${borderLeft} flex justify-between items-center transition hover:bg-gray-100 cursor-pointer mb-2" onclick="openEditActiveTask('${t.id}')">
                     <div class="overflow-hidden pr-2">
-                        <div class="font-bold text-gray-800 text-xs flex items-center gap-1.5 truncate">${levelIcon} ${t.name}</div>
+                        <div class="font-bold text-gray-800 text-xs flex items-center gap-1.5 truncate">${levelIcon} <span class="text-gray-400 font-normal text-[10px]">[${t.groupId}]</span> ${t.name}</div>
                         <div class="text-[10px] text-gray-600 mt-0.5 truncate">Due: ${formatTargetDate(t.targetDate)} | Assigned: ${t.assignee || '<span class="text-rose-500 font-bold">Unassigned</span>'}</div>
                     </div>
                     <button class="text-gray-400 hover:text-i9blue flex-shrink-0"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
@@ -2013,8 +2027,12 @@
                 if (fAss === 'ME' && t.assignee !== currentUser.name) return;
                 if (fAss === 'UNASSIGNED' && !isUn) return;
                 
+                // ADDED: Fallback visual for One-Off task group association
+                let pName = 'Unknown';
                 const p = programs.find(x => x.id === t.programId);
-                const pName = p ? `[${p.groupId}] ${p.preHeader} ${p.season}` : 'Unknown';
+                if (p) pName = `[${p.groupId}] ${p.preHeader} ${p.season}`;
+                else if (t.isOneOff) pName = `[${t.groupId}] One-Off Task`;
+                else pName = `[${t.groupId}] Unknown Program`;
 
                 const levelBadge = taskLevel === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
 
