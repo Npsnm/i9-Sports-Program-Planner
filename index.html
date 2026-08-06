@@ -241,7 +241,7 @@
                     <div class="flex items-center gap-2">
                         <button onclick="goToToday()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
                         <button onclick="changeCalendarDate(-1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[150px] text-center text-sm uppercase tracking-wide">August 2026</span>
+                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[150px] text-center text-sm uppercase tracking-wide"></span>
                         <button onclick="changeCalendarDate(1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-right"></i></button>
                         <input type="date" id="calendar-jump-date" onchange="jumpToDate(this.value)" class="ml-1 p-1.5 border border-gray-300 rounded-lg bg-gray-50 text-xs text-gray-700 outline-none cursor-pointer shadow-sm transition hover:bg-white" title="Direct jump to date">
                     </div>
@@ -499,8 +499,19 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
                 <div class="border-b pb-4">
                     <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                    <p class="text-xs text-gray-500">Manage your credentials and view your system account links.</p>
+                    <p class="text-xs text-gray-500">Manage your profile, credentials, and view your system account links.</p>
                 </div>
+
+                <!-- ADDED: Profile Update Form -->
+                <form onsubmit="handleProfileUpdate(event)" class="space-y-3 text-xs border-b pb-6">
+                    <h3 class="font-bold text-gray-800 text-sm">Personal Profile</h3>
+                    <div class="grid grid-cols-2 gap-4 max-w-md">
+                        <div><label class="block font-bold mb-1">First Name</label><input type="text" id="setting-first" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                        <div><label class="block font-bold mb-1">Last Name</label><input type="text" id="setting-last" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
+                    </div>
+                    <div><label class="block font-bold mb-1">Phone Number</label><input type="tel" id="setting-phone" required class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
+                    <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-700 transition">Save Profile</button>
+                </form>
 
                 <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
@@ -780,8 +791,9 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 border-t pt-4">
-                    <div>
+                <!-- ADDED BYE WEEK AND DURATION UPDATE -->
+                <div class="grid grid-cols-3 gap-4 border-t pt-4">
+                    <div class="col-span-1">
                         <label class="block font-bold mb-1">Days of Week</label>
                         <div class="grid grid-cols-4 gap-1 text-[10px]">
                             <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label><label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
@@ -790,10 +802,14 @@
                             <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
                         </div>
                     </div>
-                    <div>
+                    <div class="col-span-1">
                         <label class="block font-bold mb-1">Duration (Weeks)</label>
                         <input type="number" id="prog-weeks" class="w-full p-2 border rounded bg-gray-50" min="1" max="52" placeholder="e.g. 7">
-                        <label class="block font-bold mb-1 mt-2">Venue / Location</label>
+                        <label class="block font-bold mb-1 mt-2">Bye Week Date (Optional)</label>
+                        <input type="date" id="prog-bye-week" class="w-full p-2 border rounded bg-gray-50" title="Select a date representing the week off">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block font-bold mb-1">Venue / Location</label>
                         <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
                     </div>
                 </div>
@@ -1021,7 +1037,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.3.0 (Milestones & Holidays)";
+        const APP_VERSION = "2.4.0 (Milestones, Bye Weeks & Profiles)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
@@ -1312,7 +1328,7 @@
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
-            applyPermissions(); populateFilterOptions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
+            applyPermissions(); populateFilterOptions(); populateProfileForm(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
         }
 
         function checkPendingAlerts() {
@@ -1346,6 +1362,26 @@
             if (perms.editTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
         }
 
+        // ADDED PROFILE DATA BINDING
+        function populateProfileForm() {
+            if (!currentUser) return;
+            document.getElementById('setting-first').value = currentUser.firstName || '';
+            document.getElementById('setting-last').value = currentUser.lastName || '';
+            document.getElementById('setting-phone').value = currentUser.phone || '';
+        }
+
+        function handleProfileUpdate(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            currentUser.firstName = document.getElementById('setting-first').value.trim();
+            currentUser.lastName = document.getElementById('setting-last').value.trim();
+            currentUser.name = `${currentUser.firstName} ${currentUser.lastName}`;
+            currentUser.phone = document.getElementById('setting-phone').value.trim();
+            window.cloudSaveUser(currentUser);
+            applyPermissions(); 
+            showToast("Success", "Personal profile details updated.");
+        }
+
         async function handleEmailUpdate(e) {
             e.preventDefault(); if (!currentUser) return;
             const newEmail = document.getElementById('setting-new-email').value.trim();
@@ -1368,6 +1404,7 @@
             document.getElementById(`view-${tab}`).classList.remove('hidden');
             if (tab === 'dashboard') renderDashboard();
             if (tab === 'calendar') renderCalendar();
+            if (tab === 'settings') populateProfileForm();
             applyPermissions(); 
         }
 
@@ -1603,7 +1640,7 @@
                     if(fProgramId !== 'ALL' && p.id !== fProgramId) return false;
                     if(fProgType !== 'ALL' && p.type !== fProgType) return false;
                     if(fSeason !== 'ALL' && p.season !== fSeason) return false;
-                    return p.dateStart === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr;
+                    return p.dateStart === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr || p.byeWeek === dayStr;
                 });
 
                 dayPrograms.forEach(p => {
@@ -1612,9 +1649,11 @@
                     if(p.dateFinal === dayStr) milestoneTypes.push("Final Deadline");
                     if(p.dateEarly === dayStr) milestoneTypes.push("Early Deadline");
                     if(p.dateOffseason === dayStr) milestoneTypes.push("Offseason Deadline");
+                    if(p.byeWeek === dayStr) milestoneTypes.push("Bye Week"); // ADDED: Visual flag
                     
                     milestoneTypes.forEach(mt => {
-                        milestonesHTML += `<div onclick="openEditProgramModal('${p.id}')" class="text-[9px] font-bold leading-tight truncate px-1 py-0.5 mb-1 rounded bg-indigo-100 text-indigo-800 border border-indigo-300 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" title="${p.groupId} ${p.preHeader} ${p.season} ${p.type}\n${mt}"><i class="fa-solid fa-flag text-[8px] mr-1"></i>${p.groupId} ${p.season}: ${mt}</div>`;
+                        const styleCls = mt === "Bye Week" ? "bg-amber-100 text-amber-800 border-amber-300" : "bg-indigo-100 text-indigo-800 border-indigo-300";
+                        milestonesHTML += `<div onclick="openEditProgramModal('${p.id}')" class="text-[9px] font-bold leading-tight truncate px-1 py-0.5 mb-1 rounded border shadow-sm cursor-pointer hover:opacity-80 transition-opacity ${styleCls}" title="${p.groupId} ${p.preHeader} ${p.season} ${p.type}\n${mt}"><i class="fa-solid fa-flag text-[8px] mr-1"></i>${p.groupId} ${p.season}: ${mt}</div>`;
                     });
                 });
             }
@@ -1643,7 +1682,7 @@
 
                 const icon = isOverdue ? `<i class="fa-solid fa-triangle-exclamation text-[8px] text-rose-600 mr-1"></i>` : '';
 
-                // ADDED: Display the groupId visually on the task pill
+                // Display the groupId visually on the task pill
                 return `<div onclick="openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="Group: ${t.groupId}\nTask: ${t.name}\nStatus: ${t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}<span class="font-bold opacity-60 mr-1">[${t.groupId}]</span>${t.name}</div>`;
             }).join('');
 
@@ -1677,7 +1716,7 @@
                 const borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
                 const levelIcon = t.level === 'Marketing' ? '<i class="fa-solid fa-bullhorn text-emerald-600"></i>' : '<i class="fa-solid fa-gears text-i9blue"></i>';
 
-                // ADDED: Added group ID tag directly inside the dashboard task lists
+                // Added group ID tag directly inside the dashboard task lists
                 el.innerHTML += `
                 <div class="p-2.5 bg-gray-50 border border-gray-200 rounded ${borderLeft} flex justify-between items-center transition hover:bg-gray-100 cursor-pointer mb-2" onclick="openEditActiveTask('${t.id}')">
                     <div class="overflow-hidden pr-2">
@@ -1797,6 +1836,8 @@
                 if(fGrp !== 'ALL' && p.groupId !== fGrp) return; if(fYr !== 'ALL' && p.year !== fYr) return;
                 if(fSea !== 'ALL' && p.season !== fSea) return; if(fTyp !== 'ALL' && p.type !== fTyp) return;
 
+                const byeDisplay = p.byeWeek ? `<br><span class="text-amber-600 font-bold">Bye: ${formatTargetDate(p.byeWeek)}</span>` : '';
+
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
@@ -1804,7 +1845,7 @@
                         <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
                         <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
-                        <td class="px-4 py-2 text-[10px] text-gray-600">${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'} ${byeDisplay}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
                             <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1 shadow-sm"><i class="fa-solid fa-bolt"></i> Generate</button>
@@ -1845,6 +1886,8 @@
             document.getElementById('prog-date-final').value = '';
             document.getElementById('prog-date-early').value = '';
             document.getElementById('prog-date-offseason').value = '';
+            document.getElementById('prog-weeks').value = '';
+            document.getElementById('prog-bye-week').value = '';
             document.getElementById('prog-venue').value = '';
             
             document.getElementById('program-modal').classList.remove('hidden'); 
@@ -1872,7 +1915,8 @@
             document.getElementById('prog-date-final').value = p.dateFinal || '';
             document.getElementById('prog-date-early').value = p.dateEarly || '';
             document.getElementById('prog-date-offseason').value = p.dateOffseason || '';
-            document.getElementById('prog-weeks').value = p.weeks;
+            document.getElementById('prog-weeks').value = p.weeks || '';
+            document.getElementById('prog-bye-week').value = p.byeWeek || '';
             document.getElementById('prog-venue').value = p.venue || '';
             document.getElementById('program-modal').classList.remove('hidden');
         }
@@ -1894,6 +1938,7 @@
                 dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
                 dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
                 weeks: document.getElementById('prog-weeks').value,
+                byeWeek: document.getElementById('prog-bye-week').value,
                 venue: document.getElementById('prog-venue').value
             };
             window.cloudSaveProgram(p);
@@ -2027,7 +2072,7 @@
                 if (fAss === 'ME' && t.assignee !== currentUser.name) return;
                 if (fAss === 'UNASSIGNED' && !isUn) return;
                 
-                // ADDED: Fallback visual for One-Off task group association
+                // Fallback visual for One-Off task group association
                 let pName = 'Unknown';
                 const p = programs.find(x => x.id === t.programId);
                 if (p) pName = `[${p.groupId}] ${p.preHeader} ${p.season}`;
@@ -2239,8 +2284,9 @@
         function renderPermissions() {
             const tb = document.getElementById('permissions-table-body'); if(!tb) return; tb.innerHTML = '';
             ROLES.forEach(r => {
+                if (r === 'System Admin') return; // Excluded from view
                 const p = sysPermissions[r] || DEFAULT_PERMISSIONS["Staff"];
-                tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="p-3 font-bold text-gray-800">${r}</td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''} ${r==='System Admin'?'disabled':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''} ${r==='System Admin'?'disabled':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''} ${r==='System Admin'?'disabled':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTasks',this.checked)" ${p.editTasks?'checked':''} ${r==='System Admin'?'disabled':''}></td></tr>`;
+                tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="p-3 font-bold text-gray-800">${r}</td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTasks',this.checked)" ${p.editTasks?'checked':''}></td></tr>`;
             });
         }
         function updatePerm(tier, field, val) { sysPermissions[tier][field] = val; window.cloudSavePermissions(tier, sysPermissions[tier]); }
