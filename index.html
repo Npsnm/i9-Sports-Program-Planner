@@ -63,12 +63,8 @@
                     </div>
                 </div>
 
-                <button id="btn-manage-branding" onclick="openBrandingModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm hidden">
+                <button id="btn-manage-branding" onclick="openBrandingModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm hidden admin-only">
                     <i class="fa-solid fa-palette text-i9gold"></i> Branding
-                </button>
-                <button id="btn-manage-users" onclick="openUserManagementModal()" class="relative bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm hidden">
-                    <i class="fa-solid fa-users-gear"></i> Admin Dashboard
-                    <span id="admin-alert-badge" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
                 </button>
                 <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-file-excel"></i> Export CSV
@@ -95,11 +91,12 @@
             <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-layer-group"></i> Task Profiles
             </button>
-            <button onclick="switchTab('permissions')" id="tab-permissions" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap hidden admin-only">
-                <i class="fa-solid fa-shield-halved"></i> System Permissions
+            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden permission-manage-groups">
+                <i class="fa-solid fa-users-gear"></i> Admin Dashboard
+                <span id="admin-alert-badge" class="absolute -top-1 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
             </button>
             <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-user-gear"></i> User Settings
+                <i class="fa-solid fa-gear"></i> Settings
             </button>
         </div>
     </div>
@@ -318,45 +315,84 @@
             </div>
         </section>
 
-        <!-- TAB 5: SYSTEM PERMISSIONS (ADMIN ONLY) -->
-        <section id="view-permissions" class="tab-view hidden space-y-4 admin-only">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
-                <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
-                    <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions</h2>
-                        <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
-                    </div>
-                </div>
+        <!-- TAB 5: ADMIN DASHBOARD (USERS & GROUPS) -->
+        <section id="view-admin" class="tab-view hidden space-y-6 permission-manage-groups">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
+                <p class="text-xs text-gray-500">Approve users, configure groups, and send invitations.</p>
             </div>
             
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
-                <table class="w-full text-xs text-left text-gray-700">
-                    <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th class="px-4 py-3 font-bold">Role Tier</th>
-                            <th class="px-4 py-3 font-bold text-center">Manage Groups & Users</th>
-                            <th class="px-4 py-3 font-bold text-center">Create Programs</th>
-                            <th class="px-4 py-3 font-bold text-center">Edit Task Profiles</th>
-                            <th class="px-4 py-3 font-bold text-center">Edit/Assign Active Tasks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
-                </table>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- LEFT COLUMN: USERS (PENDING & ACTIVE) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-rose-200 overflow-hidden">
+                        <div class="bg-rose-50/50 p-3 border-b border-rose-100 flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-rose-700"><i class="fa-solid fa-hourglass-half"></i> Pending Approvals</h4>
+                            <span id="pending-count-badge" class="bg-rose-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">0 Waiting</span>
+                        </div>
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-rose-50 text-rose-800 uppercase font-bold text-[10px]">
+                                <tr><th class="p-3">User & Contact</th><th class="p-3">Requested Group</th><th class="p-3 text-center">Action</th></tr>
+                            </thead>
+                            <tbody id="pending-users-table" class="divide-y divide-rose-100"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-user-check text-emerald-600"></i> Active User Directory</h4>
+                        </div>
+                        <div class="overflow-y-auto max-h-80">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
+                                    <tr><th class="p-3">User Profile</th><th class="p-3">Role & Access</th><th class="p-3 text-center">Manage</th></tr>
+                                </thead>
+                                <tbody id="active-users-table" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: GROUPS & INVITES -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-blue-200">
+                        <div class="bg-blue-50/50 p-3 border-b border-blue-100">
+                            <h4 class="text-xs font-bold text-i9blue"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
+                                <input type="number" id="new-group-id" required min="100" placeholder="ID (100)" class="w-24 p-2 border border-gray-300 rounded bg-gray-50">
+                                <input type="text" id="new-group-name" required placeholder="Group Name" class="flex-grow p-2 border border-gray-300 rounded bg-gray-50">
+                                <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+</button>
+                            </form>
+                            <div id="group-pill-list" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-emerald-200">
+                        <div class="bg-emerald-50/50 p-3 border-b border-emerald-100">
+                            <h4 class="text-xs font-bold text-emerald-800"><i class="fa-solid fa-envelope-open-text"></i> Quick Invite Generator</h4>
+                        </div>
+                        <div class="p-4 space-y-2 text-xs">
+                            <p class="text-[10px] text-gray-500 mb-2">Draft an email directing new staff to register.</p>
+                            <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border border-gray-300 rounded bg-gray-50">
+                            <button onclick="generateInviteEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm">Generate Email</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- TAB 6: USER SETTINGS -->
-        <section id="view-settings" class="tab-view hidden space-y-4">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
-                <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
-                    <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                        <p class="text-xs text-gray-500">Manage your credentials and view your system account links.</p>
-                    </div>
-                </div>
-            </div>
-
+        <!-- TAB 6: SETTINGS (PERSONAL & SYSTEM PERMISSIONS) -->
+        <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
+            
+            <!-- Personal Account Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
+                    <p class="text-xs text-gray-500">Manage your credentials and view your system account links.</p>
+                </div>
+
                 <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
                     <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
@@ -377,6 +413,29 @@
                     </button>
                 </div>
             </div>
+
+            <!-- System Permissions (System Admin Only) -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4 admin-only hidden">
+                <div class="border-b pb-4">
+                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions Matrix</h2>
+                    <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-gray-50 text-gray-600 uppercase font-bold border-b">
+                            <tr>
+                                <th class="p-3">Role Tier</th>
+                                <th class="p-3 text-center">Manage Groups & Users</th>
+                                <th class="p-3 text-center">Create Programs</th>
+                                <th class="p-3 text-center">Edit Task Profiles</th>
+                                <th class="p-3 text-center">Edit/Assign Active Tasks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
         </section>
 
     </main>
@@ -536,96 +595,36 @@
         </div>
     </div>
 
-    <!-- ADMIN USER MANAGEMENT MODAL -->
-    <div id="user-management-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full p-6 space-y-6 max-h-[90vh] overflow-y-auto">
+    <!-- MODALS (Program, Template, Active Task, Branding, Admin Edit) -->
+    
+    <!-- ADMIN EDIT USER MODAL -->
+    <div id="admin-edit-user-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-users-gear mr-1 text-i9gold"></i> System Admin Dashboard</h3>
-                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h3 class="text-sm font-bold text-i9blue">Edit User Access</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- LEFT COLUMN: GROUPS & INVITES -->
-                <div class="space-y-6">
-                    <div class="bg-blue-50/60 p-4 rounded-lg border border-blue-200/60 space-y-3 permission-manage-groups">
-                        <h4 class="text-xs font-bold text-i9blue border-b border-blue-200 pb-1"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
-                        <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
-                            <input type="number" id="new-group-id" required min="100" placeholder="ID (e.g. 100)" class="w-28 p-2 border rounded bg-white">
-                            <input type="text" id="new-group-name" required placeholder="New Group Name" class="flex-grow p-2 border rounded bg-white">
-                            <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+ Add</button>
-                        </form>
-                        <div id="group-pill-list" class="space-y-1.5 max-h-48 overflow-y-auto pr-1"></div>
-                    </div>
-                    
-                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 space-y-3">
-                        <h4 class="text-xs font-bold text-emerald-800 border-b border-emerald-200 pb-1"><i class="fa-solid fa-envelope-open-text"></i> Quick Invite Generator</h4>
-                        <p class="text-[10px] text-gray-600">Send an email directing a new user to register.</p>
-                        <div class="space-y-2 text-xs">
-                            <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border rounded bg-white">
-                            <button onclick="generateInviteEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm">Generate Email</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RIGHT COLUMN: USERS (PENDING & ACTIVE) -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- PENDING APPROVALS -->
-                    <div class="space-y-2">
-                        <h4 class="text-xs font-bold text-rose-600 border-b border-rose-200 pb-1 flex items-center justify-between">
-                            <span><i class="fa-solid fa-hourglass-half"></i> Pending Approvals</span>
-                            <span id="pending-count-badge" class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full text-[10px]">0 Waiting</span>
-                        </h4>
-                        <div class="border border-rose-100 rounded-lg overflow-hidden bg-rose-50/30">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-rose-50 text-rose-800 uppercase font-bold text-[10px]">
-                                    <tr><th class="p-2">Name & Contact</th><th class="p-2">Requested Group</th><th class="p-2 text-center">Action</th></tr>
-                                </thead>
-                                <tbody id="pending-users-table" class="divide-y divide-rose-100"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- ACTIVE DIRECTORY -->
-                    <div class="space-y-2">
-                        <h4 class="text-xs font-bold text-gray-800 border-b pb-1"><i class="fa-solid fa-user-check text-emerald-600"></i> Active User Directory</h4>
-                        <div class="border rounded-lg overflow-y-auto max-h-64">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-gray-100 text-gray-700 uppercase font-bold text-[10px] sticky top-0 z-10 shadow-sm">
-                                    <tr><th class="p-2">User Profile</th><th class="p-2">Role & Access</th><th class="p-2 text-center">Manage</th></tr>
-                                </thead>
-                                <tbody id="active-users-table" class="divide-y"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- EDIT USER FORM (Hidden by default) -->
-            <form id="admin-edit-user-form" onsubmit="adminSaveUser(event)" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-300 space-y-4 text-xs mt-4 shadow-inner">
-                <div class="flex justify-between items-center border-b pb-1">
-                    <h4 class="font-bold text-i9blue text-sm">Edit User Access</h4>
-                    <button type="button" onclick="document.getElementById('admin-edit-user-form').classList.add('hidden')" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+            <form onsubmit="adminSaveUser(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="admin-u-email">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block font-bold mb-1">Role Tier</label>
-                        <select id="admin-u-role" class="w-full p-2 border rounded bg-white font-semibold text-i9blue"></select>
+                        <select id="admin-u-role" class="w-full p-2 border border-gray-300 rounded bg-gray-50 font-semibold text-i9blue"></select>
                         <p class="text-[10px] text-gray-500 mt-1">Leaving a user as 'Pending' revokes their access.</p>
                     </div>
                     <div>
                         <label class="block font-bold mb-1">Territory Access</label>
-                        <div id="admin-u-terr" class="p-2 border rounded bg-white h-24 overflow-y-auto space-y-1 shadow-inner"></div>
+                        <div id="admin-u-terr" class="p-2 border border-gray-300 rounded bg-gray-50 h-24 overflow-y-auto space-y-1"></div>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="submit" class="px-4 py-2 bg-i9blue hover:bg-blue-900 text-white rounded font-bold shadow transition">Save User Settings</button>
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold shadow">Save User Settings</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODALS (Program, Template, Active Task, Branding) -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-sm font-bold text-i9blue">Add/Edit Program</h3>
@@ -887,7 +886,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.6.0";
+        const APP_VERSION = "1.7.0 (Admin Restructure)";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1087,7 +1086,7 @@
             document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
             if (currentUser.role === 'System Admin') document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-            if (perms.manageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('btn-manage-users').classList.remove('hidden'); }
+            if (perms.manageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); }
             if (perms.createPrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
             if (perms.editTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
             if (perms.editTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
@@ -1109,11 +1108,12 @@
 
         /* --- CORE APPLICATION LOGIC & UI --- */
         function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap");
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap" + (btn.classList.contains('permission-manage-groups') ? ' hidden permission-manage-groups' : '') + (btn.classList.contains('admin-only') ? ' hidden admin-only' : ''));
             document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
             document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap";
             document.getElementById(`view-${tab}`).classList.remove('hidden');
             if (tab === 'dashboard') renderDashboard();
+            applyPermissions(); // re-apply hidden classes just in case
         }
 
         function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
@@ -1539,7 +1539,7 @@
         function cloneTask(id) { const t = activeTasks.find(x=>x.id===id); if(t) { window.cloudSaveActiveTask({...t, id: generateId('ATK')}); showToast("Cloned", "Task duplicated successfully."); } }
 
         /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
-        function openUserManagementModal() { document.getElementById('user-management-modal').classList.remove('hidden'); }
+        function openUserManagementModal() { switchTab('admin'); } // Redirect old calls just in case
         function renderGroupPills() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -1595,11 +1595,11 @@
             ROLES.forEach(r => { if(currentUser.role === 'System Admin' || r !== 'System Admin') roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
             roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
             renderTerritoryCheckboxes(); document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
-            document.getElementById('admin-edit-user-form').classList.remove('hidden');
+            document.getElementById('admin-edit-user-modal').classList.remove('hidden');
         }
         function adminSaveUser(e) {
             e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
-            if(u) { u.role = document.getElementById('admin-u-role').value; u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); window.cloudSaveUser(u); document.getElementById('admin-edit-user-form').classList.add('hidden'); showToast("Saved", `Permissions updated for ${u.name}`); }
+            if(u) { u.role = document.getElementById('admin-u-role').value; u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); window.cloudSaveUser(u); document.getElementById('admin-edit-user-modal').classList.add('hidden'); showToast("Saved", `Permissions updated for ${u.name}`); }
         }
         function renderPermissions() {
             const tb = document.getElementById('permissions-table-body'); if(!tb) return; tb.innerHTML = '';
