@@ -257,7 +257,7 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-list-check text-i9gold"></i> Task Directory</h2>
                         <p class="text-xs text-gray-500">Manage, execute, and track all tasks across your groups.</p>
                     </div>
-                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks">
                         <i class="fa-solid fa-plus"></i> Add One-Off Task
                     </button>
                 </div>
@@ -282,13 +282,13 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="bulkEditOpen('tasks')" id="btn-task-bulk-edit" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                        <button onclick="bulkEditOpen('tasks')" id="btn-task-bulk-edit" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                        <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks">
                             <i class="fa-solid fa-box-archive"></i> Archive Selected
                         </button>
-                        <button onclick="bulkDelete('tasks')" id="btn-task-bulk-delete" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
+                        <button onclick="bulkDelete('tasks')" id="btn-task-bulk-delete" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups">
                             <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
@@ -298,7 +298,6 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200" id="task-table-head">
-                        <!-- Rendered dynamically -->
                     </thead>
                     <tbody id="active-task-table-body" class="divide-y divide-gray-200"></tbody>
                 </table>
@@ -313,7 +312,7 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-calendar-days text-i9gold"></i> Programs</h2>
                         <p class="text-xs text-gray-500">Establish program dates, deadlines, and generate task lists.</p>
                     </div>
-                    <div class="flex items-center gap-2 permission-create-program hidden">
+                    <div class="flex items-center gap-2 permission-create-program">
                         <button onclick="openAddProgramModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
                             <i class="fa-solid fa-plus text-i9gold"></i> Add New Program
                         </button>
@@ -323,9 +322,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-prog-group" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"><option value="ALL">All Groups</option></select>
-                        <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
-                            <!-- Populated dynamically -->
-                        </select>
+                        <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"></select>
                         <select id="filter-prog-season" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
                         </select>
@@ -334,13 +331,13 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="openImportModal('programs')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
+                        <button onclick="openImportModal('programs')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program">
                             <i class="fa-solid fa-file-import"></i> Import CSV
                         </button>
-                        <button onclick="bulkEditOpen('programs')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
+                        <button onclick="bulkEditOpen('programs')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('programs')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
+                        <button onclick="bulkDelete('programs')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups">
                             <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
@@ -372,7 +369,7 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Task Profiles</h2>
                         <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
                     </div>
-                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
+                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template">
                         <i class="fa-solid fa-plus text-i9gold"></i> Add Profile Rule
                     </button>
                 </div>
@@ -388,13 +385,13 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="openImportModal('templates')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
+                        <button onclick="openImportModal('templates')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template">
                             <i class="fa-solid fa-file-import"></i> Import CSV
                         </button>
-                        <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
+                        <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('templates')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
+                        <button onclick="bulkDelete('templates')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups">
                             <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
@@ -421,11 +418,11 @@
             </div>
         </section>
 
-        <!-- TAB 6: ADMIN DASHBOARD (USERS, GROUPS & WORKLOAD SUMMARY) -->
+        <!-- TAB 6: ADMIN DASHBOARD -->
         <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
-                <p class="text-xs text-gray-500">Approve users, configure groups, review team workload, and manage system activity.</p>
+                <p class="text-xs text-gray-500">Approve users, configure groups, review workload, and audit system activity across franchise groups.</p>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -461,7 +458,7 @@
 
                 <!-- RIGHT COLUMN: ASSIGNEE WORKLOAD SUMMARY, GROUPS & INVITES -->
                 <div class="space-y-6">
-                    <!-- NEW FEATURE: ASSIGNEE WORKLOAD SUMMARY -->
+                    <!-- ASSIGNEE WORKLOAD SUMMARY TABLE -->
                     <div class="bg-white rounded-xl shadow-sm border border-indigo-200 overflow-hidden">
                         <div class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex justify-between items-center">
                             <h4 class="text-xs font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-viewfinder text-i9gold"></i> Assignee Workload Summary</h4>
@@ -525,14 +522,12 @@
             </div>
         </section>
 
-        <!-- TAB 7: SETTINGS (PERSONAL & SYSTEM PERMISSIONS) -->
+        <!-- TAB 7: SETTINGS -->
         <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
-            
-            <!-- Personal Account Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
                 <div class="border-b pb-4">
                     <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                    <p class="text-xs text-gray-500">Manage your profile, credentials, and view your system account links.</p>
+                    <p class="text-xs text-gray-500">Manage your personal details, credentials, and system options.</p>
                 </div>
 
                 <form onsubmit="handleProfileUpdate(event)" class="space-y-3 text-xs border-b pb-6">
@@ -559,14 +554,13 @@
 
                 <div class="space-y-3 text-xs pt-2">
                     <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
-                    <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
+                    <p class="text-gray-500 mb-2">Link your Google Workspace account for single sign-on integration.</p>
                     <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
                         <i class="fa-brands fa-google text-red-500 text-sm"></i> Link Google Account
                     </button>
                 </div>
             </div>
 
-            <!-- Group-Specific Permissions (Manage Groups Tier only) -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4 permission-manage-groups hidden">
                 <div class="border-b pb-4 flex flex-wrap justify-between items-end gap-3">
                     <div>
@@ -593,85 +587,299 @@
                     </table>
                 </div>
             </div>
-
         </section>
 
     </main>
 
-    <!-- FOOTER (Version Info) -->
+    <!-- FOOTER -->
     <footer class="text-center py-4 text-[10px] text-gray-400 mt-auto w-full">
         <p>PD Planner Engine &bull; Build Version <span id="app-version-display"></span></p>
     </footer>
 
-    <!-- ACTIVE TASK MODAL (UPDATED WITH GOOGLE CALENDAR EXPORT BUTTON) -->
-    <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+    <!-- HISTORY LOG MODAL -->
+    <div id="history-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue" id="active-task-title"><i class="fa-solid fa-list-check text-i9gold"></i> Add / Edit Task</h3>
+                <h3 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Change History Logs</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
-                <input type="hidden" id="at-edit-id">
-                <input type="hidden" id="at-is-oneoff">
+            <p class="text-xs text-gray-500 font-bold" id="history-modal-title">Item History</p>
+            <div class="overflow-y-auto flex-grow border border-gray-200 rounded">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
+                        <tr><th class="p-3">Timestamp</th><th class="p-3">User</th><th class="p-3">Action</th><th class="p-3">Details</th></tr>
+                    </thead>
+                    <tbody id="history-modal-table-body" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 rounded font-bold text-xs">Close History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRAM PRICING SLIDE-OVER PANE -->
+    <div id="pricing-pane-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300"></div>
+    <div id="pricing-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col">
+        <div class="bg-i9blue text-white p-4 flex justify-between items-center">
+            <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-tags text-i9gold"></i> Milestone Pricing Schedule</h3>
+            <button onclick="closePricingPane()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-grow text-xs space-y-6">
+            <p class="text-gray-500">Configure distinct pricing for each registration milestone deadline. Saving these prices automatically publishes Note Events to the Task List and Calendar.</p>
+            
+            <form id="pricing-pane-form" onsubmit="saveProgramPricingSchedule(event)" class="space-y-4">
+                <input type="hidden" id="pp-prog-id">
                 
-                <div id="at-program-select-container" class="hidden">
-                    <label class="block font-bold mb-1">Link to Program (Optional)</label>
-                    <select id="at-program" class="w-full p-2 border rounded bg-gray-50"></select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-3 rounded border border-gray-200 space-y-3">
                     <div>
-                        <label class="block font-bold mb-1">Task Level (Dept)</label>
-                        <select id="at-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('at-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
-                            <option value="Operational">Operational</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
+                        <label class="font-bold block text-[10px] text-gray-700">1. Offseason Price ($)</label>
+                        <input type="number" step="0.01" id="pp-price-offseason" class="w-full p-2 border rounded bg-white" placeholder="e.g. 129.00">
                     </div>
-                    <div><label class="block font-bold mb-1">Status</label><select id="at-status" class="w-full p-2 border rounded bg-gray-50"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div>
+                    <div>
+                        <label class="font-bold block text-[10px] text-gray-700">2. Early Deadline Price ($)</label>
+                        <input type="number" step="0.01" id="pp-price-early" class="w-full p-2 border rounded bg-white" placeholder="e.g. 149.00">
+                    </div>
+                    <div>
+                        <label class="font-bold block text-[10px] text-gray-700">3. Final Deadline Price ($)</label>
+                        <input type="number" step="0.01" id="pp-price-final" class="w-full p-2 border rounded bg-white" placeholder="e.g. 169.00">
+                    </div>
+                    <div>
+                        <label class="font-bold block text-[10px] text-gray-700">4. Late Registration Price ($)</label>
+                        <input type="number" step="0.01" id="pp-price-late" class="w-full p-2 border rounded bg-white" placeholder="e.g. 189.00">
+                    </div>
                 </div>
 
-                <!-- Marketing Category for Active Task -->
-                <div id="at-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
-                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
-                    <select id="at-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('at-mktg-custom').classList.remove('hidden'); else document.getElementById('at-mktg-custom').classList.add('hidden');">
-                        <option value="">-- Select Category --</option>
-                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
-                    </select>
-                    <input type="text" id="at-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
+                <div class="p-3 bg-blue-50 border border-blue-200 rounded text-blue-900 text-[10px]">
+                    <i class="fa-solid fa-circle-info text-i9blue mr-1"></i>
+                    Price updates sync as automated Note Events on target milestone dates across the calendar and task lists.
+                </div>
+            </form>
+        </div>
+        <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
+            <button onclick="closePricingPane()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
+            <button type="submit" form="pricing-pane-form" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 font-bold rounded text-xs text-white shadow">Save Pricing & Publish Notes</button>
+        </div>
+    </div>
+
+    <!-- BULK EDIT SLIDE-OVER PANE -->
+    <div id="bulk-edit-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300"></div>
+    <div id="bulk-edit-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col">
+        <div class="bg-i9blue text-white p-4 flex justify-between items-center">
+            <h3 class="font-bold text-sm flex items-center gap-2" id="bulk-edit-title"><i class="fa-solid fa-pen-to-square text-i9gold"></i> Bulk Edit Options</h3>
+            <button onclick="closeBulkEdit()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-grow text-xs space-y-6">
+            <p class="text-gray-500 mb-2">Check the box next to the fields you want to overwrite for <span id="bulk-edit-count" class="font-bold text-i9blue">0</span> selected items.</p>
+            
+            <form id="bulk-edit-form" onsubmit="executeBulkEdit(event)" class="space-y-4">
+                <input type="hidden" id="bulk-edit-mode">
+                
+                <!-- Program Bulk Edit Fields -->
+                <div id="bulk-edit-programs-fields" class="hidden space-y-4">
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-year"><div class="flex-grow"><label class="font-bold block text-[10px]">Year</label><select id="be-year" class="w-full p-1.5 border rounded"></select></div></div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-season"><div class="flex-grow"><label class="font-bold block text-[10px]">Season</label><select id="be-season" class="w-full p-1.5 border rounded"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div></div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-venue"><div class="flex-grow"><label class="font-bold block text-[10px]">Venue</label><input type="text" id="be-venue" class="w-full p-1.5 border rounded"></div></div>
                 </div>
 
+                <!-- Task Bulk Edit Fields -->
+                <div id="bulk-edit-tasks-fields" class="hidden space-y-4">
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-assignee">
+                        <div class="flex-grow">
+                            <label class="font-bold block text-[10px]">Assignee</label>
+                            <select id="be-assignee" class="w-full p-1.5 border rounded" onchange="if(this.value==='CUSTOM') document.getElementById('be-assignee-custom').classList.remove('hidden'); else document.getElementById('be-assignee-custom').classList.add('hidden');"></select>
+                            <input type="text" id="be-assignee-custom" class="w-full p-1.5 border rounded mt-1 hidden" placeholder="Type external name...">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-status"><div class="flex-grow"><label class="font-bold block text-[10px]">Status</label><select id="be-status" class="w-full p-1.5 border rounded"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div></div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-date"><div class="flex-grow"><label class="font-bold block text-[10px]">Target Date</label><input type="date" id="be-date" class="w-full p-1.5 border rounded"></div></div>
+                </div>
+
+                <!-- Task Profile Bulk Edit Fields -->
+                <div id="bulk-edit-templates-fields" class="hidden space-y-4">
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-tpl-role">
+                        <div class="flex-grow">
+                            <label class="font-bold block text-[10px]">Default Role</label>
+                            <input type="text" id="be-tpl-role" class="w-full p-1.5 border rounded">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-tpl-anchor">
+                        <div class="flex-grow">
+                            <label class="font-bold block text-[10px]">Anchor Deadline</label>
+                            <select id="be-tpl-anchor" class="w-full p-1.5 border rounded">
+                                <option value="dateStart">1. Start Date</option>
+                                <option value="dateFinal">2. Final Deadline</option>
+                                <option value="dateEarly">3. Early Deadline</option>
+                                <option value="dateOffseason">4. Offseason</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-tpl-offset">
+                        <div class="flex-grow flex gap-2">
+                            <div class="w-1/2">
+                                <label class="font-bold block text-[10px]">Offset</label>
+                                <input type="number" id="be-tpl-offset-num" class="w-full p-1.5 border rounded" placeholder="Days">
+                            </div>
+                            <div class="w-1/2">
+                                <label class="font-bold block text-[10px]">Dir</label>
+                                <select id="be-tpl-offset-dir" class="w-full p-1.5 border rounded"><option value="Before">Before</option><option value="After">After</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
+            <button onclick="closeBulkEdit()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
+            <button type="submit" form="bulk-edit-form" class="px-4 py-2 bg-i9blue font-bold rounded text-xs text-white shadow">Apply Changes</button>
+        </div>
+    </div>
+
+    <!-- HARD DELETE MODAL -->
+    <div id="hard-delete-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-red-800"><i class="fa-solid fa-triangle-exclamation"></i> Permanent Deletion</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-[10px] font-bold">
+                WARNING: This action cannot be undone. The item(s) will be permanently and completely removed from the system.
+            </div>
+            <form onsubmit="executeHardDelete(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="hd-item-ids">
+                <input type="hidden" id="hd-item-type">
+                <input type="hidden" id="hd-item-group">
+                <input type="hidden" id="hd-item-names">
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block font-bold">Task Name</label>
-                        <label class="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 cursor-pointer">
-                            <input type="checkbox" id="at-is-note" class="w-3 h-3"> Mark as Note Event (No action req)
-                        </label>
-                    </div>
-                    <input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50">
+                    <label class="block font-bold mb-1">Reason for Deletion <span class="text-rose-500">*</span></label>
+                    <select id="hd-reason" required class="w-full p-2 border rounded bg-gray-50">
+                        <option value="">-- Select Reason --</option>
+                        <option value="Created in Error">Created in Error</option>
+                        <option value="Duplicate Item">Duplicate Item</option>
+                        <option value="No Longer Supported">No Longer Supported</option>
+                        <option value="Data Cleanup">Data Cleanup</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
-                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="at-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
+                <div>
+                    <label class="block font-bold mb-1">Mandatory Comments / Details <span class="text-rose-500">*</span></label>
+                    <textarea id="hd-notes" required class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Please provide specific details explaining this permanent deletion..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-red-800 text-white rounded font-bold shadow hover:bg-red-900 transition">Permanently Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION OVERLAY -->
+    <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
+            <div class="flex text-sm font-bold text-center border-b">
+                <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue">Sign In</button>
+                <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Register / Join Group</button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <div class="text-center space-y-1">
+                    <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1"><i class="fa-solid fa-shield-halved text-3xl"></i></div>
+                    <h2 class="text-lg font-bold text-i9blue" id="auth-title">Sign In to PD Planner</h2>
+                </div>
+
+                <!-- Login Form -->
+                <form id="form-login" onsubmit="login(event)" class="space-y-3">
+                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Email</label><input type="email" id="login-email" required class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs"></div>
                     <div>
-                        <label class="block font-bold mb-1">Assign To</label>
-                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50" onchange="if(this.value==='CUSTOM') document.getElementById('at-assignee-custom').classList.remove('hidden'); else document.getElementById('at-assignee-custom').classList.add('hidden');"></select>
-                        <input type="text" id="at-assignee-custom" class="w-full p-2 border rounded bg-gray-50 mt-1 hidden" placeholder="Enter custom / external name...">
+                        <div class="flex justify-between items-end mb-1">
+                            <label class="block text-xs font-bold text-gray-700">Password</label>
+                            <button type="button" onclick="triggerPasswordReset()" class="text-i9blue text-[10px] font-bold hover:underline">Forgot Password?</button>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="login-password" required class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
+                            <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block font-bold text-gray-700 mb-1">First Name</label><input type="text" id="signup-first" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Last Name</label><input type="text" id="signup-last" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    </div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Phone Number</label><input type="tel" id="signup-phone" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    <div><label class="block font-bold text-gray-700 mb-1">Email Address</label><input type="email" id="signup-email" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
+                    
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label>
+                        <div class="relative">
+                            <input type="password" id="signup-password" required minlength="6" class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
+                            <button type="button" onclick="togglePasswordVisibility('signup-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
+                        <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
+                        <div class="flex gap-4 mb-2">
+                            <label><input type="radio" name="signup-action" value="join" checked onchange="toggleSignupAction()"> Join Existing</label>
+                            <label><input type="radio" name="signup-action" value="create" onchange="toggleSignupAction()"> Create New</label>
+                        </div>
+                        <div id="signup-join-fields">
+                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Sends a request to the Group Admin for approval.</p>
+                        </div>
+                        <div id="signup-create-fields" class="hidden">
+                            <input type="text" id="signup-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Generates a new Franchise ID and sets you as Group Owner.</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md">Register Account</button>
+                </form>
+
+                <div id="auth-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-xs font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="auth-error-text">Error.</span></div>
+
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div><span class="mx-2 text-gray-400 text-[10px] uppercase font-bold">Or</span><div class="flex-grow border-t border-gray-200"></div>
+                </div>
+                <button type="button" onclick="loginWithGoogle()" class="w-full py-2.5 bg-white text-gray-700 font-bold rounded-lg text-xs border border-gray-300 shadow-sm"><i class="fa-brands fa-google text-red-500 mr-1"></i> Sign In with Google</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN EDIT USER MODAL -->
+    <div id="admin-edit-user-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue">Edit User Access</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="adminSaveUser(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="admin-u-email">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Role Tier</label>
+                        <select id="admin-u-role" class="w-full p-2 border border-gray-300 rounded bg-gray-50 font-semibold text-i9blue"></select>
+                        <p class="text-[10px] text-gray-500 mt-1">Leaving a user as 'Pending' revokes their access.</p>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Territory Access</label>
+                        <div id="admin-u-terr" class="p-2 border border-gray-300 rounded bg-gray-50 h-24 overflow-y-auto space-y-1"></div>
                     </div>
                 </div>
-
-                <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
-                <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
-
-                <!-- FOOTER ACTIONS WITH GOOGLE CALENDAR EXPORT BUTTON -->
-                <div class="flex justify-between items-center pt-2 border-t">
-                    <button type="button" onclick="exportTaskToGoogleCalendar()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shadow text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-brands fa-google"></i> Export to Google Calendar
-                    </button>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold text-xs">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow text-xs">Save Task</button>
-                    </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold shadow">Save User Settings</button>
                 </div>
             </form>
         </div>
@@ -859,6 +1067,80 @@
         </div>
     </div>
 
+    <!-- ACTIVE TASK MODAL (WITH GOOGLE CALENDAR EXPORT BUTTON) -->
+    <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue" id="active-task-title"><i class="fa-solid fa-list-check text-i9gold"></i> Add / Edit Task</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="at-edit-id">
+                <input type="hidden" id="at-is-oneoff">
+                
+                <div id="at-program-select-container" class="hidden">
+                    <label class="block font-bold mb-1">Link to Program (Optional)</label>
+                    <select id="at-program" class="w-full p-2 border rounded bg-gray-50"></select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Task Level (Dept)</label>
+                        <select id="at-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('at-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
+                            <option value="Operational">Operational</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                    <div><label class="block font-bold mb-1">Status</label><select id="at-status" class="w-full p-2 border rounded bg-gray-50"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div>
+                </div>
+
+                <!-- Marketing Category for Active Task -->
+                <div id="at-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
+                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
+                    <select id="at-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('at-mktg-custom').classList.remove('hidden'); else document.getElementById('at-mktg-custom').classList.add('hidden');">
+                        <option value="">-- Select Category --</option>
+                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
+                    </select>
+                    <input type="text" id="at-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block font-bold">Task Name</label>
+                        <label class="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 cursor-pointer">
+                            <input type="checkbox" id="at-is-note" class="w-3 h-3"> Mark as Note Event (No action req)
+                        </label>
+                    </div>
+                    <input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50">
+                </div>
+                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="at-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div>
+                        <label class="block font-bold mb-1">Assign To</label>
+                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50" onchange="if(this.value==='CUSTOM') document.getElementById('at-assignee-custom').classList.remove('hidden'); else document.getElementById('at-assignee-custom').classList.add('hidden');"></select>
+                        <input type="text" id="at-assignee-custom" class="w-full p-2 border rounded bg-gray-50 mt-1 hidden" placeholder="Enter custom / external name...">
+                    </div>
+                </div>
+
+                <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+                <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+
+                <!-- FOOTER ACTIONS WITH GOOGLE CALENDAR EXPORT BUTTON -->
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <button type="button" onclick="exportTaskToGoogleCalendar()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shadow text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-brands fa-google"></i> Export to Google Calendar
+                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold text-xs">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow text-xs">Save Task</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ARCHIVE TASK MODAL -->
     <div id="archive-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
@@ -925,118 +1207,48 @@
         </div>
     </div>
 
-    <!-- HARD DELETE MODAL -->
-    <div id="hard-delete-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-red-800"><i class="fa-solid fa-triangle-exclamation"></i> Permanent Deletion</h3>
-                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-[10px] font-bold">
-                WARNING: This action cannot be undone. The item(s) will be permanently and completely removed from the system.
-            </div>
-            <form onsubmit="executeHardDelete(event)" class="space-y-4 text-xs">
-                <input type="hidden" id="hd-item-ids">
-                <input type="hidden" id="hd-item-type">
-                <input type="hidden" id="hd-item-group">
-                <input type="hidden" id="hd-item-names">
-                <div>
-                    <label class="block font-bold mb-1">Reason for Deletion <span class="text-rose-500">*</span></label>
-                    <select id="hd-reason" required class="w-full p-2 border rounded bg-gray-50">
-                        <option value="">-- Select Reason --</option>
-                        <option value="Created in Error">Created in Error</option>
-                        <option value="Duplicate Item">Duplicate Item</option>
-                        <option value="No Longer Supported">No Longer Supported</option>
-                        <option value="Data Cleanup">Data Cleanup</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold mb-1">Mandatory Comments / Details <span class="text-rose-500">*</span></label>
-                    <textarea id="hd-notes" required class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Please provide specific details explaining this permanent deletion..."></textarea>
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-red-800 text-white rounded font-bold shadow hover:bg-red-900 transition">Permanently Delete</button>
-                </div>
+    <!-- BRANDING MODAL -->
+    <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="saveBranding(event)" class="space-y-4">
+                <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
+                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
             </form>
         </div>
     </div>
+    
+    <!-- IMPORT MODAL -->
+    <div id="import-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-indigo-700"><i class="fa-solid fa-file-import"></i> Bulk Import Data</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="hidden" id="import-type">
+            
+            <div class="space-y-4 text-xs">
+                <!-- Step 1: Template -->
+                <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2">
+                    <p class="font-bold text-indigo-900">Step 1: Download Template</p>
+                    <p class="text-[10px] text-indigo-700">Download the required CSV format. Do not modify the column headers.</p>
+                    <button onclick="downloadImportTemplate()" class="bg-white border border-indigo-300 text-indigo-700 px-3 py-1.5 rounded shadow-sm font-bold hover:bg-indigo-100 transition w-full flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download CSV Template
+                    </button>
+                </div>
 
-    <!-- AUTHENTICATION OVERLAY -->
-    <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
-            <div class="flex text-sm font-bold text-center border-b">
-                <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue">Sign In</button>
-                <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Register / Join Group</button>
+                <!-- Step 2: Upload -->
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
+                    <p class="font-bold text-gray-800">Step 2: Upload Data</p>
+                    <p class="text-[10px] text-gray-500">Select your completed CSV file to import.</p>
+                    <input type="file" id="import-file-input" accept=".csv" class="w-full border border-gray-300 bg-white rounded p-1.5 text-[10px] cursor-pointer">
+                </div>
             </div>
 
-            <div class="p-6 space-y-5">
-                <div class="text-center space-y-1">
-                    <div class="inline-flex bg-blue-50 p-3 rounded-full text-i9blue mb-1"><i class="fa-solid fa-shield-halved text-3xl"></i></div>
-                    <h2 class="text-lg font-bold text-i9blue" id="auth-title">Sign In to PD Planner</h2>
-                </div>
-
-                <form id="form-login" onsubmit="login(event)" class="space-y-3">
-                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Email</label><input type="email" id="login-email" required class="w-full p-2.5 border rounded-lg bg-gray-50 text-xs"></div>
-                    <div>
-                        <div class="flex justify-between items-end mb-1">
-                            <label class="block text-xs font-bold text-gray-700">Password</label>
-                            <button type="button" onclick="triggerPasswordReset()" class="text-i9blue text-[10px] font-bold hover:underline">Forgot Password?</button>
-                        </div>
-                        <div class="relative">
-                            <input type="password" id="login-password" required class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
-                            <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
-                                <i class="fa-regular fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
-                </form>
-
-                <form id="form-signup" onsubmit="signup(event)" class="space-y-3 hidden text-xs">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="block font-bold text-gray-700 mb-1">First Name</label><input type="text" id="signup-first" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Last Name</label><input type="text" id="signup-last" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
-                    </div>
-                    <div><label class="block font-bold text-gray-700 mb-1">Phone Number</label><input type="tel" id="signup-phone" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
-                    <div><label class="block font-bold text-gray-700 mb-1">Email Address</label><input type="email" id="signup-email" required class="w-full p-2.5 border rounded-lg bg-gray-50"></div>
-                    
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1">Create Password (Min 6 Chars)</label>
-                        <div class="relative">
-                            <input type="password" id="signup-password" required minlength="6" class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
-                            <button type="button" onclick="togglePasswordVisibility('signup-password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
-                                <i class="fa-regular fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
-                        <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
-                        <div class="flex gap-4 mb-2">
-                            <label><input type="radio" name="signup-action" value="join" checked onchange="toggleSignupAction()"> Join Existing</label>
-                            <label><input type="radio" name="signup-action" value="create" onchange="toggleSignupAction()"> Create New</label>
-                        </div>
-                        <div id="signup-join-fields">
-                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
-                            <p class="text-[10px] text-gray-500 mt-1">Sends a request to the Group Admin for approval.</p>
-                        </div>
-                        <div id="signup-create-fields" class="hidden">
-                            <input type="text" id="signup-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-white">
-                            <p class="text-[10px] text-gray-500 mt-1">Generates a new Franchise ID and sets you as Group Owner.</p>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md">Register Account</button>
-                </form>
-
-                <div id="auth-error" class="hidden p-2 bg-rose-100 text-rose-700 rounded-lg text-xs font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i> <span id="auth-error-text">Error.</span></div>
-
-                <div class="relative flex py-2 items-center">
-                    <div class="flex-grow border-t border-gray-200"></div><span class="mx-2 text-gray-400 text-[10px] uppercase font-bold">Or</span><div class="flex-grow border-t border-gray-200"></div>
-                </div>
-                <button type="button" onclick="loginWithGoogle()" class="w-full py-2.5 bg-white text-gray-700 font-bold rounded-lg text-xs border border-gray-300 shadow-sm"><i class="fa-brands fa-google text-red-500 mr-1"></i> Sign In with Google</button>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold text-xs">Cancel</button>
+                <button type="button" onclick="executeImport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold shadow text-xs transition">Process Import</button>
             </div>
         </div>
     </div>
@@ -1044,7 +1256,7 @@
     <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- FIREBASE MODULE SDK -->
+    <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, updateEmail, signOut, GoogleAuthProvider, signInWithPopup, linkWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1083,30 +1295,31 @@
                         overlay.style.display = 'flex';
                         overlay.classList.remove('hidden');
                     }
-                    document.getElementById('sync-status-text').textContent = "Disconnected"; 
+                    const syncText = document.getElementById('sync-status-text');
+                    if (syncText) syncText.textContent = "Disconnected"; 
                 }
             });
         } catch (e) { console.error("Firebase Init Error:", e); }
 
         function initRealtimeSync() {
             if (!auth.currentUser || !db) return;
-            document.getElementById('sync-status-text').textContent = "Cloud Active";
+            const syncText = document.getElementById('sync-status-text');
+            if (syncText) syncText.textContent = "Cloud Active";
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
-                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions(); window.applyPermissions();
+                window.groups = snap.docs.map(d => d.data()); 
+                window.renderGroupPills?.(); window.populateFilterOptions?.(); window.applyPermissions?.();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
                 let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
                 window.groupPermissions = p;
-                window.renderPermissions(); window.applyPermissions();
+                window.renderPermissions?.(); window.applyPermissions?.();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
                 window.users = snap.docs.map(d => d.data()); 
-                window.renderUsersTable();
-                window.checkPendingAlerts();
-                window.renderAssigneeWorkload();
+                window.renderUsersTable?.(); window.checkPendingAlerts?.(); window.renderAssigneeWorkload?.();
                 
                 if (auth.currentUser) {
                     const em = auth.currentUser.email.toLowerCase();
@@ -1117,38 +1330,39 @@
                     }
 
                     if (matched) {
+                        if (!matched.territories) matched.territories = [];
                         window.currentUser = matched;
                         if (typeof currentUser !== 'undefined') currentUser = matched;
-                        window.unlockPortal();
+                        window.unlockPortal?.();
                     }
                 }
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
                 window.activityLogs = snap.docs.map(d => d.data());
-                window.renderActivityLog();
-                if(document.getElementById('view-control').classList.contains('hidden') === false) window.renderControlCenter();
-                if(document.getElementById('view-tasks').classList.contains('hidden') === false) window.renderActiveTasks();
-                if(document.getElementById('view-templates').classList.contains('hidden') === false) window.renderTemplates();
+                window.renderActivityLog?.();
+                if(document.getElementById('view-control')?.classList.contains('hidden') === false) window.renderControlCenter?.();
+                if(document.getElementById('view-tasks')?.classList.contains('hidden') === false) window.renderActiveTasks?.();
+                if(document.getElementById('view-templates')?.classList.contains('hidden') === false) window.renderTemplates?.();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
                 window.programs = snap.docs.map(d => d.data());
-                window.populateYearDropdowns(); window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
+                window.populateYearDropdowns?.(); window.populateFilterOptions?.(); window.renderControlCenter?.(); window.renderActiveTasks?.(); window.renderDashboard?.(); window.renderCalendar?.();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'task_templates'), (snap) => {
                 window.templates = snap.docs.map(d => d.data());
-                window.renderTemplates();
+                window.renderTemplates?.();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
                 window.activeTasks = snap.docs.map(d => d.data());
-                window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar(); window.renderAssigneeWorkload();
+                window.renderActiveTasks?.(); window.renderDashboard?.(); window.renderCalendar?.(); window.renderAssigneeWorkload?.();
             });
 
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
-                if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI(); }
+                if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI?.(); }
             });
         }
 
@@ -1171,10 +1385,9 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "3.2.0 (Google Calendar Export, Holiday Shift & Workload Summary)";
+        const APP_VERSION = "3.3.0 (Fully Complete Single-File Code)";
         
-        let calendarDate = new Date();
-        calendarDate.setHours(0,0,0,0);
+        let calendarDate = new Date(); calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
         let currentTaskView = 'active'; 
         let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
@@ -1188,13 +1401,40 @@
             "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
         };
 
+        const MARKETING_CATEGORIES = {
+            "HubSpot Email": "bg-orange-500 text-white",
+            "Operational Email": "bg-amber-700 text-white",
+            "Personal Email": "bg-orange-200 text-orange-900",
+            "Road Sign Route": "bg-green-400 text-green-900",
+            "Flyer Delivery": "bg-cyan-400 text-cyan-900",
+            "Flyer Dispersal": "bg-blue-500 text-white",
+            "In Person Event": "bg-yellow-400 text-yellow-900",
+            "Task": "bg-pink-400 text-pink-900",
+            "Order Flyers": "bg-purple-600 text-white",
+            "Marketing Note": "bg-black text-white",
+            "Peachjar Request": "bg-teal-400 text-teal-900",
+            "Peachjar Active": "bg-lime-300 text-lime-900",
+            "Facebook Post": "bg-blue-100 text-blue-800 border border-blue-200",
+            "Facebook Ad": "bg-blue-50 text-blue-900 border border-blue-200",
+            "Instagram Post": "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200",
+            "Instagram Ad": "bg-fuchsia-50 text-fuchsia-900 border border-fuchsia-200",
+            "Order Supplies": "bg-gray-200 text-gray-800",
+            "Marketing Text": "bg-red-600 text-white",
+            "Game Day Reminder": "bg-white text-gray-800 border border-gray-300",
+            "Call Fire": "bg-orange-400 text-white",
+            "Digital Flyer Submission": "bg-indigo-500 text-white",
+            "IPE Application Submission": "bg-white text-gray-800 border border-gray-300",
+            "HubSpot Automated Email": "bg-orange-600 text-white",
+            "Gameday App Notification": "bg-blue-600 text-white"
+        };
+
         window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
         window.groupPermissions = {}; 
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
-        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
+        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], activityLogs = [];
 
-        // 30-MINUTE INACTIVITY TIMEOUT
+        // 30-MINUTE INACTIVITY TIMEOUT LOGIC
         const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
         let inactivityTimer = null;
 
@@ -1214,7 +1454,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
             if(versionEl) versionEl.textContent = APP_VERSION;
-            applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
+            applyBrandingUI(); populateYearDropdowns(); populateMarketingCats();
         });
 
         function applyBrandingUI() {
@@ -1222,6 +1462,25 @@
                 const titleEl = document.getElementById('brand-title-display');
                 if (titleEl) titleEl.textContent = window.currentBranding.title;
             }
+        }
+
+        function populateMarketingCats() {
+            const sels = ['at-mktg-cat', 'tpl-mktg-cat'];
+            sels.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const customOpt = el.querySelector('option[value="CUSTOM"]');
+                    const defaultOpt = el.querySelector('option[value=""]');
+                    el.innerHTML = '';
+                    if (defaultOpt) el.appendChild(defaultOpt);
+                    Object.keys(MARKETING_CATEGORIES).forEach(cat => {
+                        const opt = document.createElement('option');
+                        opt.value = cat; opt.textContent = cat;
+                        el.appendChild(opt);
+                    });
+                    if (customOpt) el.appendChild(customOpt);
+                }
+            });
         }
 
         function formatTargetDate(dStr) {
@@ -1232,10 +1491,7 @@
         }
 
         function getUSHoliday(dateObj) {
-            const y = dateObj.getFullYear();
-            const m = dateObj.getMonth();
-            const d = dateObj.getDate();
-
+            const y = dateObj.getFullYear(); const m = dateObj.getMonth(); const d = dateObj.getDate();
             const nthDay = (nth, targetDayOfWeek, month) => {
                 let count = 0;
                 for (let i = 1; i <= 31; i++) {
@@ -1246,7 +1502,6 @@
                 }
                 return null;
             };
-
             const lastDay = (targetDayOfWeek, month) => {
                 for (let i = 31; i > 0; i--) {
                     let tempDate = new Date(y, month, i);
@@ -1266,7 +1521,6 @@
             if (m === 10 && d === 11) return "Veterans Day";
             if (m === 10 && d === nthDay(4, 4, 10)) return "Thanksgiving";
             if (m === 11 && d === 25) return "Christmas Day";
-
             return null;
         }
 
@@ -1322,10 +1576,10 @@
             const agIds = getAuthorizedGroups().map(g => g.id);
             const todayStr = new Date().toISOString().split('T')[0];
 
-            const visibleTasks = activeTasks.filter(t => (t.groupId === 'ALL' || agIds.includes(t.groupId)) && t.status !== 'Archived');
+            const visibleTasks = (window.activeTasks || []).filter(t => (t.groupId === 'ALL' || agIds.includes(t.groupId)) && t.status !== 'Archived');
 
             const workload = {};
-            users.forEach(u => { workload[u.name] = { open: 0, overdue: 0, completed: 0 }; });
+            (window.users || []).forEach(u => { workload[u.name] = { open: 0, overdue: 0, completed: 0 }; });
             workload['Unassigned'] = { open: 0, overdue: 0, completed: 0 };
 
             visibleTasks.forEach(t => {
@@ -1336,9 +1590,7 @@
                     workload[key].completed++;
                 } else {
                     workload[key].open++;
-                    if (t.targetDate && t.targetDate < todayStr) {
-                        workload[key].overdue++;
-                    }
+                    if (t.targetDate && t.targetDate < todayStr) workload[key].overdue++;
                 }
             });
 
@@ -1359,26 +1611,205 @@
             });
         }
 
+        function calculateNewTargetDate(p, tpl) {
+            let anchorDateStr = p[tpl.anchor]; 
+            if (!anchorDateStr) return '';
+            let d = new Date(anchorDateStr + "T00:00:00");
+            let offset = tpl.offsetNum || 0;
+            if (tpl.offsetDir === 'Before') offset = -offset;
+            d.setDate(d.getDate() + offset);
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        function logActivity(groupId, action, details, itemId = null) {
+            if(!currentUser) return;
+            const log = {
+                id: generateId('LOG'),
+                groupId: groupId || 'SYSTEM',
+                itemId: itemId,
+                userName: currentUser.name,
+                userEmail: currentUser.username,
+                action: action,
+                details: details,
+                timestamp: new Date().toISOString()
+            };
+            window.cloudSave('activity_logs', log.id, log);
+        }
+
+        function renderActivityLog() {
+            const tb = document.getElementById('activity-log-table');
+            if(!tb) return; tb.innerHTML = '';
+            if(!currentUser) return;
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            const terrs = currentUser.territories || [];
+            
+            const visibleLogs = (window.activityLogs || []).filter(l => terrs.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            visibleLogs.forEach(l => {
+                tb.innerHTML += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
+                    <td class="p-3 font-bold text-gray-800">${l.userName}</td>
+                    <td class="p-3 font-mono text-[10px] text-i9blue">${l.groupId}</td>
+                    <td class="p-3 font-bold text-gray-700">${l.action}</td>
+                    <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
+                </tr>`;
+            });
+        }
+
+        /* --- MILESTONE PRICING SCHEDULE SLIDE PANE --- */
+        function openPricingPane(progId) {
+            const p = (window.programs || []).find(x => x.id === progId);
+            if (!p) return;
+            document.getElementById('pp-prog-id').value = p.id;
+            
+            const ps = p.pricingSchedule || {};
+            document.getElementById('pp-price-offseason').value = ps.dateOffseason || '';
+            document.getElementById('pp-price-early').value = ps.dateEarly || '';
+            document.getElementById('pp-price-final').value = ps.dateFinal || '';
+            document.getElementById('pp-price-late').value = ps.dateLate || '';
+            
+            document.getElementById('pricing-pane-overlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('pricing-pane').classList.add('open'), 10);
+        }
+
+        function closePricingPane() {
+            document.getElementById('pricing-pane').classList.remove('open');
+            setTimeout(() => document.getElementById('pricing-pane-overlay').classList.add('hidden'), 300);
+        }
+
+        function saveProgramPricingSchedule(e) {
+            e.preventDefault();
+            const progId = document.getElementById('pp-prog-id').value;
+            const p = (window.programs || []).find(x => x.id === progId);
+            if (!p) return;
+
+            const ps = {
+                dateOffseason: document.getElementById('pp-price-offseason').value,
+                dateEarly: document.getElementById('pp-price-early').value,
+                dateFinal: document.getElementById('pp-price-final').value,
+                dateLate: document.getElementById('pp-price-late').value
+            };
+
+            p.pricingSchedule = ps;
+            window.cloudSaveProgram(p);
+
+            const milestoneMap = [
+                { anchorKey: 'dateOffseason', label: 'Offseason Price Increase', priceVal: ps.dateOffseason },
+                { anchorKey: 'dateEarly', label: 'Early Deadline Price Increase', priceVal: ps.dateEarly },
+                { anchorKey: 'dateFinal', label: 'Final Deadline Price Increase', priceVal: ps.dateFinal }
+            ];
+
+            let createdNoteCount = 0;
+            milestoneMap.forEach(m => {
+                if (p[m.anchorKey] && m.priceVal) {
+                    const taskName = `[Price Alert] ${p.preHeader || ''} ${p.season} ${p.type}: ${m.label} ($${m.priceVal})`;
+                    const existingNote = (window.activeTasks || []).find(t => t.programId === p.id && t.isNote && t.notes === `PRICE_AUTONOTE_${m.anchorKey}`);
+
+                    if (existingNote) {
+                        existingNote.name = taskName;
+                        existingNote.targetDate = p[m.anchorKey];
+                        window.cloudSaveActiveTask(existingNote);
+                    } else {
+                        const newNoteTask = {
+                            id: generateId('ATK'),
+                            programId: p.id,
+                            groupId: p.groupId,
+                            type: p.type,
+                            preHeader: "Price Note",
+                            level: "Operational",
+                            name: taskName,
+                            desc: `Milestone price set to $${m.priceVal} effective on ${p[m.anchorKey]}`,
+                            targetDate: p[m.anchorKey],
+                            assignee: '',
+                            status: 'Pending',
+                            isOneOff: true,
+                            isNote: true,
+                            notes: `PRICE_AUTONOTE_${m.anchorKey}`,
+                            completionNotes: ''
+                        };
+                        window.cloudSaveActiveTask(newNoteTask);
+                        createdNoteCount++;
+                    }
+                }
+            });
+
+            logActivity(p.groupId, 'Pricing Schedule Saved', `Updated milestone pricing schedule for ${p.season} ${p.type}`, p.id);
+            showToast("Pricing Schedule Updated", `Saved prices & published ${createdNoteCount} new Note Event(s).`);
+            closePricingPane();
+        }
+
+        function generateTaskPlan(progId, targetLevel) {
+            const p = (window.programs || []).find(x => x.id === progId);
+            if (!p) return;
+            
+            let genCount = 0;
+            (window.templates || []).forEach(tpl => {
+                if ((tpl.level || 'Operational') !== targetLevel) return;
+                
+                if (tpl.groupId !== 'ALL' && tpl.groupId !== p.groupId) return;
+                if (tpl.type !== 'ALL' && tpl.type !== p.type) return;
+                if (tpl.seasons && !tpl.seasons.includes(p.season)) return;
+                if (tpl.preHeader && p.preHeader && tpl.preHeader !== p.preHeader && tpl.preHeader !== 'ALL') return;
+
+                const existing = (window.activeTasks || []).find(t => t.programId === p.id && t.templateId === tpl.id && t.status !== 'Archived');
+                if (existing) return;
+
+                const tDate = calculateNewTargetDate(p, tpl);
+                if (!tDate) return;
+
+                const newTask = {
+                    id: generateId('ATK'),
+                    programId: p.id,
+                    groupId: p.groupId,
+                    templateId: tpl.id,
+                    type: p.type,
+                    preHeader: p.preHeader,
+                    level: tpl.level || 'Operational',
+                    marketingCategory: tpl.marketingCategory || '', 
+                    name: tpl.name,
+                    desc: tpl.desc || '',
+                    targetDate: tDate,
+                    assignee: '', 
+                    status: 'Pending',
+                    isOneOff: false,
+                    isNote: false,
+                    notes: '',
+                    completionNotes: ''
+                };
+                window.cloudSaveActiveTask(newTask);
+                genCount++;
+            });
+            logActivity(p.groupId, 'Task Generation', `Generated ${genCount} ${targetLevel} tasks for Program ${p.id}`, p.id);
+            showToast(`${targetLevel} Plan Generated`, `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
+        }
+
+        function saveBranding(e) {
+            e.preventDefault();
+            currentBranding.title = document.getElementById('branding-title-input').value;
+            window.cloudSaveBranding(currentBranding);
+            applyBrandingUI();
+            closeModals();
+            showToast("Branding Saved", "Theme updated successfully.");
+        }
+
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
             if (!container) return;
             const toast = document.createElement('div');
             toast.className = "bg-gray-900 text-white p-3 rounded-lg shadow-xl text-xs flex items-center gap-3 border border-gray-700 transition-all duration-300 pointer-events-auto";
-            toast.innerHTML = `
-                <div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div>
-                <div>
-                    <p class="font-bold">${title}</p>
-                    <p class="text-gray-300 text-[11px]">${message}</p>
-                </div>
-            `;
+            toast.innerHTML = `<div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div><div><p class="font-bold">${title}</p><p class="text-gray-300 text-[11px]">${message}</p></div>`;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        /* --- AUTHENTICATION & UI ROUTING --- */
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+            else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+        }
+
+        /* --- AUTHENTICATION & USER MANAGEMENT --- */
         function toggleAuthMode(mode) {
             document.getElementById('auth-error').classList.add('hidden');
             if (mode === 'login') {
@@ -1420,16 +1851,23 @@
                     showToast("Welcome", "Logged in as System Admin"); return;
                 }
 
-                let matched = window.users.find(u => u.username.toLowerCase() === em);
+                let matched = (window.users || []).find(u => u.username.toLowerCase() === em);
                 if (!matched) {
                     matched = { username: em, name: authUser.displayName || "New User", firstName: "Unknown", lastName: "User", phone: "N/A", role: "Pending", territories: [] };
-                    await window.cloudSaveUser(matched); window.users.push(matched);
+                    await window.cloudSaveUser(matched);
                 }
 
+                if (!matched.territories) matched.territories = [];
                 currentUser = matched; window.currentUser = matched; unlockPortal();
                 showToast("Welcome", `Logged in as ${matched.name}`);
 
             } catch (error) { showError(error.message); }
+        }
+
+        async function triggerPasswordReset() {
+            const em = document.getElementById('login-email').value.trim();
+            if (!em) return showError("Please enter your email address first.");
+            try { await window.sendPasswordResetEmail(window.auth, em); alert(`A password reset link has been sent to ${em}.`); } catch (error) { showError("Error: " + error.message); }
         }
 
         async function signup(e) {
@@ -1446,19 +1884,19 @@
             let newGroupData = null;
 
             if(action === 'create') {
-                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                const validIds = (window.groups || []).map(g => parseInt(g.id)).filter(id => !isNaN(id));
                 const newId = (validIds.length > 0 ? Math.max(...validIds) : 8765).toString();
                 const gName = document.getElementById('signup-create-name').value.trim();
                 newGroupData = { id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' };
                 uObj.role = 'Group Owner'; uObj.territories = [newId];
             } else {
                 const joinId = document.getElementById('signup-join-id').value.trim();
-                if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
+                if(!(window.groups || []).find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
                 uObj.territories = [joinId];
             }
 
             try {
-                showToast("Registering", "Creating secure account...");
+                showToast("Registering", "Creating account...");
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
                 if (newGroupData) window.cloudSaveGroup(newGroupData);
                 window.cloudSaveUser(uObj);
@@ -1480,6 +1918,8 @@
         function unlockPortal() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
+            if (!currentUser.territories) currentUser.territories = [];
+
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
             
             const overlay = document.getElementById('auth-overlay');
@@ -1490,31 +1930,37 @@
             resetInactivityTimer();
         }
 
+        function checkPendingAlerts() {
+            const badge = document.getElementById('admin-alert-badge');
+            if (!badge) return;
+            const pendingCount = (window.users || []).filter(u => u.role === 'Pending').length;
+            if (pendingCount > 0 && hasPermission('manageGroups')) {
+                badge.textContent = pendingCount; badge.classList.remove('hidden');
+            } else badge.classList.add('hidden');
+        }
+
         function hasPermission(permKey) {
             if (!currentUser) return false;
             if (currentUser.role === 'System Admin') return true;
             
-            let hasIt = false;
-            const checkGroups = currentUser.territories.includes('ALL') ? groups.map(g=>g.id) : currentUser.territories;
+            const terrs = currentUser.territories || [];
+            const checkGroups = terrs.includes('ALL') ? (window.groups || []).map(g=>g.id) : terrs;
             
             for (let gId of checkGroups) {
-                let gPerms = window.groupPermissions[gId] || window.DEFAULT_PERMISSIONS;
+                let gPerms = (window.groupPermissions || {})[gId] || window.DEFAULT_PERMISSIONS;
                 let rolePerms = gPerms[currentUser.role] || window.DEFAULT_PERMISSIONS[currentUser.role] || window.DEFAULT_PERMISSIONS["Staff"];
-                if (rolePerms && rolePerms[permKey]) {
-                    hasIt = true;
-                    break;
-                }
+                if (rolePerms && rolePerms[permKey]) return true;
             }
-            return hasIt;
+            return false;
         }
 
-        /* --- PERMISSION APPLY BUG FIX --- */
         function applyPermissions() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
+            const terrs = currentUser.territories || [];
 
             document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
-            document.getElementById('user-display-scope').textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Network' : currentUser.territories.join(', ') || 'None'}`;
+            document.getElementById('user-display-scope').textContent = `Groups: ${terrs.includes('ALL') ? 'All Network' : terrs.join(', ') || 'None'}`;
             
             const canManageGroups = hasPermission('manageGroups');
             const canCreatePrograms = hasPermission('createPrograms');
@@ -1529,33 +1975,404 @@
             if (canManageGroups) document.getElementById('tab-admin').classList.remove('hidden');
         }
 
+        function populateProfileForm() {
+            if (!currentUser) return;
+            document.getElementById('setting-first').value = currentUser.firstName || '';
+            document.getElementById('setting-last').value = currentUser.lastName || '';
+            document.getElementById('setting-phone').value = currentUser.phone || '';
+        }
+
+        function handleProfileUpdate(e) {
+            e.preventDefault(); if (!currentUser) return;
+            currentUser.firstName = document.getElementById('setting-first').value.trim();
+            currentUser.lastName = document.getElementById('setting-last').value.trim();
+            currentUser.name = `${currentUser.firstName} ${currentUser.lastName}`;
+            currentUser.phone = document.getElementById('setting-phone').value.trim();
+            window.cloudSaveUser(currentUser);
+            applyPermissions(); 
+            showToast("Success", "Profile updated.");
+        }
+
+        async function handleEmailUpdate(e) {
+            e.preventDefault(); if (!currentUser) return;
+            const newEmail = document.getElementById('setting-new-email').value.trim();
+            try { await window.updateEmail(window.auth.currentUser, newEmail); currentUser.username = newEmail; window.cloudSaveUser(currentUser); showToast("Success", "Email updated."); } catch (err) { alert(err.message); }
+        }
+
+        async function handlePasswordUpdate(e) {
+            e.preventDefault(); if (!currentUser) return;
+            const pw = document.getElementById('setting-new-password').value;
+            try { await window.updatePassword(window.auth.currentUser, pw); showToast("Success", "Password updated."); } catch (err) { alert(err.message); }
+        }
+
+        async function linkGoogleAccount() { try { await window.linkGoogle(); showToast("Success", "Google account linked!"); } catch (err) { alert(err.message); } }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.replace('border-i9blue', 'border-transparent'));
+            
+            const targetView = document.getElementById(`view-${tab}`);
+            const targetTab = document.getElementById(`tab-${tab}`);
+            if (targetView) targetView.classList.remove('hidden');
+            if (targetTab) targetTab.classList.replace('border-transparent', 'border-i9blue');
+
+            if (tab === 'dashboard') renderDashboard();
+            if (tab === 'calendar') renderCalendar();
+            if (tab === 'tasks') renderActiveTasks();
+            if (tab === 'control') renderControlCenter();
+            if (tab === 'templates') renderTemplates();
+            if (tab === 'admin') { renderUsersTable(); renderAssigneeWorkload(); }
+            if (tab === 'settings') populateProfileForm();
+            applyPermissions();
+        }
+
+        function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
+        
         function getAuthorizedGroups() { 
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
-            return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); 
+            if (!currentUser) return [];
+            const terrs = currentUser.territories || [];
+            const allGroups = window.groups || [];
+            return terrs.includes('ALL') ? allGroups.filter(g=>g.status!=='Archived') : allGroups.filter(g => terrs.includes(g.id) && g.status!=='Archived'); 
         }
 
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
 
-        function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
+        function populateFilterOptions() {
+            const ag = getAuthorizedGroups();
+            const pGroup = document.getElementById('prog-group');
+            const atGroup = document.getElementById('at-program');
+            const tplGroup = document.getElementById('tpl-group');
+            const calProgramFilter = document.getElementById('filter-cal-program');
+            const calGroupFilter = document.getElementById('filter-cal-group');
+            const permGroupSelect = document.getElementById('perm-group-select'); 
+            
+            if(pGroup) pGroup.innerHTML = ''; if(atGroup) atGroup.innerHTML = '';
+            if(tplGroup) tplGroup.innerHTML = '<option value="ALL">ALL GROUPS (Network-Wide)</option>';
+            if(calProgramFilter) calProgramFilter.innerHTML = '<option value="ALL">All Specific Programs</option>';
+            if(calGroupFilter) calGroupFilter.innerHTML = '<option value="ALL">All Authorized Groups</option>';
+            if(permGroupSelect) permGroupSelect.innerHTML = '<option value="ALL">-- Select Specific Group --</option>';
+            
+            ag.forEach(g => { 
+                if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                if(tplGroup) tplGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                if(calGroupFilter) calGroupFilter.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                if(permGroupSelect) permGroupSelect.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+            });
 
-        /* --- RENDERING ACTIVE TASKS & BUG FIXES --- */
+            (window.programs || []).forEach(p => { 
+                if (ag.some(g=>g.id===p.groupId)) { 
+                    const priceDisplay = p.price ? ` - $${p.price}` : '';
+                    if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader || ''} ${p.season} - ${p.type}${priceDisplay}</option>`; 
+                    if(calProgramFilter) calProgramFilter.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader || ''} ${p.season} ${p.type}${priceDisplay}</option>`;
+                } 
+            });
+
+            const filters = ['filter-prog-group', 'filter-task-group', 'filter-template-group'];
+            filters.forEach(f => {
+                const el = document.getElementById(f);
+                if(el) { el.innerHTML = '<option value="ALL">All Authorized Groups</option>'; ag.forEach(g => el.innerHTML += `<option value="${g.id}">${g.fullName}</option>`); }
+            });
+
+            const asSel = document.getElementById('at-assignee');
+            const bulkAsSel = document.getElementById('be-assignee');
+            if(asSel) {
+                asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
+                (window.users || []).forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
+                asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
+                bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
+            }
+            
+            renderPermissions(); 
+        }
+
+        /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
+        function openUserManagementModal() { switchTab('admin'); } 
+        function renderGroupPills() {
+            const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; 
+            const terrs = currentUser?.territories || [];
+            let visibleGroups = window.groups || [];
+            if (!terrs.includes('ALL')) visibleGroups = visibleGroups.filter(g => terrs.includes(g.id));
+
+            visibleGroups.forEach(g => { 
+                const isArchived = g.status === 'Archived';
+                ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm ${isArchived ? 'opacity-60' : ''}">
+                    <span class="font-bold text-i9blue">${g.fullName} ${isArchived ? '(Archived)' : ''}</span> 
+                    <div>
+                        <button onclick="openHardDeleteModal('group', '${g.id}')" class="text-red-800 hover:text-red-900 text-[10px]" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </div>`; 
+            });
+        }
+
+        function renderUsersTable() {
+            const pendingTb = document.getElementById('pending-users-table'); const activeTb = document.getElementById('active-users-table');
+            const pendingBadge = document.getElementById('pending-count-badge'); if(!pendingTb || !activeTb) return;
+            pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
+            
+            const terrs = currentUser?.territories || [];
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            const visibleUsers = (window.users || []).filter(u => terrs.includes('ALL') || (u.territories || []).some(t => agIds.includes(t)));
+            let pendingCount = 0;
+
+            visibleUsers.forEach(u => {
+                const phoneDisplay = u.phone || "No Phone";
+                const terrList = (u.territories || []).join(', ') || 'N/A';
+                if (u.role === 'Pending') {
+                    pendingCount++;
+                    pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${terrList}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button></td></tr>`;
+                } else {
+                    activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors"><td class="p-2"><div class="font-bold text-gray-900">${u.name}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td><td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${terrs.includes('ALL')?'All Network':terrList}</div></td><td class="p-2 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button></td></tr>`;
+                }
+            });
+            if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No pending users.</td></tr>`;
+            if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
+        }
+
+        function openAdminEdit(em) {
+            const u = (window.users || []).find(x => x.username === em); if(!u) return;
+            document.getElementById('admin-u-email').value = u.username;
+            const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
+            ROLES.forEach(r => { roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
+            roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
+            renderTerritoryCheckboxes(); document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = (u.territories || []).includes(cb.value));
+            document.getElementById('admin-edit-user-modal').classList.remove('hidden');
+        }
+
+        function renderTerritoryCheckboxes() {
+            const ct = document.getElementById('admin-u-terr'); if(!ct) return;
+            const terrs = currentUser?.territories || [];
+            ct.innerHTML = terrs.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
+            getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
+        }
+
+        function adminSaveUser(e) {
+            e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = (window.users || []).find(x => x.username === em);
+            if(u) { 
+                u.role = document.getElementById('admin-u-role').value; 
+                u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); 
+                window.cloudSaveUser(u); 
+                document.getElementById('admin-edit-user-modal').classList.add('hidden'); 
+                showToast("Saved", `Permissions updated for ${u.name}`);
+                logActivity('SYSTEM', 'User Role Update', `Updated access/role for ${u.username}`);
+            }
+        }
+
+        function renderPermissions() {
+            const tb = document.getElementById('permissions-table-body'); if(!tb) return; 
+            const groupId = document.getElementById('perm-group-select').value;
+            if (!groupId || groupId === 'ALL') { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">Please select a specific group context to edit permissions.</td></tr>`; return; }
+            
+            tb.innerHTML = '';
+            const gPerms = window.groupPermissions[groupId] || window.DEFAULT_PERMISSIONS;
+
+            ROLES.forEach(r => {
+                if (r === 'System Admin') return; 
+                const p = gPerms[r] || window.DEFAULT_PERMISSIONS["Staff"] || {};
+                
+                tb.innerHTML += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 font-bold text-gray-800">${r}</td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''}></td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''}></td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''}></td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','editTasks',this.checked)" ${p.editTasks?'checked':''}></td>
+                </tr>`;
+            });
+        }
+
+        function updatePerm(groupId, tier, field, val) { 
+            if(!window.groupPermissions[groupId]) window.groupPermissions[groupId] = JSON.parse(JSON.stringify(window.DEFAULT_PERMISSIONS));
+            if(!window.groupPermissions[groupId][tier]) window.groupPermissions[groupId][tier] = {};
+            
+            window.groupPermissions[groupId][tier][field] = val; 
+            window.cloudSavePermissions(groupId, window.groupPermissions[groupId]); 
+            logActivity(groupId, 'System Config', `Updated Group Permissions Matrix`);
+        }
+
+        function addGroup(e) { 
+            e.preventDefault(); const gName = document.getElementById('new-group-name').value.trim(); const gId = document.getElementById('new-group-id').value.trim();
+            if(gName && gId) {
+                if (parseInt(gId) < 100) return alert("Group ID must be 3 digits or higher.");
+                if ((window.groups || []).find(g => g.id === gId)) return alert("This Group ID already exists.");
+                window.cloudSaveGroup({ id: gId, name: gName, fullName: `${gId} - ${gName}`, status: 'Active' });
+                document.getElementById('new-group-name').value=''; document.getElementById('new-group-id').value=''; 
+                logActivity('SYSTEM', 'Group Creation', `Created new group: ${gId} - ${gName}`);
+            }
+        }
+
+        function generateInviteEmail() {
+            const email = document.getElementById('invite-email-input').value.trim();
+            const subject = encodeURIComponent("Invitation: Program Director Planner Access");
+            const body = encodeURIComponent(`Hello,\n\nYou are invited to access the Program Director Planner.\n\nPlease visit the portal and register.\n\nThank you.`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; 
+            showToast("Draft Generated", "Opening email client...");
+        }
+
+        /* --- MULTI-SELECT & BULK ACTIONS --- */
+        function toggleSelectAll(className, isChecked) { document.querySelectorAll(`.${className}`).forEach(cb => cb.checked = isChecked); }
+        function getSelected(className) { return Array.from(document.querySelectorAll(`.${className}:checked`)).map(cb => cb.value); }
+        
+        function bulkDelete(type) {
+            let cls, items;
+            if(type === 'programs') { cls = 'prog-cb'; items = window.programs; }
+            else if(type === 'templates') { cls = 'tpl-cb'; items = window.templates; }
+            else if(type === 'tasks') { cls = 'task-cb'; items = window.activeTasks; }
+            else return; 
+            
+            const ids = getSelected(cls);
+            if(ids.length === 0) return alert("Select items first.");
+            
+            const selectedItems = (items || []).filter(x => ids.includes(x.id));
+            const names = selectedItems.map(x => x.name || `${x.preHeader || ''} ${x.season || ''}`).join(', ');
+            const groupId = selectedItems.length > 0 ? selectedItems[0].groupId : 'SYSTEM';
+
+            openHardDeleteModal(type.replace(/s$/, ''), ids.join(','));
+        }
+
+        function bulkEditOpen(type) {
+            let cls;
+            if(type === 'programs') cls = 'prog-cb';
+            else if(type === 'tasks') cls = 'task-cb';
+            else if(type === 'templates') cls = 'tpl-cb';
+            
+            const ids = getSelected(cls);
+            if(ids.length === 0) return alert("Select items first.");
+            
+            document.getElementById('bulk-edit-count').textContent = ids.length;
+            document.getElementById('bulk-edit-mode').value = type;
+            
+            document.getElementById('bulk-edit-programs-fields').classList.add('hidden');
+            document.getElementById('bulk-edit-tasks-fields').classList.add('hidden');
+            document.getElementById('bulk-edit-templates-fields').classList.add('hidden');
+            
+            if(type === 'programs') document.getElementById('bulk-edit-programs-fields').classList.remove('hidden');
+            if(type === 'tasks') document.getElementById('bulk-edit-tasks-fields').classList.remove('hidden');
+            if(type === 'templates') document.getElementById('bulk-edit-templates-fields').classList.remove('hidden');
+            
+            document.getElementById('bulk-edit-overlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('bulk-edit-pane').classList.add('open'), 10);
+        }
+
+        function closeBulkEdit() {
+            document.getElementById('bulk-edit-pane').classList.remove('open');
+            setTimeout(() => document.getElementById('bulk-edit-overlay').classList.add('hidden'), 300);
+        }
+
+        function executeBulkEdit(e) {
+            e.preventDefault();
+            const mode = document.getElementById('bulk-edit-mode').value;
+            let ids = [];
+            
+            if(mode === 'programs') {
+                ids = getSelected('prog-cb');
+                const doYr = document.getElementById('be-cb-year').checked; const yrVal = document.getElementById('be-year').value;
+                const doSea = document.getElementById('be-cb-season').checked; const seaVal = document.getElementById('be-season').value;
+                const doVen = document.getElementById('be-cb-venue').checked; const venVal = document.getElementById('be-venue').value;
+                
+                ids.forEach(id => {
+                    const p = (window.programs || []).find(x=>x.id===id);
+                    if(p) {
+                        if(doYr) p.year = yrVal; if(doSea) p.season = seaVal; if(doVen) p.venue = venVal;
+                        window.cloudSaveProgram(p);
+                    }
+                });
+            } else if (mode === 'tasks') {
+                ids = getSelected('task-cb');
+                const doAss = document.getElementById('be-cb-assignee').checked; 
+                let assVal = document.getElementById('be-assignee').value;
+                if(assVal === 'CUSTOM') assVal = document.getElementById('be-assignee-custom').value.trim();
+
+                const doStat = document.getElementById('be-cb-status').checked; const statVal = document.getElementById('be-status').value;
+                const doDate = document.getElementById('be-cb-date').checked; const dateVal = document.getElementById('be-date').value;
+                
+                ids.forEach(id => {
+                    const t = (window.activeTasks || []).find(x=>x.id===id);
+                    if(t) {
+                        if(doAss) t.assignee = assVal; if(doStat) t.status = statVal; if(doDate && dateVal) t.targetDate = dateVal;
+                        window.cloudSaveActiveTask(t);
+                    }
+                });
+            } else if (mode === 'templates') {
+                ids = getSelected('tpl-cb');
+                const doRole = document.getElementById('be-cb-tpl-role').checked; const roleVal = document.getElementById('be-tpl-role').value;
+                const doAnchor = document.getElementById('be-cb-tpl-anchor').checked; const anchorVal = document.getElementById('be-tpl-anchor').value;
+                const doOffset = document.getElementById('be-cb-tpl-offset').checked; 
+                const offsetNum = parseInt(document.getElementById('be-tpl-offset-num').value || "0"); 
+                const offsetDir = document.getElementById('be-tpl-offset-dir').value;
+                
+                ids.forEach(id => {
+                    const t = (window.templates || []).find(x=>x.id===id);
+                    if(t) {
+                        if(doRole) t.role = roleVal;
+                        if(doAnchor) t.anchor = anchorVal;
+                        if(doOffset) { t.offsetNum = offsetNum; t.offsetDir = offsetDir; }
+                        window.cloudSaveTemplate(t);
+                    }
+                });
+            }
+            
+            closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
+        }
+
+        /* --- CSV IMPORT --- */
+        function openImportModal(type) {
+            document.getElementById('import-type').value = type;
+            document.getElementById('import-file-input').value = ''; 
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function downloadImportTemplate() {
+            const type = document.getElementById('import-type').value;
+            let csv = type === 'programs' ? "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n" : "Group Scope,Level,Marketing Category,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+            downloadCSV(csv, `${type}_Import_Template.csv`);
+        }
+
+        function executeImport() {
+            const type = document.getElementById('import-type').value;
+            const fileInput = document.getElementById('import-file-input');
+            const file = fileInput.files[0];
+            if (!file) return alert("Select a CSV file first.");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const rows = e.target.result.split(/\r?\n/);
+                let importCount = 0;
+                for (let i = 1; i < rows.length; i++) {
+                    if (!rows[i] || rows[i].trim() === '') continue; 
+                    const cleanCols = rows[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+                    if (type === 'programs') {
+                        window.cloudSaveProgram({
+                            id: generateId('PRG'), groupId: cleanCols[0], preHeader: cleanCols[1] || '', year: cleanCols[2], season: cleanCols[3], type: cleanCols[4], dateStart: cleanCols[5] || '', dateFinal: cleanCols[6] || '', venue: cleanCols[8] || '', price: cleanCols[9] || ''
+                        });
+                        importCount++;
+                    } else if (type === 'templates') {
+                        window.cloudSaveTemplate({
+                            id: generateId('TPL'), groupId: cleanCols[0], level: cleanCols[1] || 'Operational', type: cleanCols[3], name: cleanCols[5], offsetNum: parseInt(cleanCols[7]) || 0, offsetDir: cleanCols[8] || 'Before', anchor: cleanCols[9] || 'dateStart'
+                        });
+                        importCount++;
+                    }
+                }
+                showToast("Import Successful", `Imported ${importCount} items.`);
+                closeModals();
+            };
+            reader.readAsText(file);
+        }
+
+        /* --- ACTIVE TASK DIRECTORY & DASHBOARD RENDERERS --- */
         function renderActiveTasks() {
             const tb = document.getElementById('active-task-table-body');
             const th = document.getElementById('task-table-head');
             if (!tb || !th) return;
 
             const groupFilter = document.getElementById('filter-task-group').value;
-            const progFilter = document.getElementById('filter-task-program').value;
             const levelFilter = document.getElementById('filter-task-level').value;
-            const assigneeFilter = document.getElementById('filter-task-assignee').value;
             const statusFilter = document.getElementById('filter-task-status').value;
-
             const agIds = getAuthorizedGroups().map(g=>g.id);
 
             th.innerHTML = `<tr>
                 <th class="px-3 py-3 w-8 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
                 <th class="px-3 py-3 font-bold">Group / Program</th>
-                <th class="px-3 py-3 font-bold">Level / Cat</th>
+                <th class="px-3 py-3 font-bold">Level</th>
                 <th class="px-3 py-3 font-bold">Task Details</th>
                 <th class="px-3 py-3 font-bold">Target Date</th>
                 <th class="px-3 py-3 font-bold">Assignee</th>
@@ -1563,19 +2380,14 @@
                 <th class="px-3 py-3 font-bold text-center">Actions</th>
             </tr>`;
 
-            let filtered = activeTasks.filter(t => {
+            const terrs = currentUser?.territories || [];
+            let filtered = (window.activeTasks || []).filter(t => {
                 if (currentTaskView === 'active' && t.status === 'Archived') return false;
                 if (currentTaskView === 'archived' && t.status !== 'Archived') return false;
 
-                if (!currentUser.territories.includes('ALL') && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return false;
+                if (!terrs.includes('ALL') && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return false;
                 if (groupFilter !== 'ALL' && t.groupId !== groupFilter) return false;
-                if (progFilter !== 'ALL' && t.programId !== progFilter) return false;
                 if (levelFilter !== 'ALL' && t.level !== levelFilter) return false;
-                
-                if (assigneeFilter === 'ME' && t.assignee !== currentUser.name) return false;
-                if (assigneeFilter === 'UNASSIGNED' && t.assignee) return false;
-                if (assigneeFilter !== 'ALL' && assigneeFilter !== 'ME' && assigneeFilter !== 'UNASSIGNED' && t.assignee !== assigneeFilter) return false;
-
                 if (statusFilter !== 'ALL' && t.status !== statusFilter) return false;
 
                 return true;
@@ -1583,12 +2395,11 @@
 
             tb.innerHTML = '';
             if (filtered.length === 0) {
-                tb.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-400 italic">No tasks found matching current filters.</td></tr>`;
+                tb.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-400 italic">No matching tasks found.</td></tr>`;
                 return;
             }
 
             const todayStr = new Date().toISOString().split('T')[0];
-
             filtered.forEach(t => {
                 const isOverdue = t.targetDate && t.targetDate < todayStr && t.status !== 'Complete' && t.status !== 'Archived';
                 const statusBg = t.status === 'Complete' ? 'bg-emerald-100 text-emerald-800' : (t.status === 'In Progress' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800');
@@ -1618,18 +2429,13 @@
 
         function renderDashboard() {
             const agIds = getAuthorizedGroups().map(g => g.id);
-            const visibleTasks = activeTasks.filter(t => (t.groupId === 'ALL' || agIds.includes(t.groupId)) && t.status !== 'Archived');
+            const visibleTasks = (window.activeTasks || []).filter(t => (t.groupId === 'ALL' || agIds.includes(t.groupId)) && t.status !== 'Archived');
             const todayStr = new Date().toISOString().split('T')[0];
 
-            const total = visibleTasks.length;
-            const completed = visibleTasks.filter(t => t.status === 'Complete').length;
-            const unassigned = visibleTasks.filter(t => !t.assignee && t.status !== 'Complete').length;
-            const overdue = visibleTasks.filter(t => t.targetDate < todayStr && t.status !== 'Complete').length;
-
-            document.getElementById('kpi-total').textContent = total;
-            document.getElementById('kpi-completed').textContent = completed;
-            document.getElementById('kpi-unassigned').textContent = unassigned;
-            document.getElementById('kpi-overdue').textContent = overdue;
+            document.getElementById('kpi-total').textContent = visibleTasks.length;
+            document.getElementById('kpi-completed').textContent = visibleTasks.filter(t => t.status === 'Complete').length;
+            document.getElementById('kpi-unassigned').textContent = visibleTasks.filter(t => !t.assignee && t.status !== 'Complete').length;
+            document.getElementById('kpi-overdue').textContent = visibleTasks.filter(t => t.targetDate < todayStr && t.status !== 'Complete').length;
 
             const todayList = document.getElementById('dashboard-today-list');
             if (todayList) {
@@ -1678,7 +2484,6 @@
             renderActiveTasks();
         }
 
-        /* --- MODAL OPENERS & SAVERS WITH HOLIDAY PROMPT --- */
         function openAddOneOffTaskModal() {
             document.getElementById('at-edit-id').value = '';
             document.getElementById('at-is-oneoff').value = 'true';
@@ -1691,7 +2496,7 @@
         }
 
         function openEditTaskModal(id) {
-            const t = activeTasks.find(x => x.id === id);
+            const t = (window.activeTasks || []).find(x => x.id === id);
             if (!t) return;
             document.getElementById('at-edit-id').value = t.id;
             document.getElementById('at-is-oneoff').value = t.isOneOff ? 'true' : 'false';
@@ -1709,18 +2514,16 @@
             const editId = document.getElementById('at-edit-id').value;
             let dateVal = document.getElementById('at-date').value;
 
-            // Trigger Holiday Shift Prompt
             dateVal = checkAndShiftHoliday(dateVal);
             document.getElementById('at-date').value = dateVal;
 
             let assigneeVal = document.getElementById('at-assignee').value;
-            if (assigneeVal === 'CUSTOM') {
-                assigneeVal = document.getElementById('at-assignee-custom').value.trim();
-            }
+            if (assigneeVal === 'CUSTOM') assigneeVal = document.getElementById('at-assignee-custom').value.trim();
 
+            const terrs = currentUser?.territories || [];
             const taskData = {
                 id: editId || generateId('ATK'),
-                groupId: currentUser.territories[0] || '100',
+                groupId: terrs[0] || '100',
                 name: document.getElementById('at-name').value.trim(),
                 desc: document.getElementById('at-desc').value.trim(),
                 targetDate: dateVal,
@@ -1757,6 +2560,7 @@
                 year: document.getElementById('prog-year').value,
                 season: document.getElementById('prog-season').value,
                 type: document.querySelector('input[name="prog-type-radio"]:checked').value,
+                preHeader: document.getElementById('prog-pre').value || '',
                 dateStart: startDate,
                 dateFinal: document.getElementById('prog-date-final').value || '',
                 dateEarly: document.getElementById('prog-date-early').value || '',
@@ -1768,7 +2572,7 @@
 
             window.cloudSaveProgram(pData);
             closeModals();
-            showToast("Program Saved", "Program record saved successfully.");
+            showToast("Program Saved", "Program record saved.");
         }
 
         function saveTemplate(e) {
@@ -1788,7 +2592,7 @@
 
             window.cloudSaveTemplate(tData);
             closeModals();
-            showToast("Profile Saved", "Task template profile saved.");
+            showToast("Profile Saved", "Task template saved.");
         }
 
         function renderControlCenter() {
@@ -1796,8 +2600,9 @@
             if(!tb) return;
             tb.innerHTML = '';
             const agIds = getAuthorizedGroups().map(g=>g.id);
+            const terrs = currentUser?.territories || [];
 
-            const visible = programs.filter(p => currentUser.territories.includes('ALL') || agIds.includes(p.groupId));
+            const visible = (window.programs || []).filter(p => terrs.includes('ALL') || agIds.includes(p.groupId));
             if(visible.length === 0) {
                 tb.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">No programs found.</td></tr>`;
                 return;
@@ -1814,6 +2619,7 @@
                         <button onclick="openPricingPane('${p.id}')" class="text-emerald-600 font-bold" title="Pricing Schedule"><i class="fa-solid fa-tags"></i></button>
                         <button onclick="generateTaskPlan('${p.id}', 'Operational')" class="bg-i9blue text-white px-2 py-1 rounded text-[10px]">Gen Ops</button>
                         <button onclick="generateTaskPlan('${p.id}', 'Marketing')" class="bg-emerald-600 text-white px-2 py-1 rounded text-[10px]">Gen Mktg</button>
+                        <button onclick="openHardDeleteModal('program', '${p.id}')" class="text-rose-600 font-bold"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1823,7 +2629,7 @@
             const tb = document.getElementById('template-table-body');
             if(!tb) return;
             tb.innerHTML = '';
-            templates.forEach(tpl => {
+            (window.templates || []).forEach(tpl => {
                 tb.innerHTML += `<tr class="hover:bg-gray-50">
                     <td class="p-3 text-center"><input type="checkbox" value="${tpl.id}" class="tpl-cb"></td>
                     <td class="p-3 font-bold">${tpl.groupId}</td>
@@ -1833,7 +2639,7 @@
                     <td class="p-3">${tpl.seasons ? tpl.seasons.join(', ') : 'All'}</td>
                     <td class="p-3">${tpl.offsetNum} Days ${tpl.offsetDir}</td>
                     <td class="p-3">${tpl.role || 'Any'}</td>
-                    <td class="p-3 text-center"><button onclick="openHardDeleteModal('template', '${tpl.id}', '${tpl.groupId}', '${tpl.name}')" class="text-rose-600 font-bold"><i class="fa-solid fa-trash"></i></button></td>
+                    <td class="p-3 text-center"><button onclick="openHardDeleteModal('template', '${tpl.id}')" class="text-rose-600 font-bold"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
         }
@@ -1861,7 +2667,7 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayTasks = activeTasks.filter(t => t.targetDate === dayStr && t.status !== 'Archived');
+                const dayTasks = (window.activeTasks || []).filter(t => t.targetDate === dayStr && t.status !== 'Archived');
 
                 let tasksHtml = '';
                 dayTasks.forEach(t => {
@@ -1877,6 +2683,19 @@
             }
         }
 
+        function populateYearDropdowns() {
+            const currentYear = new Date().getFullYear();
+            const yearEls = ['prog-year', 'filter-prog-year', 'be-year'];
+            yearEls.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    let html = id === 'filter-prog-year' ? '<option value="ALL">All Years</option>' : '';
+                    for (let y = 2026; y <= currentYear + 3; y++) html += `<option value="${y}">${y}</option>`;
+                    el.innerHTML = html;
+                }
+            });
+        }
+
         function goToToday() { calendarDate = new Date(); renderCalendar(); }
         function changeCalendarDate(delta) { calendarDate.setMonth(calendarDate.getMonth() + delta); renderCalendar(); }
         function jumpToDate(val) { if(val) { calendarDate = new Date(val + "T00:00:00"); renderCalendar(); } }
@@ -1890,30 +2709,28 @@
         function submitArchiveTasks(e) {
             e.preventDefault();
             const id = document.getElementById('archive-task-ids').value;
-            const task = activeTasks.find(t => t.id === id);
+            const task = (window.activeTasks || []).find(t => t.id === id);
             if(task) {
                 task.status = 'Archived';
                 window.cloudSaveActiveTask(task);
             }
             closeModals();
-            showToast("Archived", "Task removed from active directory.");
+            showToast("Archived", "Task archived.");
         }
 
         function bulkArchiveTasks() {
             const ids = getSelected('task-cb');
             if(ids.length === 0) return alert("Select tasks first.");
             ids.forEach(id => {
-                const t = activeTasks.find(x => x.id === id);
+                const t = (window.activeTasks || []).find(x => x.id === id);
                 if(t) { t.status = 'Archived'; window.cloudSaveActiveTask(t); }
             });
             showToast("Bulk Archived", `${ids.length} tasks archived.`);
         }
 
-        function openHardDeleteModal(type, id, groupId, name) {
-            document.getElementById('hd-item-ids').value = Array.isArray(id) ? id.join(',') : id;
+        function openHardDeleteModal(type, id) {
+            document.getElementById('hd-item-ids').value = id;
             document.getElementById('hd-item-type').value = type;
-            document.getElementById('hd-item-group').value = groupId;
-            document.getElementById('hd-item-names').value = name;
             document.getElementById('hard-delete-modal').classList.remove('hidden');
         }
 
@@ -1942,7 +2759,7 @@
 
             let csv = "ID,Group,Name,Date,Status\n";
             if(type === 'tasks') {
-                activeTasks.filter(t => t.targetDate >= start && t.targetDate <= end).forEach(t => {
+                (window.activeTasks || []).filter(t => t.targetDate >= start && t.targetDate <= end).forEach(t => {
                     csv += `"${t.id}","${t.groupId}","${t.name}","${t.targetDate}","${t.status}"\n`;
                 });
             }
@@ -1952,7 +2769,7 @@
 
         function exportCurrentViewToCSV() {
             let csv = "ID,Group,Level,Name,Target Date,Assignee,Status\n";
-            activeTasks.forEach(t => {
+            (window.activeTasks || []).forEach(t => {
                 csv += `"${t.id}","${t.groupId}","${t.level || ''}","${t.name}","${t.targetDate}","${t.assignee || ''}","${t.status}"\n`;
             });
             downloadCSV(csv, "Task_Directory_Export.csv");
