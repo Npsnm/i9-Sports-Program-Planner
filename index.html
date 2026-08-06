@@ -91,7 +91,7 @@
             <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-layer-group"></i> Task Profiles
             </button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden">
+            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden permission-manage-groups">
                 <i class="fa-solid fa-users-gear"></i> Admin Dashboard
                 <span id="admin-alert-badge" class="absolute -top-1 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
             </button>
@@ -332,7 +332,7 @@
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-prog-group" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"><option value="ALL">All Groups</option></select>
                         <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
-                            <option value="ALL">All Years</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
+                            <!-- Populated dynamically via populateYearDropdowns -->
                         </select>
                         <select id="filter-prog-season" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
@@ -425,7 +425,7 @@
         </section>
 
         <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) -->
-        <section id="view-admin" class="tab-view hidden space-y-6">
+        <section id="view-admin" class="tab-view hidden space-y-6 permission-manage-groups">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
                 <p class="text-xs text-gray-500">Approve users, configure groups, and send invitations.</p>
@@ -502,7 +502,6 @@
                     <p class="text-xs text-gray-500">Manage your profile, credentials, and view your system account links.</p>
                 </div>
 
-                <!-- ADDED: Profile Update Form -->
                 <form onsubmit="handleProfileUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Personal Profile</h3>
                     <div class="grid grid-cols-2 gap-4 max-w-md">
@@ -534,11 +533,17 @@
                 </div>
             </div>
 
-            <!-- System Permissions (System Admin Only) -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4 admin-only hidden">
-                <div class="border-b pb-4">
-                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions Matrix</h2>
-                    <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier.</p>
+            <!-- Group-Specific Permissions (Manage Groups Tier only) -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4 permission-manage-groups hidden">
+                <div class="border-b pb-4 flex flex-wrap justify-between items-end gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions Matrix</h2>
+                        <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier within your group.</p>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-[10px] text-gray-500 mb-1">Select Group Context</label>
+                        <select id="perm-group-select" onchange="renderPermissions()" class="p-2 border border-gray-300 rounded-lg bg-gray-50 text-xs font-bold text-i9blue min-w-[150px] outline-none hover:bg-white transition"></select>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs text-left">
@@ -580,7 +585,7 @@
                 
                 <!-- Program Bulk Edit Fields -->
                 <div id="bulk-edit-programs-fields" class="hidden space-y-4">
-                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-year"><div class="flex-grow"><label class="font-bold block text-[10px]">Year</label><select id="be-year" class="w-full p-1.5 border rounded"><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div></div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-year"><div class="flex-grow"><label class="font-bold block text-[10px]">Year</label><select id="be-year" class="w-full p-1.5 border rounded"></select></div></div>
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-season"><div class="flex-grow"><label class="font-bold block text-[10px]">Season</label><select id="be-season" class="w-full p-1.5 border rounded"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div></div>
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-venue"><div class="flex-grow"><label class="font-bold block text-[10px]">Venue</label><input type="text" id="be-venue" class="w-full p-1.5 border rounded"></div></div>
                 </div>
@@ -755,7 +760,7 @@
                 
                 <div class="grid grid-cols-3 gap-4">
                     <div><label class="block font-bold mb-1">Group</label><select id="prog-group" class="w-full p-2 border rounded bg-gray-50"></select></div>
-                    <div><label class="block font-bold mb-1">Year</label><select id="prog-year" class="w-full p-2 border rounded bg-gray-50"><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                    <div><label class="block font-bold mb-1">Year</label><select id="prog-year" class="w-full p-2 border rounded bg-gray-50"></select></div>
                     <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
                 </div>
 
@@ -791,7 +796,6 @@
                     </div>
                 </div>
 
-                <!-- ADDED BYE WEEK AND DURATION UPDATE -->
                 <div class="grid grid-cols-3 gap-4 border-t pt-4">
                     <div class="col-span-1">
                         <label class="block font-bold mb-1">Days of Week</label>
@@ -944,6 +948,9 @@
             window.sendPasswordResetEmail = sendPasswordResetEmail;
             
             const googleProvider = new GoogleAuthProvider(); 
+            // ADDED SCOPE for future deeper calendar features
+            googleProvider.addScope('https://www.googleapis.com/auth/calendar.events');
+            
             window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); 
             window.linkGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
 
@@ -968,12 +975,12 @@
             document.getElementById('sync-status-text').textContent = "Cloud Active";
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
-                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions();
+                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions(); window.applyPermissions();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
                 let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
-                window.sysPermissions = Object.keys(p).length > 0 ? p : window.DEFAULT_PERMISSIONS;
+                window.groupPermissions = p;
                 window.renderPermissions(); window.applyPermissions();
             });
 
@@ -1000,7 +1007,7 @@
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
                 window.programs = snap.docs.map(d => d.data());
-                window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
+                window.populateYearDropdowns(); window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'task_templates'), (snap) => {
@@ -1031,13 +1038,13 @@
         window.cloudDeleteTemplate = (id) => window.cloudDelete('task_templates', id);
         window.cloudSaveActiveTask = (t) => window.cloudSave('active_tasks', t.id, t);
         window.cloudDeleteActiveTask = (id) => window.cloudDelete('active_tasks', id);
-        window.cloudSavePermissions = (tier, data) => window.cloudSave('permissions', tier, data);
+        window.cloudSavePermissions = (groupId, data) => window.cloudSave('permissions', groupId, data);
         window.cloudSaveBranding = (b) => setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), b);
     </script>
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.4.0 (Milestones, Bye Weeks & Profiles)";
+        const APP_VERSION = "2.5.0 (Group Matrix & Interactive Cal)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
@@ -1054,7 +1061,7 @@
 
         // ADDED DATE CALCULATOR
         function calculateNewTargetDate(p, tpl) {
-            let anchorDateStr = p[tpl.anchor]; // e.g. p['dateStart']
+            let anchorDateStr = p[tpl.anchor]; 
             if (!anchorDateStr) return '';
             let d = new Date(anchorDateStr + "T00:00:00");
             let offset = tpl.offsetNum || 0;
@@ -1070,16 +1077,11 @@
             
             let genCount = 0;
             templates.forEach(tpl => {
-                // Match group (ALL or specific)
                 if (tpl.groupId !== 'ALL' && tpl.groupId !== p.groupId) return;
-                // Match type
                 if (tpl.type !== 'ALL' && tpl.type !== p.type) return;
-                // Match season
                 if (tpl.seasons && !tpl.seasons.includes(p.season)) return;
-                // Preheader logic
                 if (tpl.preHeader && p.preHeader && tpl.preHeader !== p.preHeader && tpl.preHeader !== 'ALL') return;
 
-                // Check if task already exists
                 const existing = activeTasks.find(t => t.programId === p.id && t.templateId === tpl.id);
                 if (existing) return;
 
@@ -1117,6 +1119,34 @@
             applyBrandingUI();
             closeModals();
             showToast("Branding Saved", "Theme updated successfully.");
+        }
+
+        // ADDED DYNAMIC YEAR UPDATER
+        function populateYearDropdowns() {
+            const currentYear = new Date().getFullYear(); 
+            const startYear = 2026;
+            const endYear = currentYear + 4;
+            
+            let yearsSet = new Set();
+            for(let y = startYear; y <= endYear; y++) yearsSet.add(y.toString());
+            
+            if (window.programs) {
+                window.programs.forEach(p => { if (p.year) yearsSet.add(p.year.toString()); });
+            }
+            
+            let sortedYears = Array.from(yearsSet).sort((a,b) => parseInt(a) - parseInt(b));
+            
+            const yearEls = ['prog-year', 'filter-prog-year', 'be-year'];
+            yearEls.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    let prevVal = el.value;
+                    let html = id === 'filter-prog-year' ? '<option value="ALL">All Years</option>' : '';
+                    sortedYears.forEach(y => { html += `<option value="${y}">${y}</option>`; });
+                    el.innerHTML = html;
+                    if (prevVal && sortedYears.includes(prevVal)) el.value = prevVal;
+                }
+            });
         }
 
         function getUSHoliday(dateObj) {
@@ -1194,14 +1224,15 @@
         };
         
         window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
+        window.groupPermissions = {}; // Initialize object to hold per-group matrix
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
-        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], sysPermissions = DEFAULT_PERMISSIONS;
+        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
         window.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
             if(versionEl) versionEl.textContent = APP_VERSION;
-            applyBrandingUI(); updateTplPreHeaderOptions();
+            applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
         });
 
         /* --- AUTHENTICATION & USER MANAGEMENT --- */
@@ -1328,18 +1359,36 @@
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
-            applyPermissions(); populateFilterOptions(); populateProfileForm(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
+            populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
         }
 
         function checkPendingAlerts() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             const badge = document.getElementById('admin-alert-badge');
             if (!badge || !currentUser) return;
-            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
-            if(currentUser.role === 'System Admin' || perms.manageGroups) {
+            if(hasPermission('manageGroups')) {
                 const pendingCount = users.filter(u => u.role === 'Pending').length;
                 if(pendingCount > 0) { badge.textContent = pendingCount; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
             } else badge.classList.add('hidden');
+        }
+
+        // ADDED ISOLATED GROUP PERMISSION CHECKER
+        function hasPermission(permKey) {
+            if (!currentUser) return false;
+            if (currentUser.role === 'System Admin') return true;
+            
+            let hasIt = false;
+            const checkGroups = currentUser.territories.includes('ALL') ? groups.map(g=>g.id) : currentUser.territories;
+            
+            for (let gId of checkGroups) {
+                let gPerms = window.groupPermissions[gId] || window.DEFAULT_PERMISSIONS;
+                let rolePerms = gPerms[currentUser.role] || window.DEFAULT_PERMISSIONS["Staff"];
+                if (rolePerms[permKey]) {
+                    hasIt = true;
+                    break;
+                }
+            }
+            return hasIt;
         }
 
         function applyPermissions() {
@@ -1347,7 +1396,11 @@
             if (!currentUser) return;
             document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
             document.getElementById('user-display-scope').textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Network' : currentUser.territories.join(', ') || 'None'}`;
-            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
+            
+            const canManageGroups = hasPermission('manageGroups');
+            const canCreatePrograms = hasPermission('createPrograms');
+            const canEditTemplates = hasPermission('editTemplates');
+            const canEditTasks = hasPermission('editTasks');
             
             document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.add('hidden'));
@@ -1356,13 +1409,12 @@
             document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
             if (currentUser.role === 'System Admin') document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-            if (perms.manageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('tab-admin').classList.remove('hidden'); }
-            if (perms.createPrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
-            if (perms.editTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
-            if (perms.editTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
+            if (canManageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('tab-admin').classList.remove('hidden'); }
+            if (canCreatePrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
+            if (canEditTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
+            if (canEditTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
         }
 
-        // ADDED PROFILE DATA BINDING
         function populateProfileForm() {
             if (!currentUser) return;
             document.getElementById('setting-first').value = currentUser.firstName || '';
@@ -1423,19 +1475,20 @@
             const atGroup = document.getElementById('at-program');
             const tplGroup = document.getElementById('tpl-group');
             const calProgramFilter = document.getElementById('filter-cal-program');
-            
-            // New Calendar Group Filter Check
             const calGroupFilter = document.getElementById('filter-cal-group');
+            const permGroupSelect = document.getElementById('perm-group-select'); // For matrix
             
             if(pGroup) pGroup.innerHTML = ''; if(atGroup) atGroup.innerHTML = '';
             if(tplGroup) tplGroup.innerHTML = '<option value="ALL">ALL GROUPS (Network-Wide)</option>';
             if(calProgramFilter) calProgramFilter.innerHTML = '<option value="ALL">All Specific Programs</option>';
             if(calGroupFilter) calGroupFilter.innerHTML = '<option value="ALL">All Authorized Groups</option>';
+            if(permGroupSelect) permGroupSelect.innerHTML = '';
             
             ag.forEach(g => { 
                 if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
                 if(tplGroup) tplGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
                 if(calGroupFilter) calGroupFilter.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                if(permGroupSelect) permGroupSelect.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
             });
 
             programs.forEach(p => { 
@@ -1457,6 +1510,8 @@
                 asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
                 users.forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
             }
+            
+            renderPermissions(); // Trigger rendering of Matrix if it was open
         }
 
         /* --- CALENDAR SYSTEM --- */
@@ -1514,7 +1569,6 @@
             const agIds = getAuthorizedGroups().map(g=>g.id);
             const view = document.querySelector('input[name="cal-view-type"]:checked').value;
             
-            // Read standard filters
             const fGroup = document.getElementById('filter-cal-group') ? document.getElementById('filter-cal-group').value : 'ALL';
             const fProgType = document.getElementById('filter-cal-prog-type').value;
             const fProgramId = document.getElementById('filter-cal-program').value;
@@ -1522,7 +1576,6 @@
 
             const today = new Date(); today.setHours(0,0,0,0);
             
-            // Keep jump input synced
             const jumpInput = document.getElementById('calendar-jump-date');
             if(jumpInput) {
                 jumpInput.value = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(calendarDate.getDate()).padStart(2,'0')}`;
@@ -1593,24 +1646,21 @@
             }
         }
 
-        // Helper function for Calendar Cells
         function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agIds, fGroup, fProgType, fProgramId, fSeason, heightClass = "h-28", view = "month") {
             renderDate.setHours(0,0,0,0);
             const isToday = renderDate.getTime() === todayDate.getTime();
             const holidayName = getUSHoliday(renderDate);
 
-            // Fetch tasks matching filters
             const dayTasks = activeTasks.filter(t => {
                 if(t.targetDate !== dayStr) return false;
                 if(!agIds.includes(t.groupId)) return false;
-                if(fGroup !== 'ALL' && t.groupId !== fGroup) return false; // Check new group filter
+                if(fGroup !== 'ALL' && t.groupId !== fGroup) return false;
                 
                 const isComplete = t.status === 'Complete';
                 const isInProgress = t.status === 'In Progress';
                 const isOverdue = !isComplete && (renderDate < todayDate);
                 const taskLevel = t.level || 'Operational';
 
-                // Check Legend Toggles
                 if(isComplete && !calFilters.complete) return false;
                 if(isOverdue && !calFilters.overdue) return false;
                 if(isInProgress && !calFilters.inProgress) return false;
@@ -1619,7 +1669,6 @@
                     if(taskLevel === 'Marketing' && !calFilters.pendingMktg) return false;
                 }
 
-                // Check standard dropdowns
                 if(fProgramId !== 'ALL' && t.programId !== fProgramId) return false;
                 
                 const p = programs.find(x => x.id === t.programId);
@@ -1631,12 +1680,11 @@
                 return true;
             });
 
-            // Fetch program milestones matching filters
             let milestonesHTML = '';
             if(calFilters.milestones !== false) {
                 const dayPrograms = programs.filter(p => {
                     if(!agIds.includes(p.groupId)) return false;
-                    if(fGroup !== 'ALL' && p.groupId !== fGroup) return false; // Check new group filter
+                    if(fGroup !== 'ALL' && p.groupId !== fGroup) return false;
                     if(fProgramId !== 'ALL' && p.id !== fProgramId) return false;
                     if(fProgType !== 'ALL' && p.type !== fProgType) return false;
                     if(fSeason !== 'ALL' && p.season !== fSeason) return false;
@@ -1649,11 +1697,11 @@
                     if(p.dateFinal === dayStr) milestoneTypes.push("Final Deadline");
                     if(p.dateEarly === dayStr) milestoneTypes.push("Early Deadline");
                     if(p.dateOffseason === dayStr) milestoneTypes.push("Offseason Deadline");
-                    if(p.byeWeek === dayStr) milestoneTypes.push("Bye Week"); // ADDED: Visual flag
+                    if(p.byeWeek === dayStr) milestoneTypes.push("Bye Week");
                     
                     milestoneTypes.forEach(mt => {
                         const styleCls = mt === "Bye Week" ? "bg-amber-100 text-amber-800 border-amber-300" : "bg-indigo-100 text-indigo-800 border-indigo-300";
-                        milestonesHTML += `<div onclick="openEditProgramModal('${p.id}')" class="text-[9px] font-bold leading-tight truncate px-1 py-0.5 mb-1 rounded border shadow-sm cursor-pointer hover:opacity-80 transition-opacity ${styleCls}" title="${p.groupId} ${p.preHeader} ${p.season} ${p.type}\n${mt}"><i class="fa-solid fa-flag text-[8px] mr-1"></i>${p.groupId} ${p.season}: ${mt}</div>`;
+                        milestonesHTML += `<div onclick="event.stopPropagation(); openEditProgramModal('${p.id}')" class="text-[9px] font-bold leading-tight truncate px-1 py-0.5 mb-1 rounded border shadow-sm cursor-pointer hover:opacity-80 transition-opacity ${styleCls}" title="${p.groupId} ${p.preHeader} ${p.season} ${p.type}\n${mt}"><i class="fa-solid fa-flag text-[8px] mr-1"></i>${p.groupId} ${p.season}: ${mt}</div>`;
                     });
                 });
             }
@@ -1682,11 +1730,10 @@
 
                 const icon = isOverdue ? `<i class="fa-solid fa-triangle-exclamation text-[8px] text-rose-600 mr-1"></i>` : '';
 
-                // Display the groupId visually on the task pill
-                return `<div onclick="openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="Group: ${t.groupId}\nTask: ${t.name}\nStatus: ${t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}<span class="font-bold opacity-60 mr-1">[${t.groupId}]</span>${t.name}</div>`;
+                return `<div onclick="event.stopPropagation(); openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="Group: ${t.groupId}\nTask: ${t.name}\nStatus: ${t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}<span class="font-bold opacity-60 mr-1">[${t.groupId}]</span>${t.name}</div>`;
             }).join('');
 
-            return `<div class="${heightClass} border ${cellHighlight} rounded p-1 overflow-y-auto bg-white flex flex-col relative group transition-colors">
+            return `<div onclick="openAddOneOffTaskModal('${dayStr}')" class="${heightClass} border ${cellHighlight} rounded p-1 overflow-y-auto bg-white flex flex-col relative group transition-colors cursor-pointer hover:bg-gray-50">
                 <div class="flex justify-between items-start mb-2">
                     <div class="text-[9px] text-rose-500 font-bold uppercase leading-tight max-w-[60%]">${holidayName || ''}</div>
                     <div class="flex items-center gap-1">${todayText}<span class="font-bold ${dateStyle}">${displayDay}</span></div>
@@ -1716,7 +1763,6 @@
                 const borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
                 const levelIcon = t.level === 'Marketing' ? '<i class="fa-solid fa-bullhorn text-emerald-600"></i>' : '<i class="fa-solid fa-gears text-i9blue"></i>';
 
-                // Added group ID tag directly inside the dashboard task lists
                 el.innerHTML += `
                 <div class="p-2.5 bg-gray-50 border border-gray-200 rounded ${borderLeft} flex justify-between items-center transition hover:bg-gray-100 cursor-pointer mb-2" onclick="openEditActiveTask('${t.id}')">
                     <div class="overflow-hidden pr-2">
@@ -1826,8 +1872,7 @@
             const agIds = getAuthorizedGroups().map(g=>g.id);
             const tb = document.getElementById('control-center-table-body'); if(!tb) return; tb.innerHTML = '';
             
-            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
-            const isManager = currentUser && (currentUser.role === 'System Admin' || perms.createPrograms);
+            const isManager = hasPermission('createPrograms');
 
             const fGrp = document.getElementById('filter-prog-group').value; const fYr = document.getElementById('filter-prog-year').value;
             const fSea = document.getElementById('filter-prog-season').value; const fTyp = document.getElementById('filter-prog-type').value;
@@ -1881,7 +1926,6 @@
             
             document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = false);
             
-            // Clear visual form fields to prevent showing previous entry
             document.getElementById('prog-date-start').value = '';
             document.getElementById('prog-date-final').value = '';
             document.getElementById('prog-date-early').value = '';
@@ -1966,8 +2010,7 @@
             const f = document.getElementById('filter-template-type').value; 
             const fGrp = document.getElementById('filter-template-group').value; 
             tb.innerHTML = '';
-            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
-            const isManager = currentUser && (currentUser.role === 'System Admin' || perms.editTemplates);
+            const isManager = hasPermission('editTemplates');
             
             const agIds = getAuthorizedGroups().map(g=>g.id);
 
@@ -2003,7 +2046,6 @@
         function openAddTemplateModal() { 
             document.getElementById('tpl-edit-id').value = ''; 
             
-            // Clear visual inputs properly to prevent showing old data
             document.getElementById('tpl-name').value = '';
             document.getElementById('tpl-desc').value = '';
             document.getElementById('tpl-offset-num').value = '0';
@@ -2053,8 +2095,7 @@
             const agIds = getAuthorizedGroups().map(g=>g.id);
             const tb = document.getElementById('active-task-table-body'); if(!tb) return; tb.innerHTML = '';
             
-            const perms = sysPermissions[currentUser.role] || DEFAULT_PERMISSIONS["Staff"];
-            const canEdit = currentUser.role === 'System Admin' || perms.editTasks;
+            const canEdit = hasPermission('editTasks');
 
             const fGrp = document.getElementById('filter-task-group').value; const fPrg = document.getElementById('filter-task-program').value;
             const fAss = document.getElementById('filter-task-assignee').value; const fSt = document.getElementById('filter-task-status').value;
@@ -2072,7 +2113,6 @@
                 if (fAss === 'ME' && t.assignee !== currentUser.name) return;
                 if (fAss === 'UNASSIGNED' && !isUn) return;
                 
-                // Fallback visual for One-Off task group association
                 let pName = 'Unknown';
                 const p = programs.find(x => x.id === t.programId);
                 if (p) pName = `[${p.groupId}] ${p.preHeader} ${p.season}`;
@@ -2095,7 +2135,6 @@
                 
                 const descDisplay = t.desc && t.desc.trim() !== '' ? `<div class="text-[9px] text-gray-500 font-normal mt-0.5 max-w-[200px] truncate" title="${t.desc.replace(/"/g, '&quot;')}">${t.desc}</div>` : '';
 
-                // Inline Assignee Dropdown for Grid Editing
                 let assigneeDropdown = `<select onchange="updateTaskAssignee('${t.id}', this.value)" class="bg-transparent border-b border-gray-300 text-[11px] font-bold text-emerald-800 w-full p-1 outline-none appearance-none hover:bg-gray-50 cursor-pointer ${isUn ? 'text-rose-500' : ''}" ${canEdit ? '' : 'disabled'}>
                     <option value="" class="text-gray-500">-- Unassigned --</option>
                     ${users.map(u => `<option value="${u.name}" ${t.assignee === u.name ? 'selected' : ''}>${u.name}</option>`).join('')}
@@ -2131,13 +2170,14 @@
         function updateActiveTaskStatus(id, st) { const t = activeTasks.find(x => x.id === id); if(t) { t.status = st; window.cloudSaveActiveTask(t); } }
         function updateTaskAssignee(id, newAssignee) { const t = activeTasks.find(x => x.id === id); if(t) { t.assignee = newAssignee; window.cloudSaveActiveTask(t); showToast("Reassigned", "Assignee updated directly."); } }
         
-        function openAddOneOffTaskModal() { 
+        // MODIFIED TO ACCEPT PREFILL DATE FROM CALENDAR
+        function openAddOneOffTaskModal(prefillDate = '') { 
             document.getElementById('at-edit-id').value = ''; 
             document.getElementById('at-is-oneoff').value = 'true'; 
             document.getElementById('at-level').value = 'Operational';
             document.getElementById('at-name').value = ''; 
             document.getElementById('at-desc').value = ''; 
-            document.getElementById('at-date').value = ''; 
+            document.getElementById('at-date').value = typeof prefillDate === 'string' && prefillDate ? prefillDate : ''; 
             document.getElementById('at-assignee').value = ''; 
             document.getElementById('at-notes').value = ''; 
             document.getElementById('at-completion-notes').value = '';
@@ -2198,13 +2238,12 @@
         function cloneTask(id) { const t = activeTasks.find(x=>x.id===id); if(t) { window.cloudSaveActiveTask({...t, id: generateId('ATK')}); showToast("Cloned", "Task duplicated successfully."); } }
 
         /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
-        function openUserManagementModal() { switchTab('admin'); } // Redirect old calls just in case
+        function openUserManagementModal() { switchTab('admin'); } 
         function renderGroupPills() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; 
             
-            // Show all groups for admin
             let visibleGroups = groups;
             if (!currentUser.territories.includes('ALL')) {
                 visibleGroups = groups.filter(g => currentUser.territories.includes(g.id));
@@ -2281,15 +2320,37 @@
             e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
             if(u) { u.role = document.getElementById('admin-u-role').value; u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); window.cloudSaveUser(u); document.getElementById('admin-edit-user-modal').classList.add('hidden'); showToast("Saved", `Permissions updated for ${u.name}`); }
         }
+
+        // ADDED DYNAMIC PERMISSIONS RENDERER
         function renderPermissions() {
-            const tb = document.getElementById('permissions-table-body'); if(!tb) return; tb.innerHTML = '';
+            const tb = document.getElementById('permissions-table-body'); if(!tb) return; 
+            const groupId = document.getElementById('perm-group-select').value;
+            if (!groupId || groupId === 'ALL') { tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">Please select a specific group context to edit permissions.</td></tr>`; return; }
+            
+            tb.innerHTML = '';
+            const gPerms = window.groupPermissions[groupId] || window.DEFAULT_PERMISSIONS;
+
             ROLES.forEach(r => {
-                if (r === 'System Admin') return; // Excluded from view
-                const p = sysPermissions[r] || DEFAULT_PERMISSIONS["Staff"];
-                tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="p-3 font-bold text-gray-800">${r}</td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''}></td><td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${r}','editTasks',this.checked)" ${p.editTasks?'checked':''}></td></tr>`;
+                if (r === 'System Admin') return; 
+                const p = gPerms[r] || window.DEFAULT_PERMISSIONS["Staff"] || {};
+                
+                tb.innerHTML += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 font-bold text-gray-800">${r}</td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','manageGroups',this.checked)" ${p.manageGroups?'checked':''}></td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','createPrograms',this.checked)" ${p.createPrograms?'checked':''}></td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','editTemplates',this.checked)" ${p.editTemplates?'checked':''}></td>
+                    <td class="p-3 text-center"><input type="checkbox" onchange="updatePerm('${groupId}', '${r}','editTasks',this.checked)" ${p.editTasks?'checked':''}></td>
+                </tr>`;
             });
         }
-        function updatePerm(tier, field, val) { sysPermissions[tier][field] = val; window.cloudSavePermissions(tier, sysPermissions[tier]); }
+
+        function updatePerm(groupId, tier, field, val) { 
+            if(!window.groupPermissions[groupId]) window.groupPermissions[groupId] = JSON.parse(JSON.stringify(window.DEFAULT_PERMISSIONS));
+            if(!window.groupPermissions[groupId][tier]) window.groupPermissions[groupId][tier] = {};
+            
+            window.groupPermissions[groupId][tier][field] = val; 
+            window.cloudSavePermissions(groupId, window.groupPermissions[groupId]); 
+        }
 
         /* --- MULTI-SELECT & BULK ACTIONS --- */
         function toggleSelectAll(className, isChecked) { document.querySelectorAll(`.${className}`).forEach(cb => cb.checked = isChecked); }
