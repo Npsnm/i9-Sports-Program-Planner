@@ -178,18 +178,11 @@
         <!-- TAB 2: CALENDAR VIEW -->
         <section id="view-calendar" class="tab-view hidden space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
-                <!-- Top Row: Title & Navigation -->
+                <!-- Top Row: Title -->
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-regular fa-calendar text-i9gold"></i> Task Calendar</h2>
                         <p class="text-xs text-gray-500">Visual overview of upcoming operational and marketing tasks.</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="goToToday()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
-                        <button onclick="changeCalendarDate(-1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[150px] text-center text-sm uppercase tracking-wide">August 2026</span>
-                        <button onclick="changeCalendarDate(1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-right"></i></button>
-                        <input type="date" id="calendar-jump-date" onchange="jumpToDate(this.value)" class="ml-1 p-1.5 border border-gray-300 rounded-lg bg-gray-50 text-xs text-gray-700 outline-none cursor-pointer shadow-sm transition hover:bg-white" title="Direct jump to date">
                     </div>
                 </div>
 
@@ -216,23 +209,38 @@
                     </select>
                 </div>
 
-                <!-- Bottom Row: Clickable Legend Filters (Replaces Status & Level Dropdowns) -->
-                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-600 border-t border-gray-100 pt-3" id="calendar-legend-filters">
-                    <button onclick="toggleCalFilter('pendingOps')" id="cal-filt-pendingOps" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
-                        <div class="w-3.5 h-3.5 bg-blue-100 border border-blue-300 rounded-full"></div> Pending Ops
-                    </button>
-                    <button onclick="toggleCalFilter('pendingMktg')" id="cal-filt-pendingMktg" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
-                        <div class="w-3.5 h-3.5 bg-emerald-100 border border-emerald-300 rounded-full"></div> Pending Mktg
-                    </button>
-                    <button onclick="toggleCalFilter('inProgress')" id="cal-filt-inProgress" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
-                        <div class="w-3.5 h-3.5 bg-amber-100 border border-amber-300 rounded-full"></div> In Progress
-                    </button>
-                    <button onclick="toggleCalFilter('overdue')" id="cal-filt-overdue" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
-                        <div class="w-3.5 h-3.5 bg-rose-100 border border-rose-400 rounded-full"></div> Overdue
-                    </button>
-                    <button onclick="toggleCalFilter('complete')" id="cal-filt-complete" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
-                        <div class="w-3.5 h-3.5 bg-gray-200 border border-gray-300 rounded-full"></div> Complete
-                    </button>
+                <!-- Bottom Row: Clickable Legend Filters AND Date Navigation -->
+                <div class="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-3">
+                    <!-- Legend Filters -->
+                    <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-600" id="calendar-legend-filters">
+                        <button onclick="toggleCalFilter('milestones')" id="cal-filt-milestones" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                            <div class="w-3.5 h-3.5 bg-indigo-100 border border-indigo-400 rounded-full"></div> Milestones
+                        </button>
+                        <button onclick="toggleCalFilter('pendingOps')" id="cal-filt-pendingOps" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                            <div class="w-3.5 h-3.5 bg-blue-100 border border-blue-300 rounded-full"></div> Pending Ops
+                        </button>
+                        <button onclick="toggleCalFilter('pendingMktg')" id="cal-filt-pendingMktg" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                            <div class="w-3.5 h-3.5 bg-emerald-100 border border-emerald-300 rounded-full"></div> Pending Mktg
+                        </button>
+                        <button onclick="toggleCalFilter('inProgress')" id="cal-filt-inProgress" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                            <div class="w-3.5 h-3.5 bg-amber-100 border border-amber-300 rounded-full"></div> In Progress
+                        </button>
+                        <button onclick="toggleCalFilter('overdue')" id="cal-filt-overdue" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                            <div class="w-3.5 h-3.5 bg-rose-100 border border-rose-400 rounded-full"></div> Overdue
+                        </button>
+                        <button onclick="toggleCalFilter('complete')" id="cal-filt-complete" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                            <div class="w-3.5 h-3.5 bg-gray-200 border border-gray-300 rounded-full"></div> Complete
+                        </button>
+                    </div>
+                    
+                    <!-- Date Controls Moved Here -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="goToToday()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
+                        <button onclick="changeCalendarDate(-1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[150px] text-center text-sm uppercase tracking-wide">August 2026</span>
+                        <button onclick="changeCalendarDate(1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-right"></i></button>
+                        <input type="date" id="calendar-jump-date" onchange="jumpToDate(this.value)" class="ml-1 p-1.5 border border-gray-300 rounded-lg bg-gray-50 text-xs text-gray-700 outline-none cursor-pointer shadow-sm transition hover:bg-white" title="Direct jump to date">
+                    </div>
                 </div>
             </div>
             
@@ -720,6 +728,19 @@
         </div>
     </div>
 
+    <!-- BRANDING MODAL (Kept hidden but functional if needed elsewhere) -->
+    <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="saveBranding(event)" class="space-y-4">
+                <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
+                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -836,12 +857,51 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.1.0 (Dashboard & Format overhaul)";
+        const APP_VERSION = "2.3.0 (Milestones & Holidays)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
-        let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true };
+        let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
+
+        function getUSHoliday(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = dateObj.getMonth();
+            const d = dateObj.getDate();
+
+            const nthDay = (nth, targetDayOfWeek, month) => {
+                let count = 0;
+                for (let i = 1; i <= 31; i++) {
+                    let tempDate = new Date(y, month, i);
+                    if (tempDate.getMonth() !== month) break;
+                    if (tempDate.getDay() === targetDayOfWeek) count++;
+                    if (count === nth) return i;
+                }
+                return null;
+            };
+
+            const lastDay = (targetDayOfWeek, month) => {
+                for (let i = 31; i > 0; i--) {
+                    let tempDate = new Date(y, month, i);
+                    if (tempDate.getMonth() === month && tempDate.getDay() === targetDayOfWeek) return i;
+                }
+                return null;
+            };
+
+            if (m === 0 && d === 1) return "New Year's Day";
+            if (m === 0 && d === nthDay(3, 1, 0)) return "MLK Jr. Day";
+            if (m === 1 && d === nthDay(3, 1, 1)) return "Presidents' Day";
+            if (m === 4 && d === lastDay(1, 4)) return "Memorial Day";
+            if (m === 5 && d === 19) return "Juneteenth";
+            if (m === 6 && d === 4) return "Independence Day";
+            if (m === 8 && d === nthDay(1, 1, 8)) return "Labor Day";
+            if (m === 9 && d === nthDay(2, 1, 9)) return "Columbus Day";
+            if (m === 10 && d === 11) return "Veterans Day";
+            if (m === 10 && d === nthDay(4, 4, 10)) return "Thanksgiving";
+            if (m === 11 && d === 25) return "Christmas Day";
+
+            return null;
+        }
 
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1122,6 +1182,10 @@
         function goToToday() {
             calendarDate = new Date();
             calendarDate.setHours(0,0,0,0);
+            const jumpInput = document.getElementById('calendar-jump-date');
+            if(jumpInput) {
+                jumpInput.value = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(calendarDate.getDate()).padStart(2,'0')}`;
+            }
             renderCalendar();
         }
 
@@ -1251,7 +1315,9 @@
         function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agIds, fProgType, fProgramId, fSeason, heightClass = "h-28", view = "month") {
             renderDate.setHours(0,0,0,0);
             const isToday = renderDate.getTime() === todayDate.getTime();
-            
+            const holidayName = getUSHoliday(renderDate);
+
+            // Fetch tasks matching filters
             const dayTasks = activeTasks.filter(t => {
                 if(t.targetDate !== dayStr) return false;
                 if(!agIds.includes(t.groupId)) return false;
@@ -1282,6 +1348,30 @@
                 return true;
             });
 
+            // Fetch program milestones matching filters
+            let milestonesHTML = '';
+            if(calFilters.milestones !== false) {
+                const dayPrograms = programs.filter(p => {
+                    if(!agIds.includes(p.groupId)) return false;
+                    if(fProgramId !== 'ALL' && p.id !== fProgramId) return false;
+                    if(fProgType !== 'ALL' && p.type !== fProgType) return false;
+                    if(fSeason !== 'ALL' && p.season !== fSeason) return false;
+                    return p.dateStart === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr;
+                });
+
+                dayPrograms.forEach(p => {
+                    const milestoneTypes = [];
+                    if(p.dateStart === dayStr) milestoneTypes.push("Start Date");
+                    if(p.dateFinal === dayStr) milestoneTypes.push("Final Deadline");
+                    if(p.dateEarly === dayStr) milestoneTypes.push("Early Deadline");
+                    if(p.dateOffseason === dayStr) milestoneTypes.push("Offseason Deadline");
+                    
+                    milestoneTypes.forEach(mt => {
+                        milestonesHTML += `<div onclick="openEditProgramModal('${p.id}')" class="text-[9px] font-bold leading-tight truncate px-1 py-0.5 mb-1 rounded bg-indigo-100 text-indigo-800 border border-indigo-300 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" title="${p.groupId} ${p.preHeader} ${p.season} ${p.type}\n${mt}"><i class="fa-solid fa-flag text-[8px] mr-1"></i>${p.groupId} ${p.season}: ${mt}</div>`;
+                    });
+                });
+            }
+
             let dateStyle = '';
             if(isToday) {
                 dateStyle = 'bg-i9blue text-white w-6 h-6 flex items-center justify-center rounded-full text-xs shadow-md';
@@ -1310,8 +1400,11 @@
             }).join('');
 
             return `<div class="${heightClass} border ${cellHighlight} rounded p-1 overflow-y-auto bg-white flex flex-col relative group transition-colors">
-                <div class="flex justify-end items-center mb-2">${todayText}<span class="font-bold ${dateStyle}">${displayDay}</span></div>
-                <div class="flex-grow content-start space-y-1">${tasksHTML}</div>
+                <div class="flex justify-between items-start mb-2">
+                    <div class="text-[9px] text-rose-500 font-bold uppercase leading-tight max-w-[60%]">${holidayName || ''}</div>
+                    <div class="flex items-center gap-1">${todayText}<span class="font-bold ${dateStyle}">${displayDay}</span></div>
+                </div>
+                <div class="flex-grow content-start space-y-1">${milestonesHTML}${tasksHTML}</div>
             </div>`;
         }
 
@@ -1659,58 +1752,6 @@
         }
 
         /* --- TASKS --- */
-        
-        // Target format: DayOfWeek, Month DD, YYYY (e.g. Monday, August 05, 2026)
-        function formatTargetDate(dateStr) {
-            if(!dateStr) return 'TBD';
-            try {
-                const [y, m, d] = dateStr.split('-');
-                const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                return `${days[dateObj.getDay()]}, ${months[dateObj.getMonth()]} ${String(d).padStart(2,'0')}, ${y}`;
-            } catch(e) { return dateStr; }
-        }
-
-        function calculateNewTargetDate(program, template) {
-            const baseStr = program[template.anchor];
-            if (!baseStr) return "TBD";
-            const d = new Date(baseStr + "T00:00:00");
-            const shift = template.offsetDir === "Before" ? -Math.abs(template.offsetNum) : Math.abs(template.offsetNum);
-            d.setDate(d.getDate() + shift);
-            return d.toISOString().split('T')[0];
-        }
-
-        function generateTaskPlan(progId) {
-            const p = programs.find(x => x.id === progId); if(!p) return;
-            const existing = activeTasks.filter(t => t.programId === progId);
-            if(existing.length > 0) { if(!confirm(`Warning: Found ${existing.length} existing tasks. Generating will add duplicates unless cleared manually. Proceed?`)) return; }
-            
-            const tpls = templates.filter(t => {
-                const tGroup = t.groupId || 'ALL';
-                const tPre = t.preHeader || '';
-                const pPre = p.preHeader || '';
-                return t.type === p.type &&
-                       (t.seasons && t.seasons.includes(p.season)) &&
-                       (tGroup === 'ALL' || tGroup === p.groupId) &&
-                       (tPre === '' || tPre === pPre);
-            });
-            
-            if(tpls.length === 0) return alert(`No profiles matched this program's Type (${p.type}), Season (${p.season}), and Pre-Header (${p.preHeader || 'None'}). No tasks generated.`);
-            
-            let count = 0;
-            tpls.forEach(t => {
-                const tgt = calculateNewTargetDate(p, t);
-                if(tgt !== "TBD") {
-                    window.cloudSaveActiveTask({
-                        id: generateId('ATK'), programId: p.id, templateId: t.id, groupId: p.groupId, type: p.type,
-                        preHeader: t.preHeader || '', level: t.level || 'Operational', name: t.name, desc: t.desc || '', assignee: "", defaultRole: t.role || '', targetDate: tgt, status: "Pending", isOneOff: false, notes: "", completionNotes: ""
-                    });
-                    count++;
-                }
-            });
-            showToast("Plan Generated!", `${count} tasks calculated and deployed.`); switchTab('tasks');
-        }
 
         function renderActiveTasks() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
