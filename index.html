@@ -595,8 +595,6 @@
         </div>
     </div>
 
-    <!-- MODALS (Program, Template, Active Task, Branding, Admin Edit) -->
-    
     <!-- ADMIN EDIT USER MODAL -->
     <div id="admin-edit-user-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
@@ -625,6 +623,7 @@
         </div>
     </div>
 
+    <!-- MODALS (Program, Template, Active Task, Branding) -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-sm font-bold text-i9blue">Add/Edit Program</h3>
@@ -886,7 +885,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.7.0 (Admin Restructure)";
+        const APP_VERSION = "1.7.1 (Settings Restructure)";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1086,7 +1085,7 @@
             document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
             if (currentUser.role === 'System Admin') document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-            if (perms.manageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); }
+            if (perms.manageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('tab-admin').classList.remove('hidden'); }
             if (perms.createPrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
             if (perms.editTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
             if (perms.editTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
@@ -1113,7 +1112,7 @@
             document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap";
             document.getElementById(`view-${tab}`).classList.remove('hidden');
             if (tab === 'dashboard') renderDashboard();
-            applyPermissions(); // re-apply hidden classes just in case
+            applyPermissions(); 
         }
 
         function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
@@ -1493,7 +1492,6 @@
                             ${canEdit ? `
                                 <button onclick="openEditActiveTask('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                                 <button onclick="cloneTask('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                                <button onclick="window.cloudDeleteActiveTask('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
                             ` : '-'}
                         </td>
                     </tr>`;
@@ -1543,9 +1541,30 @@
         function renderGroupPills() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
-            const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; const ag = getAuthorizedGroups();
-            ag.forEach(g => { ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm"><span class="font-bold text-i9blue">${g.fullName}</span> <div><button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button> <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button></div></div>`; });
+            const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; 
+            
+            // Show all groups for admin
+            let visibleGroups = groups;
+            if (!currentUser.territories.includes('ALL')) {
+                visibleGroups = groups.filter(g => currentUser.territories.includes(g.id));
+            }
+
+            visibleGroups.forEach(g => { 
+                const isArchived = g.status === 'Archived';
+                ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm ${isArchived ? 'opacity-60' : ''}">
+                    <span class="font-bold text-i9blue">${g.fullName} ${isArchived ? '(Archived)' : ''}</span> 
+                    <div>
+                        ${isArchived ? 
+                            `<button onclick="unarchiveGroup('${g.id}')" class="text-emerald-500 hover:text-emerald-700 mr-2 text-[10px]" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>` : 
+                            `<button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button>`
+                        } 
+                        <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`; 
+            });
         }
+        function unarchiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Restore this group to Active status?")) { g.status = 'Active'; window.cloudSaveGroup(g); } }
+
         function renderTerritoryCheckboxes() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
