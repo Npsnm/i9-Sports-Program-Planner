@@ -141,7 +141,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Main Content: Today & Focused Filter -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                         <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
@@ -158,7 +157,6 @@
                     </div>
                 </div>
                 
-                <!-- Side Panel: Progress & My Tasks -->
                 <div class="space-y-6">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                         <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
@@ -427,7 +425,7 @@
         <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
-                <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and view team workloads.</p>
+                <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and send invitations.</p>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -461,19 +459,8 @@
                     </div>
                 </div>
 
-                <!-- RIGHT COLUMN: WORKLOAD SUMMARY & GROUPS -->
+                <!-- RIGHT COLUMN: GROUPS & INVITES -->
                 <div class="space-y-6">
-                    <!-- SUGGESTION 2: ASSIGNEE WORKLOAD WIDGET -->
-                    <div class="bg-white rounded-xl shadow-sm border border-indigo-200">
-                        <div class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-indigo-900"><i class="fa-solid fa-chart-pie mr-1"></i> Team Workload Summary</h4>
-                            <span class="text-[10px] text-indigo-600 font-bold">Active Open Tasks</span>
-                        </div>
-                        <div id="admin-workload-list" class="p-3 space-y-2 max-h-64 overflow-y-auto text-xs">
-                            <!-- Populated dynamically via JS -->
-                        </div>
-                    </div>
-
                     <div class="bg-white rounded-xl shadow-sm border border-blue-200">
                         <div class="bg-blue-50/50 p-3 border-b border-blue-100">
                             <h4 class="text-xs font-bold text-i9blue"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
@@ -1126,15 +1113,9 @@
                 <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
                 <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
 
-                <div class="flex justify-between items-center border-t pt-3">
-                    <!-- SUGGESTION 1: GOOGLE CALENDAR EXPORT BUTTON -->
-                    <button type="button" onclick="exportTaskToGoogleCalendar()" class="px-3 py-1.5 bg-blue-50 border border-blue-200 text-i9blue hover:bg-blue-100 rounded font-bold flex items-center gap-1.5 transition">
-                        <i class="fa-brands fa-google text-red-500"></i> Push to Google Calendar
-                    </button>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
-                    </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
                 </div>
             </form>
         </div>
@@ -1316,7 +1297,6 @@
                 window.users = snap.docs.map(d => d.data()); 
                 window.renderUsersTable();
                 window.checkPendingAlerts();
-                window.renderWorkloadSummary();
                 
                 if (auth.currentUser) {
                     const em = auth.currentUser.email.toLowerCase();
@@ -1354,7 +1334,7 @@
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
                 window.activeTasks = snap.docs.map(d => d.data());
-                window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar(); window.renderWorkloadSummary();
+                window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
             });
 
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
@@ -1381,7 +1361,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "3.2.0 (Google Sync, Workload Summary & Holiday Shifts)";
+        const APP_VERSION = "3.1.0 (Auto Logout, Tiered Pricing & Note Events)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
@@ -1432,7 +1412,7 @@
         var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
         // --- 30-MINUTE INACTIVITY TIMEOUT LOGIC ---
-        const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
+        const INACTIVITY_LIMIT_MS = 30 * 60 * 1000; // 30 Minutes
         let inactivityTimer = null;
 
         function resetInactivityTimer() {
@@ -1490,24 +1470,6 @@
             if (tpl.offsetDir === 'Before') offset = -offset;
             d.setDate(d.getDate() + offset);
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        }
-
-        // SUGGESTION 3: AUTOMATED HOLIDAY SHIFT HELPER
-        function checkHolidayShift(dateStr, itemName = "Task") {
-            if (!dateStr) return dateStr;
-            const [y, m, d] = dateStr.split('-');
-            const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-            const holiday = getUSHoliday(dateObj);
-
-            if (holiday) {
-                if (confirm(`Notice: Target date for "${itemName}" falls on ${holiday} (${formatTargetDate(dateStr)}).\n\nWould you like to shift the deadline +1 day forward to the next business day?`)) {
-                    dateObj.setDate(dateObj.getDate() + 1);
-                    const newDateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
-                    showToast("Holiday Shift Applied", `Deadline pushed +1 day to ${formatTargetDate(newDateStr)}.`);
-                    return newDateStr;
-                }
-            }
-            return dateStr;
         }
 
         window.activityLogs = [];
@@ -1574,67 +1536,6 @@
                 });
             }
             document.getElementById('history-modal').classList.remove('hidden');
-        }
-
-        // SUGGESTION 2: ASSIGNEE WORKLOAD SUMMARY
-        function renderWorkloadSummary() {
-            const container = document.getElementById('admin-workload-list');
-            if(!container) return;
-            container.innerHTML = '';
-
-            const agIds = getAuthorizedGroups().map(g=>g.id);
-            const workloadMap = {};
-
-            users.forEach(u => { workloadMap[u.name] = { total: 0, pending: 0, inProgress: 0, overdue: 0 }; });
-            workloadMap['Unassigned'] = { total: 0, pending: 0, inProgress: 0, overdue: 0 };
-
-            const today = new Date(); today.setHours(0,0,0,0);
-
-            activeTasks.filter(t => agIds.includes(t.groupId) && t.status !== 'Archived' && t.status !== 'Complete' && !t.isNote).forEach(t => {
-                const assigneeKey = (t.assignee && t.assignee.trim() !== '') ? t.assignee : 'Unassigned';
-                if (!workloadMap[assigneeKey]) workloadMap[assigneeKey] = { total: 0, pending: 0, inProgress: 0, overdue: 0 };
-
-                workloadMap[assigneeKey].total++;
-                if (t.status === 'In Progress') workloadMap[assigneeKey].inProgress++;
-                else workloadMap[assigneeKey].pending++;
-
-                const tgt = new Date(t.targetDate + "T00:00:00");
-                if (today > tgt) workloadMap[assigneeKey].overdue++;
-            });
-
-            Object.keys(workloadMap).sort().forEach(name => {
-                const w = workloadMap[name];
-                if (w.total > 0 || users.some(u=>u.name===name)) {
-                    container.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200">
-                        <div>
-                            <p class="font-bold text-gray-800 text-xs">${name}</p>
-                            <p class="text-[10px] text-gray-500">${w.inProgress} In-Progress | ${w.pending} Pending</p>
-                        </div>
-                        <div class="flex gap-1 items-center">
-                            ${w.overdue > 0 ? `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold text-[10px]" title="Overdue">${w.overdue} Overdue</span>` : ''}
-                            <span class="bg-i9blue text-white px-2.5 py-1 rounded font-bold text-[10px]">${w.total} Tasks</span>
-                        </div>
-                    </div>`;
-                }
-            });
-        }
-
-        // SUGGESTION 1: EXPORT TASK TO GOOGLE CALENDAR
-        function exportTaskToGoogleCalendar() {
-            const taskName = document.getElementById('at-name').value.trim();
-            const taskDesc = document.getElementById('at-desc').value.trim();
-            const dateStr = document.getElementById('at-date').value;
-
-            if (!taskName || !dateStr) return alert("Please enter a Task Name and Target Date first.");
-
-            const dateClean = dateStr.replace(/-/g, '');
-            const startTime = `${dateClean}T090000Z`;
-            const endTime = `${dateClean}T100000Z`;
-
-            const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(taskName)}&details=${encodeURIComponent(taskDesc)}&dates=${startTime}/${endTime}`;
-            window.open(googleCalUrl, '_blank');
-            showToast("Opening Calendar", "Redirecting to Google Calendar event builder...");
         }
 
         /* --- MILESTONE PRICING SCHEDULE SLIDE PANE --- */
@@ -1736,7 +1637,7 @@
                 const existing = activeTasks.find(t => t.programId === p.id && t.templateId === tpl.id && t.status !== 'Archived');
                 if (existing) return;
 
-                let tDate = calculateNewTargetDate(p, tpl);
+                const tDate = calculateNewTargetDate(p, tpl);
                 if (!tDate) return;
 
                 const newTask = {
@@ -2046,7 +1947,6 @@
             return hasIt;
         }
 
-        // BUG FIX: Corrected permission class display toggles
         function applyPermissions() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
