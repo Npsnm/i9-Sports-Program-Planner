@@ -287,6 +287,9 @@
                         <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                             <i class="fa-solid fa-box-archive"></i> Archive Selected
                         </button>
+                        <button onclick="bulkDelete('tasks')" id="btn-task-bulk-delete" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
+                            <i class="fa-solid fa-trash-can"></i> Delete Selected
+                        </button>
                     </div>
                 </div>
             </div>
@@ -320,7 +323,7 @@
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-prog-group" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"><option value="ALL">All Groups</option></select>
                         <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
-                            <!-- Populated dynamically via populateYearDropdowns -->
+                            <!-- Populated dynamically -->
                         </select>
                         <select id="filter-prog-season" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
@@ -333,8 +336,8 @@
                         <button onclick="bulkEditOpen('programs')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('programs')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
-                            <i class="fa-solid fa-trash"></i> Delete Selected
+                        <button onclick="bulkDelete('programs')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
+                            <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
                 </div>
@@ -384,8 +387,8 @@
                         <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('templates')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
-                            <i class="fa-solid fa-trash"></i> Delete Selected
+                        <button onclick="bulkDelete('templates')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
+                            <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
                 </div>
@@ -398,7 +401,8 @@
                             <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllTpls" onchange="toggleSelectAll('tpl-cb', this.checked)"></th>
                             <th class="px-4 py-3 font-bold">Group Scope</th>
                             <th class="px-4 py-3 font-bold">Level</th>
-                            <th class="px-4 py-3 font-bold">Type & Name</th>
+                            <th class="px-4 py-3 font-bold">Type & Pre-Header</th>
+                            <th class="px-4 py-3 font-bold">Task Name</th>
                             <th class="px-4 py-3 font-bold">Seasons</th>
                             <th class="px-4 py-3 font-bold">Offset Rule</th>
                             <th class="px-4 py-3 font-bold">Default Role</th>
@@ -648,6 +652,44 @@
         </div>
     </div>
 
+    <!-- HARD DELETE MODAL -->
+    <div id="hard-delete-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-red-800"><i class="fa-solid fa-triangle-exclamation"></i> Permanent Deletion</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-[10px] font-bold">
+                WARNING: This action cannot be undone. The item(s) will be permanently and completely removed from the system.
+            </div>
+            <form onsubmit="executeHardDelete(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="hd-item-ids">
+                <input type="hidden" id="hd-item-type">
+                <input type="hidden" id="hd-item-group">
+                <input type="hidden" id="hd-item-names">
+                <div>
+                    <label class="block font-bold mb-1">Reason for Deletion <span class="text-rose-500">*</span></label>
+                    <select id="hd-reason" required class="w-full p-2 border rounded bg-gray-50">
+                        <option value="">-- Select Reason --</option>
+                        <option value="Created in Error">Created in Error</option>
+                        <option value="Duplicate Item">Duplicate Item</option>
+                        <option value="No Longer Supported">No Longer Supported</option>
+                        <option value="Data Cleanup">Data Cleanup</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Mandatory Comments / Details <span class="text-rose-500">*</span></label>
+                    <textarea id="hd-notes" required class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Please provide specific details explaining this permanent deletion..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-red-800 text-white rounded font-bold shadow hover:bg-red-900 transition">Permanently Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- AUTHENTICATION OVERLAY -->
     <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
@@ -800,8 +842,6 @@
                         <div id="prog-dl-1-container">
                             <label class="block font-bold mb-1 text-[10px]">Start Date</label>
                             <input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50">
-                            <!-- ADDED: Optional Secondary Start Date -->
-                            <div class="mt-2"><label class="block font-bold mb-1 text-[10px] text-gray-500">Secondary Start Date (Optional)</label><input type="date" id="prog-date-start-2" class="w-full p-1.5 border rounded bg-gray-50" title="Use if program starts on multiple days (e.g. Sat & Sun)"></div>
                         </div>
                         <div id="prog-dl-2-container"><label class="block font-bold mb-1 text-[10px]">Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
                         <div id="prog-dl-3-container"><label class="block font-bold mb-1 text-[10px]">Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
@@ -809,7 +849,31 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
+                <!-- ADDED: Compact Secondary Start Dates UI -->
+                <div class="col-span-2 md:col-span-4 border-t pt-3 mt-2">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block font-bold text-[10px] text-i9blue">Additional / Secondary Start Dates</label>
+                        <select id="prog-sec-start-count" onchange="updateSecStartsCount()" class="p-1 border border-gray-300 rounded bg-white text-[10px] outline-none">
+                            <option value="0">None</option>
+                            <option value="1">1 Additional</option>
+                            <option value="2">2 Additional</option>
+                            <option value="3">3 Additional</option>
+                            <option value="4">4 Additional</option>
+                            <option value="5">5 Additional</option>
+                            <option value="6">6 Additional</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-6 gap-2 hidden" id="sec-starts-container">
+                        <input type="date" id="prog-start-sec-1" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-2" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-3" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-4" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-5" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-6" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4 mt-2">
                     <div class="col-span-1">
                         <label class="block font-bold mb-1">Days of Week</label>
                         <div class="grid grid-cols-4 gap-1 text-[10px]">
@@ -1068,7 +1132,6 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
                 window.activityLogs = snap.docs.map(d => d.data());
                 window.renderActivityLog();
-                // Re-render tables so the embedded "Last Edited" logic updates inline
                 if(document.getElementById('view-control').classList.contains('hidden') === false) window.renderControlCenter();
                 if(document.getElementById('view-tasks').classList.contains('hidden') === false) window.renderActiveTasks();
                 if(document.getElementById('view-templates').classList.contains('hidden') === false) window.renderTemplates();
@@ -1113,7 +1176,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.7.0 (Custom Assignees & Date Skips)";
+        const APP_VERSION = "2.8.0 (Hard Deletes & Dynamic Offsets)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
@@ -1154,13 +1217,12 @@
             window.cloudSave('activity_logs', log.id, log);
         }
 
-        // Inline latest log fetcher
         function getRecentLogHTML(itemId) {
             if(!window.activityLogs) return '';
             const logs = window.activityLogs.filter(l => l.itemId === itemId).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
             if(logs.length > 0) {
                 const lg = logs[0];
-                return `<div class="text-[9px] text-gray-400 mt-1 italic" title="${lg.details}"><i class="fa-solid fa-clock-rotate-left"></i> ${lg.action} by ${lg.userName} (${new Date(lg.timestamp).toLocaleDateString()})</div>`;
+                return `<div class="text-[9px] text-gray-400 mt-1 italic" title="${lg.details.replace(/"/g, '&quot;')}"><i class="fa-solid fa-clock-rotate-left"></i> ${lg.action} by ${lg.userName} (${new Date(lg.timestamp).toLocaleDateString()})</div>`;
             }
             return '';
         }
@@ -1803,14 +1865,16 @@
                     if(fProgType !== 'ALL' && p.type !== fProgType) return false;
                     if(fSeason !== 'ALL' && p.season !== fSeason) return false;
                     
+                    const isSecStart = Array.isArray(p.secStartDates) && p.secStartDates.includes(dayStr);
                     const isBye = Array.isArray(p.byeDates) && p.byeDates.includes(dayStr);
-                    return p.dateStart === dayStr || p.dateStart2 === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr || isBye;
+                    return p.dateStart === dayStr || p.dateStart2 === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr || isBye || isSecStart;
                 });
 
                 dayPrograms.forEach(p => {
                     const milestoneTypes = [];
                     if(p.dateStart === dayStr) milestoneTypes.push("Start Date");
                     if(p.dateStart2 === dayStr) milestoneTypes.push("Secondary Start");
+                    if(Array.isArray(p.secStartDates) && p.secStartDates.includes(dayStr)) milestoneTypes.push("Secondary Start");
                     if(p.dateFinal === dayStr) milestoneTypes.push("Final Deadline");
                     if(p.dateEarly === dayStr) milestoneTypes.push("Early Deadline");
                     if(p.dateOffseason === dayStr) milestoneTypes.push("Offseason Deadline");
@@ -1979,6 +2043,43 @@
             renderDashList('dashboard-focused-list', focusedTasks, "No tasks match this filter setting.");
         }
 
+        /* --- HARD DELETE UNIFIED LOGIC --- */
+        function openHardDeleteModal(type, ids, groupId, names) {
+            document.getElementById('hd-item-ids').value = Array.isArray(ids) ? ids.join(',') : ids;
+            document.getElementById('hd-item-type').value = type;
+            document.getElementById('hd-item-group').value = groupId;
+            document.getElementById('hd-item-names').value = Array.isArray(names) ? names.join(' | ') : names;
+            document.getElementById('hd-reason').value = '';
+            document.getElementById('hd-notes').value = '';
+            document.getElementById('hard-delete-modal').classList.remove('hidden');
+        }
+
+        function executeHardDelete(e) {
+            e.preventDefault();
+            const type = document.getElementById('hd-item-type').value;
+            const ids = document.getElementById('hd-item-ids').value.split(',');
+            const names = document.getElementById('hd-item-names').value;
+            const groupId = document.getElementById('hd-item-group').value || 'SYSTEM';
+            const reason = document.getElementById('hd-reason').value;
+            const notes = document.getElementById('hd-notes').value.trim();
+
+            ids.forEach(id => {
+                if(type === 'program') window.cloudDeleteProgram(id);
+                else if(type === 'template') window.cloudDeleteTemplate(id);
+                else if(type === 'task') window.cloudDeleteActiveTask(id);
+                else if(type === 'group') window.cloudDeleteGroup(id);
+            });
+
+            logActivity(groupId, `Permanent Delete (${type})`, `Erased: ${names}. Reason: ${reason}. Notes: ${notes}`);
+            
+            closeModals();
+            showToast("Permanently Deleted", `${ids.length} item(s) have been erased.`);
+            
+            if(type==='program') document.getElementById('selectAllProgs').checked=false;
+            if(type==='task') document.getElementById('selectAllTasks').checked=false;
+            if(type==='template') document.getElementById('selectAllTpls').checked=false;
+        }
+
         /* --- PROGRAMS --- */
         function renderControlCenter() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
@@ -2017,7 +2118,7 @@
                             <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1 shadow-sm"><i class="fa-solid fa-bolt"></i> Generate</button>
                             <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            <button onclick="window.cloudDeleteProgram('${p.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
+                            ${hasPermission('manageGroups') ? `<button onclick="openHardDeleteModal('program', '${p.id}', '${p.groupId}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-red-800 hover:text-red-900 mx-1" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                             ` : '-'}
                         </td>
                     </tr>`;
@@ -2031,7 +2132,16 @@
             document.getElementById('prog-dl-4-container').classList.toggle('hidden', count < 4);
         }
 
-        // ADDED: Multiple Bye Dates radial logic
+        function updateSecStartsCount() {
+            const count = parseInt(document.getElementById('prog-sec-start-count').value);
+            const container = document.getElementById('sec-starts-container');
+            if(count > 0) container.classList.remove('hidden'); else container.classList.add('hidden');
+            for(let i=1; i<=6; i++) {
+                const el = document.getElementById('prog-start-sec-' + i);
+                if(i <= count) el.classList.remove('hidden'); else { el.classList.add('hidden'); el.value = ''; }
+            }
+        }
+
         function updateByeCount() {
             const count = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
             const container = document.getElementById('bye-weeks-container');
@@ -2056,13 +2166,15 @@
             document.querySelector(`input[name="prog-deadline-count"][value="4"]`).checked = true;
             updateDeadlineCount();
 
+            document.getElementById('prog-sec-start-count').value = "0";
+            updateSecStartsCount();
+
             document.querySelector(`input[name="prog-bye-count"][value="0"]`).checked = true;
             updateByeCount();
             
             document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = false);
             
             document.getElementById('prog-date-start').value = '';
-            document.getElementById('prog-date-start-2').value = '';
             document.getElementById('prog-date-final').value = '';
             document.getElementById('prog-date-early').value = '';
             document.getElementById('prog-date-offseason').value = '';
@@ -2091,12 +2203,22 @@
             document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = dArr.includes(cb.value));
             
             document.getElementById('prog-date-start').value = p.dateStart || '';
-            document.getElementById('prog-date-start-2').value = p.dateStart2 || '';
             document.getElementById('prog-date-final').value = p.dateFinal || '';
             document.getElementById('prog-date-early').value = p.dateEarly || '';
             document.getElementById('prog-date-offseason').value = p.dateOffseason || '';
             document.getElementById('prog-weeks').value = p.weeks || '';
             document.getElementById('prog-venue').value = p.venue || '';
+
+            // Handle Sec Starts binding
+            const secCount = p.secStartDates ? p.secStartDates.length : 0;
+            document.getElementById('prog-sec-start-count').value = secCount <= 6 ? secCount.toString() : "6";
+            updateSecStartsCount();
+            if(p.secStartDates) {
+                for(let i=0; i<p.secStartDates.length; i++) {
+                    const idx = i + 1;
+                    if(idx <= 6) document.getElementById('prog-start-sec-' + idx).value = p.secStartDates[i];
+                }
+            }
 
             // Handle Bye Dates binding
             const byeCount = p.byeDates ? p.byeDates.length : 0;
@@ -2121,6 +2243,13 @@
             const dCount = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
             const days = Array.from(document.querySelectorAll('.prog-day-cb:checked')).map(cb => cb.value).join(', ');
             
+            const secCount = parseInt(document.getElementById('prog-sec-start-count').value);
+            let secDatesArray = [];
+            for(let i=1; i<=secCount; i++) {
+                const val = document.getElementById('prog-start-sec-' + i).value;
+                if (val) secDatesArray.push(val);
+            }
+
             const byeCount = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
             let byeDatesArray = [];
             for(let i=1; i<=byeCount; i++) {
@@ -2134,7 +2263,7 @@
                 season: document.getElementById('prog-season').value, 
                 deadlineCount: dCount, days: days,
                 dateStart: document.getElementById('prog-date-start').value,
-                dateStart2: document.getElementById('prog-date-start-2').value,
+                secStartDates: secDatesArray,
                 dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
                 dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
                 dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
@@ -2204,21 +2333,11 @@
                             ${isManager ? `
                             <button onclick="openEditTemplate('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneTemplate('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            <button onclick="deleteTemplate('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
+                            ${hasPermission('manageGroups') ? `<button onclick="openHardDeleteModal('template', '${t.id}', '${t.groupId}', '${t.name}')" class="text-red-800 hover:text-red-900 mx-1" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                             ` : '-'}
                         </td>
                     </tr>`;
             });
-        }
-
-        function deleteTemplate(id) { 
-            if(confirm("Delete this profile rule forever?")) { 
-                const t = templates.find(x => x.id === id);
-                if (t) {
-                    window.cloudDeleteTemplate(id); 
-                    logActivity(t.groupId, 'Profile Rule Deleted', `Deleted Rule: ${t.name}`, t.id);
-                }
-            } 
         }
 
         function openAddTemplateModal() { 
@@ -2282,15 +2401,18 @@
             const btnArch = document.getElementById('btn-tasks-archived');
             const bulkEditBtn = document.getElementById('btn-task-bulk-edit');
             const bulkArchBtn = document.getElementById('btn-task-bulk-archive');
+            const bulkDelBtn = document.getElementById('btn-task-bulk-delete');
 
             if (view === 'active') {
                 btnAct.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
                 btnArch.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
                 bulkEditBtn.style.display = 'block'; bulkArchBtn.style.display = 'block';
+                if(bulkDelBtn) bulkDelBtn.style.display = 'none';
             } else {
                 btnAct.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
                 btnArch.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
                 bulkEditBtn.style.display = 'none'; bulkArchBtn.style.display = 'none';
+                if(bulkDelBtn && hasPermission('manageGroups')) bulkDelBtn.style.display = 'block';
             }
             renderActiveTasks();
         }
@@ -2302,6 +2424,7 @@
             const tb = document.getElementById('active-task-table-body'); if(!tb) return; tb.innerHTML = '';
             
             const canEdit = hasPermission('editTasks');
+            const canDelete = hasPermission('manageGroups');
             
             const tHead = document.getElementById('task-table-head');
             if (currentTaskView === 'active') {
@@ -2318,6 +2441,7 @@
                 </tr>`;
             } else {
                 tHead.innerHTML = `<tr>
+                    <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
                     <th class="px-3 py-3 font-bold pl-5">Program Link / Group</th>
                     <th class="px-3 py-3 font-bold">Task Name</th>
                     <th class="px-3 py-3 font-bold">Archived Date</th>
@@ -2356,8 +2480,9 @@
                     const aDate = t.archivedAt ? new Date(t.archivedAt).toLocaleDateString() : 'Unknown';
                     tb.innerHTML += `
                         <tr class="hover:bg-gray-50 opacity-60">
+                            <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
                             <td class="px-3 py-2 font-bold text-gray-500 text-[11px] pl-5">${pName}</td>
-                            <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name}</td>
+                            <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name} ${getRecentLogHTML(t.id)}</td>
                             <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap">${aDate}</td>
                             <td class="px-3 py-2 text-xs font-bold text-gray-600">${t.archivedBy || 'System'}</td>
                             <td class="px-3 py-2 text-[10px] text-gray-500"><strong class="text-rose-600">${t.archiveReason || 'Other'}</strong><br>${t.archiveNotes || ''}</td>
@@ -2379,7 +2504,6 @@
                     
                     const descDisplay = t.desc && t.desc.trim() !== '' ? `<div class="text-[9px] text-gray-500 font-normal mt-0.5 max-w-[200px] truncate" title="${t.desc.replace(/"/g, '&quot;')}">${t.desc}</div>` : '';
 
-                    // Grid Assignee Dropdown containing current custom value if it exists
                     const isCustomExt = t.assignee && !users.find(u => u.name === t.assignee);
                     let assigneeDropdown = `<select onchange="updateTaskAssignee('${t.id}', this.value)" class="bg-transparent border-b border-gray-300 text-[11px] font-bold text-emerald-800 w-full p-1 outline-none appearance-none hover:bg-gray-50 cursor-pointer ${isUn ? 'text-rose-500' : ''}" ${canEdit ? '' : 'disabled'}>
                         <option value="" class="text-gray-500">-- Unassigned --</option>
@@ -2409,7 +2533,8 @@
                                 ${canEdit ? `
                                     <button onclick="openEditActiveTask('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                                     <button onclick="cloneTask('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1" title="Duplicate Task"><i class="fa-regular fa-copy"></i></button>
-                                    <button onclick="openArchiveTaskModal('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1" title="Archive / Remove Task"><i class="fa-solid fa-box-archive"></i></button>
+                                    <button onclick="openArchiveTaskModal('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1" title="Archive / Soft Remove"><i class="fa-solid fa-box-archive"></i></button>
+                                    ${canDelete ? `<button onclick="openHardDeleteModal('task', '${t.id}', '${t.groupId}', '${t.name.replace(/'/g, "\\'")}')" class="text-red-800 hover:text-red-900 mx-1" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                                 ` : '-'}
                             </td>
                         </tr>`;
@@ -2425,12 +2550,11 @@
             } 
         }
         
-        // MODIFIED for Custom External String Override
         function updateTaskAssignee(id, val) { 
             if (val === 'CUSTOM') {
                 const customName = prompt("Enter the name of the external or non-member assignee:");
                 if (customName) val = customName;
-                else { renderActiveTasks(); return; } // Reset if cancelled
+                else { renderActiveTasks(); return; } 
             }
             
             const t = activeTasks.find(x => x.id === id); 
@@ -2474,7 +2598,7 @@
                     t.archivedBy = currentUser.name;
                     t.archivedAt = new Date().toISOString();
                     window.cloudSaveActiveTask(t);
-                    logActivity(t.groupId, 'Task Removed/Archived', `Task ${t.name} removed. Reason: ${reason}`, t.id);
+                    logActivity(t.groupId, 'Task Removed/Archived', `Task ${t.name} archived. Reason: ${reason}`, t.id);
                 }
             });
 
@@ -2514,7 +2638,6 @@
             document.getElementById('at-desc').value = t.desc || ''; 
             document.getElementById('at-date').value = t.targetDate; 
             
-            // Custom Assignee Logic in Modal
             const assigneeSel = document.getElementById('at-assignee');
             const customInp = document.getElementById('at-assignee-custom');
             if(t.assignee && !users.find(u => u.name === t.assignee)) {
@@ -2606,7 +2729,7 @@
                             `<button onclick="unarchiveGroup('${g.id}')" class="text-emerald-500 hover:text-emerald-700 mr-2 text-[10px]" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>` : 
                             `<button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button>`
                         } 
-                        <button onclick="deleteGroup('${g.id}')" class="text-rose-500 hover:text-rose-700 text-[10px]" title="Delete Forever"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="openHardDeleteModal('group', '${g.id}', 'SYSTEM', '${g.fullName}')" class="text-red-800 hover:text-red-900 text-[10px]" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>`; 
             });
@@ -2632,7 +2755,6 @@
             }
         }
         function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); logActivity('SYSTEM', 'Group Archived', `Archived group ${id}`);} }
-        function deleteGroup(id) { if(confirm("Permanently destroy this group?")) { window.cloudDeleteGroup(id); logActivity('SYSTEM', 'Group Deleted', `Hard deleted group ${id}`); } }
         function renderUsersTable() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -2713,19 +2835,20 @@
         function getSelected(className) { return Array.from(document.querySelectorAll(`.${className}:checked`)).map(cb => cb.value); }
         
         function bulkDelete(type) {
-            let cls, action;
-            if(type === 'programs') { cls = 'prog-cb'; action = window.cloudDeleteProgram; }
-            else if(type === 'templates') { cls = 'tpl-cb'; action = window.cloudDeleteTemplate; }
+            let cls, items;
+            if(type === 'programs') { cls = 'prog-cb'; items = programs; }
+            else if(type === 'templates') { cls = 'tpl-cb'; items = templates; }
+            else if(type === 'tasks') { cls = 'task-cb'; items = activeTasks; }
             else return; 
             
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
-            if(confirm(`Delete ${ids.length} selected items forever?`)) {
-                ids.forEach(id => action(id));
-                if(type==='programs') document.getElementById('selectAllProgs').checked=false;
-                if(type==='templates') document.getElementById('selectAllTpls').checked=false;
-                logActivity('SYSTEM', 'Bulk Delete', `Bulk deleted ${ids.length} items from ${type}`);
-            }
+            
+            const selectedItems = items.filter(x => ids.includes(x.id));
+            const names = selectedItems.map(x => x.name || `${x.preHeader || ''} ${x.season || ''}`).join(', ');
+            const groupId = selectedItems.length > 0 ? selectedItems[0].groupId : 'SYSTEM';
+
+            openHardDeleteModal(type.replace(/s$/, ''), ids, groupId, names);
         }
 
         function bulkEditOpen(type) {
