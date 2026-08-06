@@ -46,7 +46,7 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">Program Director Planner</h1>
-                        <span id="cloud-sync-badge" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span id="cloud-sync-badge" class="bg-amber-950/80 border border-amber-500/50 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                             <i class="fa-solid fa-cloud"></i> <span id="sync-status-text">Connecting...</span>
                         </span>
                     </div>
@@ -357,7 +357,7 @@
                             <th class="px-4 py-3 font-bold">Group / Identity</th>
                             <th class="px-4 py-3 font-bold">Type</th>
                             <th class="px-4 py-3 font-bold">Milestone Deadlines</th>
-                            <th class="px-4 py-3 font-bold">Logistics & Price</th>
+                            <th class="px-4 py-3 font-bold">Logistics</th>
                             <th class="px-4 py-3 font-bold text-center">Actions</th>
                         </tr>
                     </thead>
@@ -409,7 +409,7 @@
                         <tr>
                             <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllTpls" onchange="toggleSelectAll('tpl-cb', this.checked)"></th>
                             <th class="px-4 py-3 font-bold">Group Scope</th>
-                            <th class="px-4 py-3 font-bold">Level / Category</th>
+                            <th class="px-4 py-3 font-bold">Level</th>
                             <th class="px-4 py-3 font-bold">Type & Pre-Header</th>
                             <th class="px-4 py-3 font-bold">Task Name</th>
                             <th class="px-4 py-3 font-bold">Seasons</th>
@@ -583,28 +583,6 @@
     <footer class="text-center py-4 text-[10px] text-gray-400 mt-auto w-full">
         <p>PD Planner Engine &bull; Build Version <span id="app-version-display"></span></p>
     </footer>
-
-    <!-- HISTORY LOG MODAL -->
-    <div id="history-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4 flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Change History Logs</h3>
-                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <p class="text-xs text-gray-500 font-bold" id="history-modal-title">Item History</p>
-            <div class="overflow-y-auto flex-grow border border-gray-200 rounded">
-                <table class="w-full text-xs text-left">
-                    <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
-                        <tr><th class="p-3">Timestamp</th><th class="p-3">User</th><th class="p-3">Action</th><th class="p-3">Details</th></tr>
-                    </thead>
-                    <tbody id="history-modal-table-body" class="divide-y divide-gray-100"></tbody>
-                </table>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 rounded font-bold text-xs">Close History</button>
-            </div>
-        </div>
-    </div>
 
     <!-- BULK EDIT SLIDE-OVER PANE -->
     <div id="bulk-edit-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300"></div>
@@ -880,6 +858,7 @@
                     </div>
                 </div>
 
+                <!-- ADDED: Compact Secondary Start Dates UI -->
                 <div class="col-span-2 md:col-span-4 border-t pt-3 mt-2">
                     <div class="flex justify-between items-center mb-2">
                         <label class="block font-bold text-[10px] text-i9blue">Additional / Secondary Start Dates</label>
@@ -903,7 +882,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4 mt-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4 mt-2">
                     <div class="col-span-1">
                         <label class="block font-bold mb-1">Days of Week</label>
                         <div class="grid grid-cols-4 gap-1 text-[10px]">
@@ -919,11 +898,8 @@
                         <label class="block font-bold mb-1 mt-2">Venue / Location</label>
                         <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
                     </div>
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="block font-bold mb-1 text-emerald-600">Program Pricing ($)</label>
-                        <input type="number" id="prog-price" step="0.01" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. 149.00">
-                        
-                        <label class="block font-bold mb-1 mt-2 text-i9blue">Bye Weeks / Skipped Dates</label>
+                    <div class="col-span-1 md:col-span-3">
+                        <label class="block font-bold mb-1 text-i9blue">Bye Weeks / Skipped Dates</label>
                         <div class="flex gap-4 mb-2 text-[10px]">
                             <label><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
                             <label><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
@@ -963,25 +939,8 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold mb-1">Required Pre-Header</label><select id="tpl-preheader" class="w-full p-2 border rounded bg-gray-50"></select></div>
-                    <div>
-                        <label class="block font-bold mb-1">Task Level (Dept)</label>
-                        <select id="tpl-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('tpl-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
-                            <option value="Operational">Operational</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
-                    </div>
+                    <div><label class="block font-bold mb-1">Task Level (Dept)</label><select id="tpl-level" class="w-full p-2 border rounded bg-gray-50"><option value="Operational">Operational</option><option value="Marketing">Marketing</option></select></div>
                 </div>
-
-                <!-- Marketing Category for Template -->
-                <div id="tpl-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
-                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
-                    <select id="tpl-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('tpl-mktg-custom').classList.remove('hidden'); else document.getElementById('tpl-mktg-custom').classList.add('hidden');">
-                        <option value="">-- Select Category --</option>
-                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
-                    </select>
-                    <input type="text" id="tpl-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
-                </div>
-
                 <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="tpl-name" required class="w-full p-2 border rounded bg-gray-50"></div>
                 <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="tpl-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
                 
@@ -1028,35 +987,11 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold mb-1">Task Level (Dept)</label>
-                        <select id="at-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('at-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
-                            <option value="Operational">Operational</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
-                    </div>
+                    <div><label class="block font-bold mb-1">Task Level (Dept)</label><select id="at-level" class="w-full p-2 border rounded bg-gray-50"><option value="Operational">Operational</option><option value="Marketing">Marketing</option></select></div>
                     <div><label class="block font-bold mb-1">Status</label><select id="at-status" class="w-full p-2 border rounded bg-gray-50"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div>
                 </div>
 
-                <!-- Marketing Category for Active Task -->
-                <div id="at-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
-                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
-                    <select id="at-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('at-mktg-custom').classList.remove('hidden'); else document.getElementById('at-mktg-custom').classList.add('hidden');">
-                        <option value="">-- Select Category --</option>
-                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
-                    </select>
-                    <input type="text" id="at-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block font-bold">Task Name</label>
-                        <label class="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 cursor-pointer">
-                            <input type="checkbox" id="at-is-note" class="w-3 h-3"> Mark as Note Event (No action req)
-                        </label>
-                    </div>
-                    <input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50">
-                </div>
+                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50"></div>
                 <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="at-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
                 
                 <div class="grid grid-cols-2 gap-4">
@@ -1319,81 +1254,13 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "3.0.0 (Marketing Cats, Notes, History & Date Resync)";
+        const APP_VERSION = "2.8.0 (Hard Deletes & Dynamic Offsets)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
         let currentTaskView = 'active'; 
         let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
-
-        const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
-        const DEFAULT_PERMISSIONS = {
-            "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
-            "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
-            "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
-            "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
-            "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
-        };
-        
-        const MARKETING_CATEGORIES = {
-            "HubSpot Email": "bg-orange-500 text-white",
-            "Operational Email": "bg-amber-700 text-white",
-            "Personal Email": "bg-orange-200 text-orange-900",
-            "Road Sign Route": "bg-green-400 text-green-900",
-            "Flyer Delivery": "bg-cyan-400 text-cyan-900",
-            "Flyer Dispersal": "bg-blue-500 text-white",
-            "In Person Event": "bg-yellow-400 text-yellow-900",
-            "Task": "bg-pink-400 text-pink-900",
-            "Order Flyers": "bg-purple-600 text-white",
-            "Marketing Note": "bg-black text-white",
-            "Peachjar Request": "bg-teal-400 text-teal-900",
-            "Peachjar Active": "bg-lime-300 text-lime-900",
-            "Facebook Post": "bg-blue-100 text-blue-800 border border-blue-200",
-            "Facebook Ad": "bg-blue-50 text-blue-900 border border-blue-200",
-            "Instagram Post": "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200",
-            "Instagram Ad": "bg-fuchsia-50 text-fuchsia-900 border border-fuchsia-200",
-            "Order Supplies": "bg-gray-200 text-gray-800",
-            "Marketing Text": "bg-red-600 text-white",
-            "Game Day Reminder": "bg-white text-gray-800 border border-gray-300",
-            "Call Fire": "bg-orange-400 text-white",
-            "Digital Flyer Submission": "bg-indigo-500 text-white",
-            "IPE Application Submission": "bg-white text-gray-800 border border-gray-300",
-            "HubSpot Automated Email": "bg-orange-600 text-white",
-            "Gameday App Notification": "bg-blue-600 text-white"
-        };
-
-        window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
-        window.groupPermissions = {}; 
-
-        var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
-        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const versionEl = document.getElementById('app-version-display');
-            if(versionEl) versionEl.textContent = APP_VERSION;
-            applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
-            populateMarketingCats();
-        });
-
-        function populateMarketingCats() {
-            const sels = ['at-mktg-cat', 'tpl-mktg-cat'];
-            sels.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    const customOpt = el.querySelector('option[value="CUSTOM"]');
-                    const defaultOpt = el.querySelector('option[value=""]');
-                    el.innerHTML = '';
-                    if (defaultOpt) el.appendChild(defaultOpt);
-                    Object.keys(MARKETING_CATEGORIES).forEach(cat => {
-                        const opt = document.createElement('option');
-                        opt.value = cat; opt.textContent = cat;
-                        el.appendChild(opt);
-                    });
-                    if (customOpt) el.appendChild(customOpt);
-                }
-            });
-        }
 
         function formatTargetDate(dStr) {
             if (!dStr) return '';
@@ -1457,35 +1324,12 @@
             });
         }
 
-        function openHistoryModal(itemId, itemName) {
-            document.getElementById('history-modal-title').textContent = `Change log for: ${itemName}`;
-            const tb = document.getElementById('history-modal-table-body');
-            tb.innerHTML = '';
-            
-            const logs = window.activityLogs.filter(l => l.itemId === itemId).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-            if(logs.length === 0) {
-                tb.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">No history logged for this item yet.</td></tr>`;
-            } else {
-                logs.forEach(l => {
-                    tb.innerHTML += `<tr class="hover:bg-gray-50">
-                        <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
-                        <td class="p-3 font-bold text-gray-800">${l.userName}</td>
-                        <td class="p-3 font-bold text-i9blue text-[10px]">${l.action}</td>
-                        <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
-                    </tr>`;
-                });
-            }
-            document.getElementById('history-modal').classList.remove('hidden');
-        }
-
-        function generateTaskPlan(progId, targetLevel) {
+        function generateTaskPlan(progId) {
             const p = programs.find(x => x.id === progId);
             if (!p) return;
             
             let genCount = 0;
             templates.forEach(tpl => {
-                if ((tpl.level || 'Operational') !== targetLevel) return;
-                
                 if (tpl.groupId !== 'ALL' && tpl.groupId !== p.groupId) return;
                 if (tpl.type !== 'ALL' && tpl.type !== p.type) return;
                 if (tpl.seasons && !tpl.seasons.includes(p.season)) return;
@@ -1505,45 +1349,20 @@
                     type: p.type,
                     preHeader: p.preHeader,
                     level: tpl.level || 'Operational',
-                    marketingCategory: tpl.marketingCategory || '', 
                     name: tpl.name,
                     desc: tpl.desc || '',
                     targetDate: tDate,
                     assignee: '', 
                     status: 'Pending',
                     isOneOff: false,
-                    isNote: false,
                     notes: '',
                     completionNotes: ''
                 };
                 window.cloudSaveActiveTask(newTask);
                 genCount++;
             });
-            logActivity(p.groupId, 'Task Generation', `Generated ${genCount} ${targetLevel} tasks for Program ${p.id}`, p.id);
-            showToast(`${targetLevel} Plan Generated`, `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
-        }
-
-        function syncProgramTasks(progId) {
-            const p = programs.find(x => x.id === progId);
-            if (!p) return;
-
-            const linkedTasks = activeTasks.filter(t => t.programId === p.id && !t.isOneOff && t.status !== 'Archived');
-            let updateCount = 0;
-
-            linkedTasks.forEach(t => {
-                const tpl = templates.find(x => x.id === t.templateId);
-                if (tpl) {
-                    const newDate = calculateNewTargetDate(p, tpl);
-                    if (newDate && t.targetDate !== newDate) {
-                        t.targetDate = newDate;
-                        window.cloudSaveActiveTask(t);
-                        updateCount++;
-                    }
-                }
-            });
-
-            logActivity(p.groupId, 'Task Dates Synced', `Re-aligned ${updateCount} task dates for Program ${p.id}`, p.id);
-            showToast("Sync Complete", `${updateCount} task deadlines were updated to match the current program milestones.`);
+            logActivity(p.groupId, 'Task Generation', `Generated ${genCount} tasks from templates for Program ${p.id}`, p.id);
+            showToast("Task Plan Generated", `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
         }
 
         function saveBranding(e) {
@@ -1646,6 +1465,27 @@
             if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
             else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
         }
+
+        const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
+        const DEFAULT_PERMISSIONS = {
+            "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
+            "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
+            "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
+        };
+        
+        window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
+        window.groupPermissions = {}; 
+
+        var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
+        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const versionEl = document.getElementById('app-version-display');
+            if(versionEl) versionEl.textContent = APP_VERSION;
+            applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
+        });
 
         /* --- AUTHENTICATION & USER MANAGEMENT --- */
         function toggleAuthMode(mode) {
@@ -1904,9 +1744,8 @@
 
             programs.forEach(p => { 
                 if (ag.some(g=>g.id===p.groupId)) { 
-                    const priceDisplay = p.price ? ` - $${p.price}` : '';
-                    if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} - ${p.type}${priceDisplay}</option>`; 
-                    if(calProgramFilter) calProgramFilter.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}${priceDisplay}</option>`;
+                    if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} - ${p.type}</option>`; 
+                    if(calProgramFilter) calProgramFilter.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</option>`;
                 } 
             });
 
@@ -2073,7 +1912,7 @@
                 
                 const isComplete = t.status === 'Complete';
                 const isInProgress = t.status === 'In Progress';
-                const isOverdue = !isComplete && (renderDate < todayDate) && !t.isNote;
+                const isOverdue = !isComplete && (renderDate < todayDate);
                 const taskLevel = t.level || 'Operational';
 
                 if(isComplete && !calFilters.complete) return false;
@@ -2139,25 +1978,18 @@
             let tasksHTML = dayTasks.map(t => {
                 const isComplete = t.status === 'Complete';
                 const isInProgress = t.status === 'In Progress';
-                const isOverdue = !isComplete && (renderDate < todayDate) && !t.isNote;
+                const isOverdue = !isComplete && (renderDate < todayDate);
                 
                 let bg = '';
-                if (t.isNote) bg = 'bg-gray-800 text-white border border-gray-900 shadow-sm';
-                else if (isComplete) bg = 'bg-gray-200 text-gray-500 border border-gray-300 line-through opacity-70';
+                if (isComplete) bg = 'bg-gray-200 text-gray-500 border border-gray-300 line-through opacity-70';
                 else if (isOverdue) bg = 'bg-rose-100 text-rose-800 border-2 border-rose-400 shadow-md animate-pulse';
                 else if (isInProgress) bg = 'bg-amber-100 text-amber-800 border border-amber-300 shadow-sm';
-                else if (t.level === 'Marketing') {
-                    if (t.marketingCategory && MARKETING_CATEGORIES[t.marketingCategory]) {
-                        bg = MARKETING_CATEGORIES[t.marketingCategory];
-                    } else {
-                        bg = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
-                    }
-                }
+                else if (t.level === 'Marketing') bg = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
                 else bg = 'bg-blue-100 text-blue-800 border border-blue-200';
 
-                const icon = isOverdue ? `<i class="fa-solid fa-triangle-exclamation text-[8px] text-rose-600 mr-1"></i>` : (t.isNote ? `<i class="fa-solid fa-circle-info text-[8px] mr-1"></i>` : '');
+                const icon = isOverdue ? `<i class="fa-solid fa-triangle-exclamation text-[8px] text-rose-600 mr-1"></i>` : '';
 
-                return `<div onclick="event.stopPropagation(); openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="Group: ${t.groupId}\nTask: ${t.name}\nStatus: ${t.isNote ? 'Note Event' : t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}<span class="font-bold opacity-60 mr-1">[${t.groupId}]</span>${t.name}</div>`;
+                return `<div onclick="event.stopPropagation(); openEditActiveTask('${t.id}')" class="text-[9px] font-medium leading-tight truncate px-1 py-0.5 mb-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${bg}" title="Group: ${t.groupId}\nTask: ${t.name}\nStatus: ${t.status}\nAssigned: ${t.assignee || 'Unassigned'}">${icon}<span class="font-bold opacity-60 mr-1">[${t.groupId}]</span>${t.name}</div>`;
             }).join('');
 
             return `<div onclick="openAddOneOffTaskModal('${dayStr}')" class="${heightClass} border ${cellHighlight} rounded p-1 overflow-y-auto bg-white flex flex-col relative group transition-colors cursor-pointer hover:bg-gray-50">
@@ -2186,19 +2018,15 @@
             tasks.sort((a,b) => new Date(a.targetDate) - new Date(b.targetDate));
             
             tasks.forEach(t => {
-                const isOverdue = !t.isNote && t.status !== 'Complete' && t.status !== 'Archived' && (new Date(t.targetDate + "T00:00:00") < new Date().setHours(0,0,0,0));
-                let borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
-                if(t.isNote) borderLeft = 'border-l-4 border-l-gray-800';
-
-                let levelIcon = '<i class="fa-solid fa-gears text-i9blue"></i>';
-                if(t.isNote) levelIcon = '<i class="fa-solid fa-circle-info text-gray-800"></i>';
-                else if(t.level === 'Marketing') levelIcon = '<i class="fa-solid fa-bullhorn text-emerald-600"></i>';
+                const isOverdue = t.status !== 'Complete' && t.status !== 'Archived' && (new Date(t.targetDate + "T00:00:00") < new Date().setHours(0,0,0,0));
+                const borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
+                const levelIcon = t.level === 'Marketing' ? '<i class="fa-solid fa-bullhorn text-emerald-600"></i>' : '<i class="fa-solid fa-gears text-i9blue"></i>';
 
                 el.innerHTML += `
                 <div class="p-2.5 bg-gray-50 border border-gray-200 rounded ${borderLeft} flex justify-between items-center transition hover:bg-gray-100 cursor-pointer mb-2" onclick="openEditActiveTask('${t.id}')">
                     <div class="overflow-hidden pr-2">
                         <div class="font-bold text-gray-800 text-xs flex items-center gap-1.5 truncate">${levelIcon} <span class="text-gray-400 font-normal text-[10px]">[${t.groupId}]</span> ${t.name}</div>
-                        <div class="text-[10px] text-gray-600 mt-0.5 truncate">Due: ${formatTargetDate(t.targetDate)} | Assigned: ${t.isNote ? 'N/A' : (t.assignee || '<span class="text-rose-500 font-bold">Unassigned</span>')}</div>
+                        <div class="text-[10px] text-gray-600 mt-0.5 truncate">Due: ${formatTargetDate(t.targetDate)} | Assigned: ${t.assignee || '<span class="text-rose-500 font-bold">Unassigned</span>'}</div>
                     </div>
                     <button class="text-gray-400 hover:text-i9blue flex-shrink-0"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
                 </div>`;
@@ -2229,7 +2057,7 @@
             document.getElementById('dash-focused-title').innerHTML = focusTitle[currentDashFilter];
 
             programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
-                const pTasks = activeTasks.filter(t => t.programId === p.id && t.status !== 'Archived' && !t.isNote);
+                const pTasks = activeTasks.filter(t => t.programId === p.id && t.status !== 'Archived');
                 const pOpTasks = pTasks.filter(t => t.level === 'Operational' || !t.level);
                 const pMktTasks = pTasks.filter(t => t.level === 'Marketing');
 
@@ -2264,22 +2092,22 @@
             activeTasks.filter(t => agIds.includes(t.groupId) && t.status !== 'Archived').forEach(t => {
                 const tgt = new Date(t.targetDate + "T00:00:00");
                 const isComplete = t.status === "Complete";
-                const isUnassigned = (!t.assignee || t.assignee.trim() === '');
-                const isOverdue = !isComplete && !t.isNote && (today > tgt);
+                const isUnassigned = !t.assignee || t.assignee.trim() === '';
+                const isOverdue = !isComplete && (today > tgt);
 
-                if (!isComplete && !t.isNote) tot++;
-                if (isComplete && !t.isNote) comp++;
-                if (!isComplete && isUnassigned && !t.isNote) unassigned++;
+                if (!isComplete) tot++;
+                if (isComplete) comp++;
+                if (!isComplete && isUnassigned) unassigned++;
                 if (isOverdue) over++;
 
                 if (t.targetDate === todayStr && !isComplete) todayTasks.push(t);
                 
                 const inNext7 = tgt >= today && tgt <= new Date(today.getTime() + (7*86400000));
-                if (t.assignee === currentUser.name && !isComplete && inNext7 && !t.isNote) myTasks.push(t);
+                if (t.assignee === currentUser.name && !isComplete && inNext7) myTasks.push(t);
 
                 if (currentDashFilter === 'active' && !isComplete) focusedTasks.push(t);
                 else if (currentDashFilter === 'completed' && isComplete) focusedTasks.push(t);
-                else if (currentDashFilter === 'unassigned' && !isComplete && isUnassigned && !t.isNote) focusedTasks.push(t);
+                else if (currentDashFilter === 'unassigned' && !isComplete && isUnassigned) focusedTasks.push(t);
                 else if (currentDashFilter === 'overdue' && isOverdue) focusedTasks.push(t);
             });
 
@@ -2352,8 +2180,6 @@
                     byeDisplay = `<br><span class="text-amber-600 font-bold">Skips: ${formattedDates}</span>`;
                 }
 
-                const priceDisplay = p.price ? `<span class="text-emerald-700 font-bold">$${p.price}</span>` : '<span class="text-gray-400 italic">No Price</span>';
-
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
@@ -2364,17 +2190,12 @@
                         </td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
                         <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateStart2 ? `<br>Start 2: ${formatTargetDate(p.dateStart2)}` : ''}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
-                        <td class="px-4 py-2 text-[10px] text-gray-600">${priceDisplay}<br>${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'} ${byeDisplay}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'} ${byeDisplay}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
-                            <div class="inline-flex flex-col gap-1 mr-1 align-middle">
-                                <button onclick="generateTaskPlan('${p.id}', 'Operational')" class="text-[9px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-gears"></i> Gen Ops</button>
-                                <button onclick="generateTaskPlan('${p.id}', 'Marketing')" class="text-[9px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-bullhorn"></i> Gen Mktg</button>
-                            </div>
-                            <button onclick="syncProgramTasks('${p.id}')" class="text-indigo-500 hover:text-indigo-700 mx-1" title="Sync Task Dates"><i class="fa-solid fa-rotate"></i></button>
+                            <button onclick="generateTaskPlan('${p.id}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded mr-1 shadow-sm"><i class="fa-solid fa-bolt"></i> Generate</button>
                             <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            <button onclick="openHistoryModal('${p.id}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-gray-500 hover:text-gray-700 mx-1" title="View History"><i class="fa-solid fa-clock-rotate-left"></i></button>
                             ${hasPermission('manageGroups') ? `<button onclick="openHardDeleteModal('program', '${p.id}', '${p.groupId}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-red-800 hover:text-red-900 mx-1" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                             ` : '-'}
                         </td>
@@ -2437,7 +2258,6 @@
             document.getElementById('prog-date-offseason').value = '';
             document.getElementById('prog-weeks').value = '';
             document.getElementById('prog-venue').value = '';
-            document.getElementById('prog-price').value = '';
             
             document.getElementById('program-modal').classList.remove('hidden'); 
         }
@@ -2466,7 +2286,6 @@
             document.getElementById('prog-date-offseason').value = p.dateOffseason || '';
             document.getElementById('prog-weeks').value = p.weeks || '';
             document.getElementById('prog-venue').value = p.venue || '';
-            document.getElementById('prog-price').value = p.price || '';
 
             // Handle Sec Starts binding
             const secCount = p.secStartDates ? p.secStartDates.length : 0;
@@ -2528,8 +2347,7 @@
                 dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
                 weeks: document.getElementById('prog-weeks').value,
                 byeDates: byeDatesArray,
-                venue: document.getElementById('prog-venue').value,
-                price: document.getElementById('prog-price').value
+                venue: document.getElementById('prog-venue').value
             };
             window.cloudSaveProgram(p);
             
@@ -2577,15 +2395,7 @@
                 return true;
             }).forEach(t => {
                 const grpDisplay = t.groupId === 'ALL' ? '<span class="text-i9blue font-bold">ALL (Network)</span>' : `<span class="text-gray-800 font-bold">${t.groupId}</span>`;
-                
-                let levelDisplay = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px]">Operational</span>`;
-                if(t.level === 'Marketing') {
-                    if (t.marketingCategory) {
-                        levelDisplay = `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px]">Mktg: ${t.marketingCategory}</span>`;
-                    } else {
-                        levelDisplay = `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px]">Marketing</span>`;
-                    }
-                }
+                const levelDisplay = t.level === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px]">Marketing</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px]">Operational</span>`;
                 
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
@@ -2618,11 +2428,6 @@
             document.getElementById('tpl-group').value = 'ALL';
             document.getElementById('tpl-level').value = 'Operational';
             
-            document.getElementById('tpl-mktg-cat').value = '';
-            document.getElementById('tpl-mktg-custom').value = '';
-            document.getElementById('tpl-mktg-custom').classList.add('hidden');
-            document.getElementById('tpl-mktg-cat-container').classList.add('hidden');
-
             updateTplPreHeaderOptions();
             document.getElementById('template-modal').classList.remove('hidden'); 
         }
@@ -2633,22 +2438,7 @@
             document.getElementById('tpl-group').value = t.groupId || 'ALL';
             document.getElementById('tpl-type').value = t.type; updateTplPreHeaderOptions(); 
             document.getElementById('tpl-preheader').value = t.preHeader || '';
-            
             document.getElementById('tpl-level').value = t.level || 'Operational';
-            const mktgContainer = document.getElementById('tpl-mktg-cat-container');
-            if (t.level === 'Marketing') mktgContainer.classList.remove('hidden'); else mktgContainer.classList.add('hidden');
-            
-            const catSel = document.getElementById('tpl-mktg-cat');
-            const catCus = document.getElementById('tpl-mktg-custom');
-            if(t.marketingCategory && !Object.keys(MARKETING_CATEGORIES).includes(t.marketingCategory)) {
-                catSel.value = 'CUSTOM';
-                catCus.value = t.marketingCategory;
-                catCus.classList.remove('hidden');
-            } else {
-                catSel.value = t.marketingCategory || '';
-                catCus.classList.add('hidden');
-            }
-
             document.getElementById('tpl-name').value = t.name; document.getElementById('tpl-desc').value = t.desc || '';
             document.querySelectorAll('.tpl-season-cb').forEach(cb => cb.checked = t.seasons.includes(cb.value));
             document.getElementById('tpl-offset-num').value = t.offsetNum; document.getElementById('tpl-offset-dir').value = t.offsetDir;
@@ -2669,17 +2459,9 @@
             e.preventDefault();
             const id = document.getElementById('tpl-edit-id').value || generateId('TPL');
             const seasons = Array.from(document.querySelectorAll('.tpl-season-cb:checked')).map(cb=>cb.value);
-            
-            let mktgCat = '';
-            if (document.getElementById('tpl-level').value === 'Marketing') {
-                mktgCat = document.getElementById('tpl-mktg-cat').value;
-                if (mktgCat === 'CUSTOM') mktgCat = document.getElementById('tpl-mktg-custom').value.trim();
-            }
-
             const t = {
                 id: id, groupId: document.getElementById('tpl-group').value, type: document.getElementById('tpl-type').value, 
                 preHeader: document.getElementById('tpl-preheader').value, level: document.getElementById('tpl-level').value,
-                marketingCategory: mktgCat,
                 name: document.getElementById('tpl-name').value, desc: document.getElementById('tpl-desc').value, 
                 seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
                 offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value.trim()
@@ -2764,12 +2546,11 @@
 
                 let isUn = (!t.assignee || t.assignee.trim() === '');
                 if (fAss === 'ME' && t.assignee !== currentUser.name) return;
-                if (fAss === 'UNASSIGNED' && !isUn && !t.isNote) return;
+                if (fAss === 'UNASSIGNED' && !isUn) return;
                 
                 let pName = 'Unknown';
                 const p = programs.find(x => x.id === t.programId);
-                const priceStr = (p && p.price) ? ` - $${p.price}` : '';
-                if (p) pName = `[${p.groupId}] ${p.preHeader} ${p.season}${priceStr}`;
+                if (p) pName = `[${p.groupId}] ${p.preHeader} ${p.season}`;
                 else if (t.isOneOff) pName = `[${t.groupId}] One-Off Task`;
                 else pName = `[${t.groupId}] Unknown Program`;
 
@@ -2785,31 +2566,15 @@
                             <td class="px-3 py-2 text-[10px] text-gray-500"><strong class="text-rose-600">${t.archiveReason || 'Other'}</strong><br>${t.archiveNotes || ''}</td>
                         </tr>`;
                 } else {
-                    let levelBadge = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
-                    if (t.isNote) {
-                        levelBadge = `<span class="bg-gray-800 text-white px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-circle-info text-[9px]"></i> NOTE</span>`;
-                    } else if (taskLevel === 'Marketing') {
-                        if (t.marketingCategory && MARKETING_CATEGORIES[t.marketingCategory]) {
-                            const customStyle = MARKETING_CATEGORIES[t.marketingCategory].replace('text-white', 'text-gray-900').replace(/bg-[a-z]+-[0-9]+/, 'bg-emerald-100'); // Fallback style for table badge to ensure readability, or just use the badge
-                            levelBadge = `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> ${t.marketingCategory.substring(0,12)}</span>`;
-                        } else {
-                            levelBadge = `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>`;
-                        }
-                    }
+                    const levelBadge = taskLevel === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
 
                     const today = new Date(); today.setHours(0,0,0,0);
                     const tgt = new Date(t.targetDate + "T00:00:00");
                     let stHTML = `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-[10px]">Upcoming</span>`;
                     
-                    if (t.isNote) {
-                        stHTML = `<span class="bg-gray-800 text-white font-bold border border-gray-900 px-2 py-1 rounded text-[10px]">Note Event</span>`;
-                    } else if (t.status === "Complete") {
-                        stHTML = `<span class="bg-gray-200 text-gray-500 line-through px-2 py-1 rounded text-[10px]">Complete</span>`;
-                    } else if (t.status === "In Progress") {
-                        stHTML = `<span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold">In Progress</span>`;
-                    } else if (today > tgt) {
-                        stHTML = `<span class="bg-rose-100 text-rose-700 font-bold border border-rose-200 px-2 py-1 rounded text-[10px]">OVERDUE</span>`;
-                    }
+                    if (t.status === "Complete") stHTML = `<span class="bg-gray-200 text-gray-500 line-through px-2 py-1 rounded text-[10px]">Complete</span>`;
+                    else if (t.status === "In Progress") stHTML = `<span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold">In Progress</span>`;
+                    else if (today > tgt) stHTML = `<span class="bg-rose-100 text-rose-700 font-bold border border-rose-200 px-2 py-1 rounded text-[10px]">OVERDUE</span>`;
 
                     const notesText = `History: ${t.notes || 'None'}\nCompletion: ${t.completionNotes || 'None'}`;
                     const hasAnyNotes = (t.notes && t.notes.trim() !== '') || (t.completionNotes && t.completionNotes.trim() !== '');
@@ -2825,12 +2590,6 @@
                         <option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>
                     </select>`;
 
-                    let statusSelect = `<select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none" ${canEdit ? '' : 'disabled'}>
-                        <option value="Pending" ${t.status==='Pending'?'selected':''}>Pending</option>
-                        <option value="In Progress" ${t.status==='In Progress'?'selected':''}>In Progress</option>
-                        <option value="Complete" ${t.status==='Complete'?'selected':''}>Done</option>
-                    </select>`;
-
                     tb.innerHTML += `
                         <tr class="hover:bg-gray-50">
                             <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
@@ -2838,11 +2597,15 @@
                             <td class="px-3 py-2">${levelBadge}</td>
                             <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name} ${descDisplay} ${getRecentLogHTML(t.id)}</td>
                             <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap">${formatTargetDate(t.targetDate)}</td>
-                            <td class="px-3 py-2 relative">${t.isNote ? '<span class="text-gray-400 italic text-[10px]">N/A (Note)</span>' : assigneeDropdown}</td>
+                            <td class="px-3 py-2 relative">${assigneeDropdown}</td>
                             <td class="px-3 py-2">${notesDisplay}</td>
                             <td class="px-3 py-2 whitespace-nowrap">
                                 ${stHTML}
-                                ${t.isNote ? '' : statusSelect}
+                                <select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none" ${canEdit ? '' : 'disabled'}>
+                                    <option value="Pending" ${t.status==='Pending'?'selected':''}>Pending</option>
+                                    <option value="In Progress" ${t.status==='In Progress'?'selected':''}>In Progress</option>
+                                    <option value="Complete" ${t.status==='Complete'?'selected':''}>Done</option>
+                                </select>
                             </td>
                             <td class="px-3 py-2 text-center whitespace-nowrap">
                                 ${canEdit ? `
@@ -2926,13 +2689,6 @@
             document.getElementById('at-edit-id').value = ''; 
             document.getElementById('at-is-oneoff').value = 'true'; 
             document.getElementById('at-level').value = 'Operational';
-            document.getElementById('at-is-note').checked = false;
-            
-            document.getElementById('at-mktg-cat').value = '';
-            document.getElementById('at-mktg-custom').value = '';
-            document.getElementById('at-mktg-custom').classList.add('hidden');
-            document.getElementById('at-mktg-cat-container').classList.add('hidden');
-
             document.getElementById('at-name').value = ''; 
             document.getElementById('at-desc').value = ''; 
             document.getElementById('at-date').value = typeof prefillDate === 'string' && prefillDate ? prefillDate : ''; 
@@ -2956,22 +2712,6 @@
             document.getElementById('at-program-select-container').classList.add('hidden');
             document.getElementById('at-status').value = t.status || 'Pending';
             document.getElementById('at-level').value = t.level || 'Operational';
-            document.getElementById('at-is-note').checked = t.isNote === true;
-            
-            const mktgContainer = document.getElementById('at-mktg-cat-container');
-            if (t.level === 'Marketing') mktgContainer.classList.remove('hidden'); else mktgContainer.classList.add('hidden');
-            
-            const catSel = document.getElementById('at-mktg-cat');
-            const catCus = document.getElementById('at-mktg-custom');
-            if(t.marketingCategory && !Object.keys(MARKETING_CATEGORIES).includes(t.marketingCategory)) {
-                catSel.value = 'CUSTOM';
-                catCus.value = t.marketingCategory;
-                catCus.classList.remove('hidden');
-            } else {
-                catSel.value = t.marketingCategory || '';
-                catCus.classList.add('hidden');
-            }
-
             document.getElementById('at-name').value = t.name; 
             document.getElementById('at-desc').value = t.desc || ''; 
             document.getElementById('at-date').value = t.targetDate; 
@@ -3004,25 +2744,15 @@
             let assigneeVal = document.getElementById('at-assignee').value;
             if (assigneeVal === 'CUSTOM') assigneeVal = document.getElementById('at-assignee-custom').value.trim();
 
-            let mktgCat = '';
-            if (document.getElementById('at-level').value === 'Marketing') {
-                mktgCat = document.getElementById('at-mktg-cat').value;
-                if (mktgCat === 'CUSTOM') mktgCat = document.getElementById('at-mktg-custom').value.trim();
-            }
-
-            const isNote = document.getElementById('at-is-note').checked;
-
             if(id) {
                 const t = activeTasks.find(x => x.id === id);
                 if(t) { 
                     t.status = document.getElementById('at-status').value;
                     t.level = document.getElementById('at-level').value;
-                    t.marketingCategory = mktgCat;
-                    t.isNote = isNote;
                     t.name = document.getElementById('at-name').value.trim(); 
                     t.desc = document.getElementById('at-desc').value.trim(); 
                     t.targetDate = document.getElementById('at-date').value; 
-                    t.assignee = isNote ? '' : assigneeVal; 
+                    t.assignee = assigneeVal; 
                     t.notes = document.getElementById('at-notes').value.trim();
                     t.completionNotes = document.getElementById('at-completion-notes').value.trim();
                     window.cloudSaveActiveTask(t); 
@@ -3033,13 +2763,11 @@
                 if(p) {
                     const newTask = { 
                         id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", 
-                        level: document.getElementById('at-level').value, marketingCategory: mktgCat,
-                        name: document.getElementById('at-name').value.trim(), 
-                        desc: document.getElementById('at-desc').value.trim(), assignee: isNote ? '' : assigneeVal, 
+                        level: document.getElementById('at-level').value, name: document.getElementById('at-name').value.trim(), 
+                        desc: document.getElementById('at-desc').value.trim(), assignee: assigneeVal, 
                         defaultRole: "Custom", targetDate: document.getElementById('at-date').value, 
                         status: document.getElementById('at-status').value, 
-                        isOneOff: true, isNote: isNote,
-                        notes: document.getElementById('at-notes').value.trim(), completionNotes: document.getElementById('at-completion-notes').value.trim() 
+                        isOneOff: true, notes: document.getElementById('at-notes').value.trim(), completionNotes: document.getElementById('at-completion-notes').value.trim() 
                     };
                     window.cloudSaveActiveTask(newTask);
                     logActivity(p.groupId, 'Task Create', `Created One-Off Task: ${newTask.name}`, newTask.id);
@@ -3324,9 +3052,10 @@
             let csv = "";
             let filename = "";
 
+            // 1. Check if Task List is active
             if (!document.getElementById('view-tasks').classList.contains('hidden')) {
                 filename = `Task_List_Export_${new Date().toISOString().split('T')[0]}.csv`;
-                csv = "Group ID,Program ID,Task Name,Level,Marketing Category,Note Event,Status,Target Date,Assignee,Notes,Completion Notes\n";
+                csv = "Group ID,Program ID,Task Name,Level,Status,Target Date,Assignee,Notes,Completion Notes\n";
                 
                 const fGrp = document.getElementById('filter-task-group').value; 
                 const fPrg = document.getElementById('filter-task-program').value;
@@ -3347,12 +3076,13 @@
                     if (fAss === 'ME' && t.assignee !== currentUser.name) return;
                     if (fAss === 'UNASSIGNED' && !isUn) return;
 
-                    csv += `"${t.groupId}","${t.programId}","${t.name}","${t.level || 'Operational'}","${t.marketingCategory || ''}","${t.isNote ? 'Yes' : 'No'}","${t.status}","${t.targetDate}","${t.assignee || 'Unassigned'}","${(t.notes || '').replace(/"/g, '""')}","${(t.completionNotes || '').replace(/"/g, '""')}"\n`;
+                    csv += `"${t.groupId}","${t.programId}","${t.name}","${t.level || 'Operational'}","${t.status}","${t.targetDate}","${t.assignee || 'Unassigned'}","${(t.notes || '').replace(/"/g, '""')}","${(t.completionNotes || '').replace(/"/g, '""')}"\n`;
                 });
             } 
+            // 2. Check if Programs page is active
             else if (!document.getElementById('view-control').classList.contains('hidden')) {
                 filename = `Programs_Export_${new Date().toISOString().split('T')[0]}.csv`;
-                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n";
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue\n";
                 
                 const fGrp = document.getElementById('filter-prog-group').value; 
                 const fYr = document.getElementById('filter-prog-year').value;
@@ -3366,12 +3096,13 @@
                     if(fSea !== 'ALL' && p.season !== fSea) return; 
                     if(fTyp !== 'ALL' && p.type !== fTyp) return;
 
-                    csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart}","${p.dateFinal || ''}","${p.weeks}","${p.venue || ''}","${p.price || ''}"\n`;
+                    csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart}","${p.dateFinal || ''}","${p.weeks}","${p.venue || ''}"\n`;
                 });
             }
+            // 3. Check if Task Profiles page is active
             else if (!document.getElementById('view-templates').classList.contains('hidden')) {
                 filename = `Task_Profiles_Export_${new Date().toISOString().split('T')[0]}.csv`;
-                csv = "Group Scope,Level,Marketing Category,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+                csv = "Group Scope,Level,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
                 
                 const fGrp = document.getElementById('filter-template-group').value; 
                 const fTyp = document.getElementById('filter-template-type').value;
@@ -3381,7 +3112,7 @@
                     if (fGrp === 'ALL' && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return;
                     if (fTyp !== 'ALL' && t.type !== fTyp) return;
 
-                    csv += `"${t.groupId}","${t.level || 'Operational'}","${t.marketingCategory || ''}","${t.type}","${t.preHeader || ''}","${t.name}","${t.seasons.join(' ')}","${t.offsetNum}","${t.offsetDir}","${t.anchor}","${t.role || ''}"\n`;
+                    csv += `"${t.groupId}","${t.level || 'Operational'}","${t.type}","${t.preHeader || ''}","${t.name}","${t.seasons.join(' ')}","${t.offsetNum}","${t.offsetDir}","${t.anchor}","${t.role || ''}"\n`;
                 });
             } 
             else {
@@ -3450,4 +3181,95 @@
         }
 
         function downloadImportTemplate() {
-            const type =I encountered an error doing what you asked. Could you try again?
+            const type = document.getElementById('import-type').value;
+            let csv = "";
+            let filename = "";
+
+            if (type === 'programs') {
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue\n";
+                filename = "Program_Import_Template.csv";
+            } else if (type === 'templates') {
+                csv = "Group Scope,Level,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+                filename = "Task_Profile_Import_Template.csv";
+            }
+
+            downloadCSV(csv, filename);
+            showToast("Template Downloaded", "Fill this out and upload it in Step 2.");
+        }
+
+        function executeImport() {
+            const type = document.getElementById('import-type').value;
+            const fileInput = document.getElementById('import-file-input');
+            const file = fileInput.files[0];
+
+            if (!file) return alert("Please select a file to import in Step 2.");
+            if (file.size > 5 * 1024 * 1024) return alert("File is too large. Please upload a CSV smaller than 5MB.");
+
+            showToast("Importing", "Parsing file data...");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const rows = text.split(/\r?\n/);
+                let importCount = 0;
+                
+                // Loop starts at 1 to skip the header row
+                for (let i = 1; i < rows.length; i++) {
+                    if (!rows[i] || rows[i].trim() === '') continue; 
+                    
+                    // Regex handles commas inside quotation marks
+                    const cols = rows[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    const cleanCols = cols.map(col => col.replace(/^"|"$/g, '').trim());
+                    
+                    if (type === 'programs') {
+                        const newProg = {
+                            id: generateId('PRG'),
+                            groupId: cleanCols[0],
+                            preHeader: cleanCols[1] || '',
+                            year: cleanCols[2],
+                            season: cleanCols[3],
+                            type: cleanCols[4],
+                            dateStart: cleanCols[5] || '',
+                            dateFinal: cleanCols[6] || '',
+                            weeks: cleanCols[7] || '',
+                            venue: cleanCols[8] || '',
+                            deadlineCount: 4,
+                            days: '',
+                            byeDates: [],
+                            secStartDates: []
+                        };
+                        window.cloudSaveProgram(newProg);
+                        importCount++;
+                    } else if (type === 'templates') {
+                        const newTpl = {
+                            id: generateId('TPL'),
+                            groupId: cleanCols[0],
+                            level: cleanCols[1] || 'Operational',
+                            type: cleanCols[2],
+                            preHeader: cleanCols[3] || '',
+                            name: cleanCols[4],
+                            seasons: cleanCols[5] ? cleanCols[5].split(' ') : [],
+                            offsetNum: parseInt(cleanCols[6]) || 0,
+                            offsetDir: cleanCols[7] || 'Before',
+                            anchor: cleanCols[8] || 'dateStart',
+                            role: cleanCols[9] || ''
+                        };
+                        window.cloudSaveTemplate(newTpl);
+                        importCount++;
+                    }
+                }
+                
+                logActivity('SYSTEM', 'Data Import', `Imported ${importCount} new ${type} from CSV.`);
+                showToast("Import Complete", `Successfully imported ${importCount} items.`);
+                closeModals();
+            };
+            
+            reader.onerror = function() {
+                alert("Failed to read file! Please check the file and try again.");
+            };
+            
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
