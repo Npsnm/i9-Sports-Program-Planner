@@ -336,6 +336,9 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
+                        <button onclick="openImportModal('programs')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
+                            <i class="fa-solid fa-file-import"></i> Import CSV
+                        </button>
                         <button onclick="bulkEditOpen('programs')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
@@ -387,6 +390,9 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
+                        <button onclick="openImportModal('templates')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
+                            <i class="fa-solid fa-file-import"></i> Import CSV
+                        </button>
                         <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
@@ -1082,6 +1088,41 @@
                 <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
                 <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
             </form>
+        </div>
+    </div>
+    
+    <!-- IMPORT MODAL -->
+    <div id="import-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-indigo-700"><i class="fa-solid fa-file-import"></i> Bulk Import Data</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="hidden" id="import-type">
+            
+            <div class="space-y-4 text-xs">
+                <!-- Step 1: Template -->
+                <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2">
+                    <p class="font-bold text-indigo-900">Step 1: Download Template</p>
+                    <p class="text-[10px] text-indigo-700">Download the required CSV format. Do not modify the column headers.</p>
+                    <button onclick="downloadImportTemplate()" class="bg-white border border-indigo-300 text-indigo-700 px-3 py-1.5 rounded shadow-sm font-bold hover:bg-indigo-100 transition w-full flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download CSV Template
+                    </button>
+                </div>
+
+                <!-- Step 2: Upload -->
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
+                    <p class="font-bold text-gray-800">Step 2: Upload Data</p>
+                    <p class="text-[10px] text-gray-500">Select your completed CSV file to import.</p>
+                    <input type="file" id="import-file-input" accept=".csv" class="w-full border border-gray-300 bg-white rounded p-1.5 text-[10px] cursor-pointer">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold text-xs">Cancel</button>
+                <button type="button" onclick="executeImport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold shadow text-xs transition">Process Import</button>
+            </div>
         </div>
     </div>
 
@@ -3129,6 +3170,105 @@
             
             downloadCSV(csv, `Custom_Report_${type}_${new Date().getTime()}.csv`);
             showToast("Report Downloaded", "Your custom CSV report has been generated.");
+        }
+
+        // --- TWO-STEP CSV IMPORT LOGIC ---
+
+        function openImportModal(type) {
+            document.getElementById('import-type').value = type;
+            document.getElementById('import-file-input').value = ''; 
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function downloadImportTemplate() {
+            const type = document.getElementById('import-type').value;
+            let csv = "";
+            let filename = "";
+
+            if (type === 'programs') {
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue\n";
+                filename = "Program_Import_Template.csv";
+            } else if (type === 'templates') {
+                csv = "Group Scope,Level,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+                filename = "Task_Profile_Import_Template.csv";
+            }
+
+            downloadCSV(csv, filename);
+            showToast("Template Downloaded", "Fill this out and upload it in Step 2.");
+        }
+
+        function executeImport() {
+            const type = document.getElementById('import-type').value;
+            const fileInput = document.getElementById('import-file-input');
+            const file = fileInput.files[0];
+
+            if (!file) return alert("Please select a file to import in Step 2.");
+            if (file.size > 5 * 1024 * 1024) return alert("File is too large. Please upload a CSV smaller than 5MB.");
+
+            showToast("Importing", "Parsing file data...");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const rows = text.split(/\r?\n/);
+                let importCount = 0;
+                
+                // Loop starts at 1 to skip the header row
+                for (let i = 1; i < rows.length; i++) {
+                    if (!rows[i] || rows[i].trim() === '') continue; 
+                    
+                    // Regex handles commas inside quotation marks
+                    const cols = rows[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    const cleanCols = cols.map(col => col.replace(/^"|"$/g, '').trim());
+                    
+                    if (type === 'programs') {
+                        const newProg = {
+                            id: generateId('PRG'),
+                            groupId: cleanCols[0],
+                            preHeader: cleanCols[1] || '',
+                            year: cleanCols[2],
+                            season: cleanCols[3],
+                            type: cleanCols[4],
+                            dateStart: cleanCols[5] || '',
+                            dateFinal: cleanCols[6] || '',
+                            weeks: cleanCols[7] || '',
+                            venue: cleanCols[8] || '',
+                            deadlineCount: 4,
+                            days: '',
+                            byeDates: [],
+                            secStartDates: []
+                        };
+                        window.cloudSaveProgram(newProg);
+                        importCount++;
+                    } else if (type === 'templates') {
+                        const newTpl = {
+                            id: generateId('TPL'),
+                            groupId: cleanCols[0],
+                            level: cleanCols[1] || 'Operational',
+                            type: cleanCols[2],
+                            preHeader: cleanCols[3] || '',
+                            name: cleanCols[4],
+                            seasons: cleanCols[5] ? cleanCols[5].split(' ') : [],
+                            offsetNum: parseInt(cleanCols[6]) || 0,
+                            offsetDir: cleanCols[7] || 'Before',
+                            anchor: cleanCols[8] || 'dateStart',
+                            role: cleanCols[9] || ''
+                        };
+                        window.cloudSaveTemplate(newTpl);
+                        importCount++;
+                    }
+                }
+                
+                logActivity('SYSTEM', 'Data Import', `Imported ${importCount} new ${type} from CSV.`);
+                showToast("Import Complete", `Successfully imported ${importCount} items.`);
+                closeModals();
+            };
+            
+            reader.onerror = function() {
+                alert("Failed to read file! Please check the file and try again.");
+            };
+            
+            reader.readAsText(file);
         }
     </script>
 </body>
