@@ -37,45 +37,44 @@
 <body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col overflow-x-hidden">
 
     <!-- APP HEADER -->
-    <header class="bg-i9blue text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-3">
-            <div class="flex items-center gap-3">
-                <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg shadow-sm border border-blue-800/30 flex items-center justify-center min-w-[38px] h-10">
-                    <img id="brand-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Logo" class="max-h-8 object-contain">
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">Program Director Planner</h1>
-                        <span id="cloud-sync-badge" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="fa-solid fa-cloud"></i> <span id="sync-status-text">Connecting...</span>
-                        </span>
-                    </div>
-                    <p class="text-[11px] text-blue-200">by NP Solutions LLC • Multi-Group Franchise Portal</p>
-                </div>
+<header class="bg-i9blue text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+            <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg shadow-sm border border-blue-800/30 flex items-center justify-center min-w-[38px] h-10">
+                <img id="brand-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Logo" class="max-h-8 object-contain">
             </div>
-
-            <div class="flex items-center flex-wrap gap-2 text-xs">
-                <div id="user-badge" class="bg-blue-950/60 border border-blue-700/60 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                    <i class="fa-solid fa-user-gear text-i9gold"></i>
-                    <div>
-                        <p id="user-display-name" class="font-bold text-white leading-none">Not Logged In</p>
-                        <p id="user-display-scope" class="text-[10px] text-blue-200 leading-tight">Tier: Loading...</p>
-                    </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">Program Director Planner</h1>
+                    <span id="cloud-sync-badge" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <i class="fa-solid fa-cloud"></i> <span id="sync-status-text">Connecting...</span>
+                    </span>
                 </div>
-
-                <button onclick="openReportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-chart-line"></i> Custom Report
-                </button>
-                <button onclick="exportCurrentViewToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-file-excel"></i> Export View
-                </button>
-                <button onclick="logout()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
-                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-                </button>
+                <p class="text-[11px] text-blue-200">by NP Solutions LLC • Multi-Group Franchise Portal</p>
             </div>
         </div>
-    </header>
 
+        <div class="flex items-center flex-wrap gap-2 text-xs">
+            <div id="user-badge" class="bg-blue-950/60 border border-blue-700/60 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-user-gear text-i9gold"></i>
+                <div>
+                    <p id="user-display-name" class="font-bold text-white leading-none">Not Logged In</p>
+                    <p id="user-display-scope" class="text-[10px] text-blue-200 leading-tight">Tier: Loading...</p>
+                </div>
+            </div>
+
+            <!-- Pricing Adjustment Panel Trigger -->
+            <button onclick="openPriceAdjustmentPanel()" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition shadow">
+                <i class="fa-solid fa-tags"></i> Adjust Pricing
+            </button>
+
+            <button onclick="logout()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </button>
+        </div>
+    </div>
+</header>
+    
     <!-- NAVIGATION TABS -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[60px] z-30">
         <div class="max-w-7xl mx-auto px-4 flex space-x-6 overflow-x-auto">
@@ -425,156 +424,64 @@
 
         <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) -->
         <section id="view-admin" class="tab-view hidden space-y-6">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
-                <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and send invitations.</p>
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
+        <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and balance workload.</p>
+    </div>
+    
+    <!-- ASSIGNEE WORKLOAD SUMMARY WIDGET -->
+    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4">
+        <div class="border-b border-purple-100 pb-2 mb-3 flex justify-between items-center">
+            <h4 class="text-xs font-bold text-purple-800 flex items-center gap-2">
+                <i class="fa-solid fa-scale-balanced"></i> Assignee Workload Summary (Open Tasks)
+            </h4>
+            <span class="text-[10px] text-gray-400">Live Task Distribution</span>
+        </div>
+        <div id="workload-summary-grid" class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <!-- Dynamically populated by renderWorkloadSummary() -->
+        </div>
+    </div>
+
+    <!-- Admin User Management & Activity Grids -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-4">
+            <h3 class="font-bold text-xs text-gray-700 uppercase tracking-wider">User Directory & Permissions</h3>
+            <div id="admin-user-list" class="divide-y text-xs">
+                <!-- User rows render here -->
             </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- LEFT COLUMN: USERS (PENDING & ACTIVE) -->
-                <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-rose-200 overflow-hidden">
-                        <div class="bg-rose-50/50 p-3 border-b border-rose-100 flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-rose-700"><i class="fa-solid fa-hourglass-half"></i> Pending Approvals</h4>
-                            <span id="pending-count-badge" class="bg-rose-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">0 Waiting</span>
-                        </div>
-                        <table class="w-full text-xs text-left">
-                            <thead class="bg-rose-50 text-rose-800 uppercase font-bold text-[10px]">
-                                <tr><th class="p-3">User & Contact</th><th class="p-3">Requested Group</th><th class="p-3 text-center">Action</th></tr>
-                            </thead>
-                            <tbody id="pending-users-table" class="divide-y divide-rose-100"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-user-check text-emerald-600"></i> Active User Directory</h4>
-                        </div>
-                        <div class="overflow-y-auto max-h-80">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
-                                    <tr><th class="p-3">User Profile</th><th class="p-3">Role & Access</th><th class="p-3 text-center">Manage</th></tr>
-                                </thead>
-                                <tbody id="active-users-table" class="divide-y divide-gray-100"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RIGHT COLUMN: GROUPS & INVITES -->
-                <div class="space-y-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-blue-200">
-                        <div class="bg-blue-50/50 p-3 border-b border-blue-100">
-                            <h4 class="text-xs font-bold text-i9blue"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
-                        </div>
-                        <div class="p-4 space-y-3">
-                            <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
-                                <input type="number" id="new-group-id" required min="100" placeholder="ID (100)" class="w-24 p-2 border border-gray-300 rounded bg-gray-50">
-                                <input type="text" id="new-group-name" required placeholder="Group Name" class="flex-grow p-2 border border-gray-300 rounded bg-gray-50">
-                                <button type="submit" class="bg-i9blue text-white font-bold px-3 py-2 rounded">+</button>
-                            </form>
-                            <div id="group-pill-list" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl shadow-sm border border-emerald-200">
-                        <div class="bg-emerald-50/50 p-3 border-b border-emerald-100">
-                            <h4 class="text-xs font-bold text-emerald-800"><i class="fa-solid fa-envelope-open-text"></i> Quick Invite Generator</h4>
-                        </div>
-                        <div class="p-4 space-y-2 text-xs">
-                            <p class="text-[10px] text-gray-500 mb-2">Draft an email directing new staff to register.</p>
-                            <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border border-gray-300 rounded bg-gray-50">
-                            <button onclick="generateInviteEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm">Generate Email</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-2">
-                    <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
-                        <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-i9blue"></i> System Activity & Audit Log</h4>
-                    </div>
-                    <div class="overflow-y-auto max-h-64">
-                        <table class="w-full text-xs text-left">
-                            <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
-                                <tr><th class="p-3">Timestamp</th><th class="p-3">User</th><th class="p-3">Group Context</th><th class="p-3">Action</th><th class="p-3">Details</th></tr>
-                            </thead>
-                            <tbody id="activity-log-table" class="divide-y divide-gray-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-4">
+            <h3 class="font-bold text-xs text-gray-700 uppercase tracking-wider">System Audit Logs</h3>
+            <div id="admin-activity-log" class="text-xs space-y-2 max-h-96 overflow-y-auto">
+                <!-- Logs render here -->
             </div>
-        </section>
-
+        </div>
+    </div>
+</section>
         <!-- TAB 7: SETTINGS (PERSONAL & SYSTEM PERMISSIONS) -->
         <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
-            
-            <!-- Personal Account Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
-                <div class="border-b pb-4">
-                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                    <p class="text-xs text-gray-500">Manage your profile, credentials, and view your system account links.</p>
+                <h2 class="text-lg font-bold text-i9blue border-b pb-4">My Account Settings</h2>
+                
+                <!-- AUTOMATION & HOLIDAY SETTINGS -->
+                <div class="space-y-3 text-xs border-b pb-6">
+                    <h3 class="font-bold text-gray-800 text-sm">System Automation</h3>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="setting-auto-holiday" class="w-4 h-4 text-i9blue rounded focus:ring-i9blue">
+                        <span class="font-bold text-gray-700">Automated Holiday Shift Prompt</span>
+                    </label>
+                    <p class="text-[11px] text-gray-500 ml-6">Automatically shifts calculated task deadlines forward (+1 day) if they land on a recognized U.S. holiday.</p>
                 </div>
-
-                <form onsubmit="handleProfileUpdate(event)" class="space-y-3 text-xs border-b pb-6">
-                    <h3 class="font-bold text-gray-800 text-sm">Personal Profile</h3>
-                    <div class="grid grid-cols-2 gap-4 max-w-md">
-                        <div><label class="block font-bold mb-1">First Name</label><input type="text" id="setting-first" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
-                        <div><label class="block font-bold mb-1">Last Name</label><input type="text" id="setting-last" required class="w-full p-2 border rounded-lg bg-gray-50"></div>
+        
+                <div class="space-y-4 text-xs">
+                    <h3 class="font-bold text-gray-800 text-sm">Profile Customization</h3>
+                    <div>
+                        <label class="block font-semibold mb-1">Display Name</label>
+                        <input type="text" id="settings-user-name" class="w-full p-2 border rounded bg-gray-50">
                     </div>
-                    <div><label class="block font-bold mb-1">Phone Number</label><input type="tel" id="setting-phone" required class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
-                    <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-700 transition">Save Profile</button>
-                </form>
-
-                <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
-                    <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
-                    <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Email</button>
-                </form>
-
-                <form onsubmit="handlePasswordUpdate(event)" class="space-y-3 text-xs border-b pb-6">
-                    <h3 class="font-bold text-gray-800 text-sm">Update Password</h3>
-                    <div><label class="block font-bold mb-1">New Password (Min 6 Chars)</label><input type="password" id="setting-new-password" required minlength="6" class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
-                </form>
-
-                <div class="space-y-3 text-xs pt-2">
-                    <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
-                    <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
-                    <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
-                        <i class="fa-brands fa-google text-red-500 text-sm"></i> Link Google Account
-                    </button>
+                    <button onclick="saveProfileSettings()" class="px-4 py-2 bg-i9blue text-white rounded font-bold">Save Settings</button>
                 </div>
             </div>
-
-            <!-- Group-Specific Permissions (Manage Groups Tier only) -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4 permission-manage-groups hidden">
-                <div class="border-b pb-4 flex flex-wrap justify-between items-end gap-3">
-                    <div>
-                        <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions Matrix</h2>
-                        <p class="text-xs text-gray-500">Configure feature access capabilities for each system tier within your group.</p>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-[10px] text-gray-500 mb-1">Select Group Context</label>
-                        <select id="perm-group-select" onchange="renderPermissions()" class="p-2 border border-gray-300 rounded-lg bg-gray-50 text-xs font-bold text-i9blue min-w-[150px] outline-none hover:bg-white transition"></select>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-left">
-                        <thead class="bg-gray-50 text-gray-600 uppercase font-bold border-b">
-                            <tr>
-                                <th class="p-3">Role Tier</th>
-                                <th class="p-3 text-center">Manage Groups & Users</th>
-                                <th class="p-3 text-center">Create Programs</th>
-                                <th class="p-3 text-center">Edit Task Profiles</th>
-                                <th class="p-3 text-center">Edit/Assign Active Tasks</th>
-                            </tr>
-                        </thead>
-                        <tbody id="permissions-table-body" class="divide-y divide-gray-200"></tbody>
-                    </table>
-                </div>
-            </div>
-
         </section>
 
     </main>
@@ -1012,72 +919,70 @@
     </div>
 
     <!-- ACTIVE TASK MODAL -->
-    <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue" id="active-task-title"><i class="fa-solid fa-list-check text-i9gold"></i> Add / Edit Task</h3>
-                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
-                <input type="hidden" id="at-edit-id">
-                <input type="hidden" id="at-is-oneoff">
-                
-                <div id="at-program-select-container" class="hidden">
-                    <label class="block font-bold mb-1">Link to Program (Optional)</label>
-                    <select id="at-program" class="w-full p-2 border rounded bg-gray-50"></select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold mb-1">Task Level (Dept)</label>
-                        <select id="at-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('at-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
-                            <option value="Operational">Operational</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
-                    </div>
-                    <div><label class="block font-bold mb-1">Status</label><select id="at-status" class="w-full p-2 border rounded bg-gray-50"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div>
-                </div>
-
-                <!-- Marketing Category for Active Task -->
-                <div id="at-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
-                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
-                    <select id="at-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('at-mktg-custom').classList.remove('hidden'); else document.getElementById('at-mktg-custom').classList.add('hidden');">
-                        <option value="">-- Select Category --</option>
-                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
-                    </select>
-                    <input type="text" id="at-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block font-bold">Task Name</label>
-                        <label class="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 cursor-pointer">
-                            <input type="checkbox" id="at-is-note" class="w-3 h-3"> Mark as Note Event (No action req)
-                        </label>
-                    </div>
-                    <input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50">
-                </div>
-                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="at-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div>
-                        <label class="block font-bold mb-1">Assign To</label>
-                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50" onchange="if(this.value==='CUSTOM') document.getElementById('at-assignee-custom').classList.remove('hidden'); else document.getElementById('at-assignee-custom').classList.add('hidden');"></select>
-                        <input type="text" id="at-assignee-custom" class="w-full p-2 border rounded bg-gray-50 mt-1 hidden" placeholder="Enter custom / external name...">
-                    </div>
-                </div>
-
-                <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
-                <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
-
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
-                </div>
-            </form>
+<div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+            <h3 id="task-modal-title" class="font-bold text-sm text-i9blue">Edit Task</h3>
+            <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
+
+        <form id="active-task-form" onsubmit="saveActiveTask(event)" class="space-y-3 text-xs">
+            <input type="hidden" id="task-modal-id">
+            
+            <div>
+                <label class="font-semibold block mb-1">Task Title</label>
+                <input type="text" id="task-modal-name" required class="w-full p-2 border rounded bg-gray-50">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="font-semibold block mb-1">Target Date</label>
+                    <input type="date" id="task-modal-date" required class="w-full p-2 border rounded bg-gray-50">
+                </div>
+                <div>
+                    <label class="font-semibold block mb-1">Assignee</label>
+                    <input type="text" id="task-modal-assignee" class="w-full p-2 border rounded bg-gray-50">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="font-semibold block mb-1">Status</label>
+                    <select id="task-modal-status" class="w-full p-2 border rounded bg-gray-50">
+                        <option value="Not Started">Not Started</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Complete">Complete</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-semibold block mb-1">Priority</label>
+                    <select id="task-modal-priority" class="w-full p-2 border rounded bg-gray-50">
+                        <option value="Normal">Normal</option>
+                        <option value="High">High</option>
+                        <option value="Urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="font-semibold block mb-1">Notes & History</label>
+                <textarea id="task-modal-notes" rows="3" class="w-full p-2 border rounded bg-gray-50"></textarea>
+            </div>
+
+            <div class="flex justify-between items-center pt-3 border-t mt-4">
+                <!-- GOOGLE CALENDAR EXPORT BUTTON -->
+                <a id="gcal-export-btn" href="#" target="_blank" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-xs shadow hidden transition items-center gap-1.5">
+                    <i class="fa-brands fa-google"></i> Export to Calendar
+                </a>
+                
+                <div class="flex gap-2 ml-auto">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold text-gray-700">Cancel</button>
+                    <button type="submit" class="px-4 py-1.5 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
+                </div>
+            </div>
+        </form>
     </div>
+</div>
 
     <!-- ARCHIVE TASK MODAL -->
     <div id="archive-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
@@ -1546,6 +1451,153 @@
             showToast("Sync Complete", `${updateCount} task deadlines were updated to match the current program milestones.`);
         }
 
+// ==========================================
+// FEATURE 1: AUTO-LOGOUT INACTIVITY TIMER
+// ==========================================
+let inactivityTimer;
+const INACTIVITY_LIMIT = 30 * 60 * 1000; // 30 Minutes
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    if (window.currentUser) {
+        inactivityTimer = setTimeout(() => {
+            alert("You have been signed out due to 30 minutes of inactivity.");
+            if (typeof logout === 'function') logout();
+        }, INACTIVITY_LIMIT);
+    }
+}
+['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => window.addEventListener(evt, resetInactivityTimer));
+
+// ==========================================
+// FEATURE 2: HOLIDAY SHIFT CHECKER
+// ==========================================
+const MAJOR_US_HOLIDAYS = ['2026-01-01', '2026-01-19', '2026-05-25', '2026-06-19', '2026-07-04', '2026-09-07', '2026-11-26', '2026-12-25'];
+
+function checkHolidayShift(dateStr) {
+    const autoHolidayEnabled = document.getElementById('setting-auto-holiday')?.checked;
+    if (autoHolidayEnabled && MAJOR_US_HOLIDAYS.includes(dateStr)) {
+        let d = new Date(dateStr + 'T00:00:00');
+        d.setDate(d.getDate() + 1);
+        return d.toISOString().split('T')[0];
+    }
+    return dateStr;
+}
+
+// ==========================================
+// FEATURE 3: GOOGLE CALENDAR LINK GENERATOR
+// ==========================================
+function updateGCalExportLink(task) {
+    const btn = document.getElementById('gcal-export-btn');
+    if (!btn) return;
+    if (!task || !task.targetDate) {
+        btn.classList.add('hidden');
+        return;
+    }
+    const dateFormatted = task.targetDate.replace(/-/g, '');
+    const title = encodeURIComponent(task.name || 'Task');
+    const desc = encodeURIComponent(`Program Task: ${task.name}\nStatus: ${task.status}\nNotes: ${task.notes || 'None'}`);
+    
+    btn.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateFormatted}/${dateFormatted}&details=${desc}`;
+    btn.classList.remove('hidden');
+    btn.classList.add('flex');
+}
+
+// ==========================================
+// FEATURE 4: ASSIGNEE WORKLOAD SUMMARY
+// ==========================================
+function renderWorkloadSummary() {
+    const grid = document.getElementById('workload-summary-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    const tasks = window.activeTasks || [];
+    const workload = {};
+    
+    tasks.forEach(t => {
+        if (t.status !== 'Complete' && t.status !== 'Archived') {
+            const assignee = t.assignee ? t.assignee.trim() : 'Unassigned';
+            workload[assignee] = (workload[assignee] || 0) + 1;
+        }
+    });
+
+    const keys = Object.keys(workload).sort();
+    if (keys.length === 0) {
+        grid.innerHTML = '<p class="col-span-full text-xs text-gray-400 py-2">No open tasks currently assigned.</p>';
+        return;
+    }
+
+    keys.forEach(user => {
+        const count = workload[user];
+        const isUnassigned = user === 'Unassigned';
+        const styleClass = isUnassigned ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-purple-50 border-purple-200 text-purple-900';
+        
+        grid.innerHTML += `
+            <div class="p-2 border rounded-lg ${styleClass} flex flex-col items-center text-center shadow-sm">
+                <span class="text-[10px] font-bold uppercase truncate w-full" title="${user}">${user}</span>
+                <span class="text-base font-black">${count}</span>
+            </div>
+        `;
+    });
+}
+
+// ==========================================
+// FEATURE 5: PRICE ADJUSTMENT CONTROLLERS
+// ==========================================
+function openPriceAdjustmentPanel() {
+    const select = document.getElementById('price-adj-program');
+    if (!select) return;
+    select.innerHTML = '<option value="">-- Select a Program --</option>';
+    
+    const programs = window.programs || [];
+    programs.forEach(p => {
+        select.innerHTML += `<option value="${p.id}">${p.groupId || 'Group'} - ${p.season || ''} ${p.year || ''} (${p.type || 'Program'})</option>`;
+    });
+    
+    document.getElementById('price-edit-overlay')?.classList.remove('hidden');
+    document.getElementById('price-edit-pane')?.classList.add('open');
+}
+
+function closePriceAdjustmentPanel() {
+    document.getElementById('price-edit-overlay')?.classList.add('hidden');
+    document.getElementById('price-edit-pane')?.classList.remove('open');
+}
+
+function executePriceAdjustment(event) {
+    event.preventDefault();
+    const progId = document.getElementById('price-adj-program').value;
+    const newPrice = document.getElementById('price-adj-amount').value;
+    const context = document.getElementById('price-adj-deadline').value;
+    
+    const program = (window.programs || []).find(p => p.id === progId);
+    if (!program) return;
+
+    program.price = newPrice;
+    if (typeof window.cloudSaveProgram === 'function') {
+        window.cloudSaveProgram(program);
+    }
+
+    const tasks = window.activeTasks || [];
+    const linkedTasks = tasks.filter(t => t.programId === progId);
+    
+    linkedTasks.forEach(t => {
+        const timestamp = new Date().toLocaleDateString();
+        const noteStamp = `\n[Price Update: ${context} pricing changed to $${newPrice} on ${timestamp}]`;
+        t.notes = (t.notes || '') + noteStamp;
+        if (typeof window.cloudSaveActiveTask === 'function') {
+            window.cloudSaveActiveTask(t);
+        }
+    });
+
+    if (typeof logActivity === 'function') {
+        logActivity(program.groupId, 'Pricing Update', `Set ${context} price to $${newPrice}`, program.id);
+    }
+    
+    closePriceAdjustmentPanel();
+    if (typeof showToast === 'function') {
+        showToast('Price Updated', `Program price updated to $${newPrice} and linked tasks annotated.`);
+    }
+}
+        
         function saveBranding(e) {
             e.preventDefault();
             currentBranding.title = document.getElementById('branding-title-input').value;
@@ -3539,5 +3591,39 @@
             reader.readAsText(file);
         }
     </script>
+    <!-- PRICE ADJUSTMENT SLIDE-OVER PANEL -->
+<div id="price-edit-overlay" onclick="closePriceAdjustmentPanel()" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300"></div>
+<div id="price-edit-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col">
+    <div class="bg-purple-800 text-white p-4 flex justify-between items-center">
+        <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-tags text-i9gold"></i> Adjust Program Pricing</h3>
+        <button onclick="closePriceAdjustmentPanel()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
+    </div>
+    <div class="p-6 overflow-y-auto flex-grow text-xs space-y-4">
+        <p class="text-gray-500 mb-2">Updating the program price automatically updates the program record and appends a timestamped note to all associated active tasks.</p>
+        
+        <form id="price-edit-form" onsubmit="executePriceAdjustment(event)" class="space-y-4">
+            <div>
+                <label class="font-bold block mb-1">Select Program</label>
+                <select id="price-adj-program" required class="w-full p-2 border rounded bg-gray-50"></select>
+            </div>
+            <div>
+                <label class="font-bold block mb-1 text-emerald-600">New Price ($)</label>
+                <input type="number" id="price-adj-amount" step="0.01" placeholder="199.00" required class="w-full p-2 border rounded bg-gray-50">
+            </div>
+            <div>
+                <label class="font-bold block mb-1">Deadline Context</label>
+                <select id="price-adj-deadline" class="w-full p-2 border rounded bg-gray-50">
+                    <option value="General">General Price Update</option>
+                    <option value="Early Bird">Early Bird Deadline</option>
+                    <option value="Final">Final Deadline</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
+        <button onclick="closePriceAdjustmentPanel()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
+        <button type="submit" form="price-edit-form" class="px-4 py-2 bg-purple-800 font-bold rounded text-xs text-white shadow">Apply Price Update</button>
+    </div>
+</div>
 </body>
 </html>
