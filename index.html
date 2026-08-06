@@ -261,13 +261,20 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
                     <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-list-check text-i9gold"></i> Task List</h2>
-                        <p class="text-xs text-gray-500">Manage, execute, and track active tasks.</p>
+                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-list-check text-i9gold"></i> Task Directory</h2>
+                        <p class="text-xs text-gray-500">Manage, execute, and track all tasks across your groups.</p>
                     </div>
                     <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                         <i class="fa-solid fa-plus"></i> Add One-Off Task
                     </button>
                 </div>
+
+                <!-- ADDED TOGGLE FOR ACTIVE VS ARCHIVED -->
+                <div class="flex gap-2 text-xs font-bold mb-2">
+                    <button onclick="setTaskView('active')" id="btn-tasks-active" class="px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition">Active Tasks</button>
+                    <button onclick="setTaskView('archived')" id="btn-tasks-archived" class="px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition">Archived / Removed</button>
+                </div>
+
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
@@ -283,11 +290,12 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="bulkEditOpen('tasks')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                        <button onclick="bulkEditOpen('tasks')" id="btn-task-bulk-edit" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('tasks')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
-                            <i class="fa-solid fa-trash"></i> Delete Selected
+                        <!-- MODIFIED: Changed from Bulk Delete to Bulk Archive -->
+                        <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
+                            <i class="fa-solid fa-box-archive"></i> Archive Selected
                         </button>
                     </div>
                 </div>
@@ -295,18 +303,8 @@
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
-                    <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
-                            <th class="px-3 py-3 font-bold">Program Link / Group</th>
-                            <th class="px-3 py-3 font-bold">Level</th>
-                            <th class="px-3 py-3 font-bold">Task Name & Desc</th>
-                            <th class="px-3 py-3 font-bold">Target Date</th>
-                            <th class="px-3 py-3 font-bold">Assigned To</th>
-                            <th class="px-3 py-3 font-bold">Notes</th>
-                            <th class="px-3 py-3 font-bold">Status Update</th>
-                            <th class="px-3 py-3 text-center font-bold">Actions</th>
-                        </tr>
+                    <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200" id="task-table-head">
+                        <!-- Rendered dynamically based on view -->
                     </thead>
                     <tbody id="active-task-table-body" class="divide-y divide-gray-200"></tbody>
                 </table>
@@ -424,11 +422,11 @@
             </div>
         </section>
 
-        <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) -->
-        <section id="view-admin" class="tab-view hidden space-y-6 permission-manage-groups">
+        <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) - FIXED VISIBILITY BLEED -->
+        <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
-                <p class="text-xs text-gray-500">Approve users, configure groups, and send invitations.</p>
+                <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and send invitations.</p>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -489,6 +487,22 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ADDED SYSTEM ACTIVITY LOG -->
+                <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-2">
+                    <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
+                        <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-i9blue"></i> System Activity & Audit Log</h4>
+                    </div>
+                    <div class="overflow-y-auto max-h-64">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
+                                <tr><th class="p-3">Timestamp</th><th class="p-3">User</th><th class="p-3">Group Context</th><th class="p-3">Action</th><th class="p-3">Details</th></tr>
+                            </thead>
+                            <tbody id="activity-log-table" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -912,6 +926,38 @@
         </div>
     </div>
 
+    <!-- ARCHIVE TASK MODAL (ADDED) -->
+    <div id="archive-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-rose-600"><i class="fa-solid fa-box-archive"></i> Archive / Remove Task(s)</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="submitArchiveTasks(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="archive-task-ids">
+                <div>
+                    <label class="block font-bold mb-1">Reason for Removal</label>
+                    <select id="archive-reason" required class="w-full p-2 border rounded bg-gray-50">
+                        <option value="">-- Select Reason --</option>
+                        <option value="Duplicate Task">Duplicate Task</option>
+                        <option value="Not Applicable this Season">Not Applicable this Season</option>
+                        <option value="Created in Error">Created in Error</option>
+                        <option value="Completed Outside System">Completed Outside System</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Removal Notes / Details</label>
+                    <textarea id="archive-notes" required class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Please provide specific details..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-rose-600 text-white rounded font-bold shadow">Confirm Removal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- BRANDING MODAL -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
@@ -948,7 +994,6 @@
             window.sendPasswordResetEmail = sendPasswordResetEmail;
             
             const googleProvider = new GoogleAuthProvider(); 
-            // ADDED SCOPE for future deeper calendar features
             googleProvider.addScope('https://www.googleapis.com/auth/calendar.events');
             
             window.signInWithGoogle = () => signInWithPopup(auth, googleProvider); 
@@ -1020,6 +1065,12 @@
                 window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
             });
 
+            // ADDED: Activity Log Snapshot Sync
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
+                window.activityLogs = snap.docs.map(d => d.data());
+                window.renderActivityLog();
+            });
+
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
                 if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI(); }
             });
@@ -1044,14 +1095,14 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.5.0 (Group Matrix & Interactive Cal)";
+        const APP_VERSION = "2.6.0 (Archiving & Audit Trails)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
+        let currentTaskView = 'active'; // ADDED toggling for active/archived tasks
         let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
 
-        // ADDED DATE FORMATTER
         function formatTargetDate(dStr) {
             if (!dStr) return '';
             const parts = dStr.split('-');
@@ -1059,7 +1110,6 @@
             return `${parts[1]}/${parts[2]}/${parts[0]}`;
         }
 
-        // ADDED DATE CALCULATOR
         function calculateNewTargetDate(p, tpl) {
             let anchorDateStr = p[tpl.anchor]; 
             if (!anchorDateStr) return '';
@@ -1070,7 +1120,42 @@
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
 
-        // ADDED TASK GENERATOR
+        // ADDED SYSTEM ACTIVITY LOGGER
+        window.activityLogs = [];
+        function logActivity(groupId, action, details) {
+            if(!currentUser) return;
+            const log = {
+                id: generateId('LOG'),
+                groupId: groupId || 'SYSTEM',
+                userName: currentUser.name,
+                userEmail: currentUser.username,
+                action: action,
+                details: details,
+                timestamp: new Date().toISOString()
+            };
+            window.cloudSave('activity_logs', log.id, log);
+        }
+
+        // RENDER ACTIVITY LOG FOR ADMINS
+        window.renderActivityLog = function() {
+            const tb = document.getElementById('activity-log-table');
+            if(!tb) return; tb.innerHTML = '';
+            if(!currentUser) return;
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            
+            const visibleLogs = window.activityLogs.filter(l => currentUser.territories.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            visibleLogs.forEach(l => {
+                tb.innerHTML += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
+                    <td class="p-3 font-bold text-gray-800">${l.userName}</td>
+                    <td class="p-3 font-mono text-[10px] text-i9blue">${l.groupId}</td>
+                    <td class="p-3 font-bold text-gray-700">${l.action}</td>
+                    <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
+                </tr>`;
+            });
+        }
+
         function generateTaskPlan(progId) {
             const p = programs.find(x => x.id === progId);
             if (!p) return;
@@ -1082,7 +1167,7 @@
                 if (tpl.seasons && !tpl.seasons.includes(p.season)) return;
                 if (tpl.preHeader && p.preHeader && tpl.preHeader !== p.preHeader && tpl.preHeader !== 'ALL') return;
 
-                const existing = activeTasks.find(t => t.programId === p.id && t.templateId === tpl.id);
+                const existing = activeTasks.find(t => t.programId === p.id && t.templateId === tpl.id && t.status !== 'Archived');
                 if (existing) return;
 
                 const tDate = calculateNewTargetDate(p, tpl);
@@ -1108,10 +1193,10 @@
                 window.cloudSaveActiveTask(newTask);
                 genCount++;
             });
+            logActivity(p.groupId, 'Task Generation', `Generated ${genCount} tasks from templates for Program ${p.id}`);
             showToast("Task Plan Generated", `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
         }
 
-        // ADDED BRANDING SAVER
         function saveBranding(e) {
             e.preventDefault();
             currentBranding.title = document.getElementById('branding-title-input').value;
@@ -1121,7 +1206,6 @@
             showToast("Branding Saved", "Theme updated successfully.");
         }
 
-        // ADDED DYNAMIC YEAR UPDATER
         function populateYearDropdowns() {
             const currentYear = new Date().getFullYear(); 
             const startYear = 2026;
@@ -1224,7 +1308,7 @@
         };
         
         window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
-        window.groupPermissions = {}; // Initialize object to hold per-group matrix
+        window.groupPermissions = {}; 
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
         var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
@@ -1372,7 +1456,6 @@
             } else badge.classList.add('hidden');
         }
 
-        // ADDED ISOLATED GROUP PERMISSION CHECKER
         function hasPermission(permKey) {
             if (!currentUser) return false;
             if (currentUser.role === 'System Admin') return true;
@@ -1476,13 +1559,13 @@
             const tplGroup = document.getElementById('tpl-group');
             const calProgramFilter = document.getElementById('filter-cal-program');
             const calGroupFilter = document.getElementById('filter-cal-group');
-            const permGroupSelect = document.getElementById('perm-group-select'); // For matrix
+            const permGroupSelect = document.getElementById('perm-group-select'); 
             
             if(pGroup) pGroup.innerHTML = ''; if(atGroup) atGroup.innerHTML = '';
             if(tplGroup) tplGroup.innerHTML = '<option value="ALL">ALL GROUPS (Network-Wide)</option>';
             if(calProgramFilter) calProgramFilter.innerHTML = '<option value="ALL">All Specific Programs</option>';
             if(calGroupFilter) calGroupFilter.innerHTML = '<option value="ALL">All Authorized Groups</option>';
-            if(permGroupSelect) permGroupSelect.innerHTML = '';
+            if(permGroupSelect) permGroupSelect.innerHTML = '<option value="ALL">-- Select Specific Group --</option>';
             
             ag.forEach(g => { 
                 if(pGroup) pGroup.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
@@ -1511,7 +1594,7 @@
                 users.forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
             }
             
-            renderPermissions(); // Trigger rendering of Matrix if it was open
+            renderPermissions(); 
         }
 
         /* --- CALENDAR SYSTEM --- */
@@ -1653,8 +1736,9 @@
 
             const dayTasks = activeTasks.filter(t => {
                 if(t.targetDate !== dayStr) return false;
+                if(t.status === 'Archived') return false; // Do not show archived tasks on calendar
                 if(!agIds.includes(t.groupId)) return false;
-                if(fGroup !== 'ALL' && t.groupId !== fGroup) return false;
+                if(fGroup !== 'ALL' && t.groupId !== fGroup) return false; 
                 
                 const isComplete = t.status === 'Complete';
                 const isInProgress = t.status === 'In Progress';
@@ -1697,7 +1781,7 @@
                     if(p.dateFinal === dayStr) milestoneTypes.push("Final Deadline");
                     if(p.dateEarly === dayStr) milestoneTypes.push("Early Deadline");
                     if(p.dateOffseason === dayStr) milestoneTypes.push("Offseason Deadline");
-                    if(p.byeWeek === dayStr) milestoneTypes.push("Bye Week");
+                    if(p.byeWeek === dayStr) milestoneTypes.push("Bye Week"); 
                     
                     milestoneTypes.forEach(mt => {
                         const styleCls = mt === "Bye Week" ? "bg-amber-100 text-amber-800 border-amber-300" : "bg-indigo-100 text-indigo-800 border-indigo-300";
@@ -1759,7 +1843,7 @@
             tasks.sort((a,b) => new Date(a.targetDate) - new Date(b.targetDate));
             
             tasks.forEach(t => {
-                const isOverdue = t.status !== 'Complete' && (new Date(t.targetDate + "T00:00:00") < new Date().setHours(0,0,0,0));
+                const isOverdue = t.status !== 'Complete' && t.status !== 'Archived' && (new Date(t.targetDate + "T00:00:00") < new Date().setHours(0,0,0,0));
                 const borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
                 const levelIcon = t.level === 'Marketing' ? '<i class="fa-solid fa-bullhorn text-emerald-600"></i>' : '<i class="fa-solid fa-gears text-i9blue"></i>';
 
@@ -1787,7 +1871,6 @@
             let myTasks = [];
             let focusedTasks = [];
 
-            // Reset execution progress UI
             document.getElementById('dashboard-season-progress').innerHTML = '';
 
             const focusTitle = {
@@ -1799,7 +1882,7 @@
             document.getElementById('dash-focused-title').innerHTML = focusTitle[currentDashFilter];
 
             programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
-                const pTasks = activeTasks.filter(t => t.programId === p.id);
+                const pTasks = activeTasks.filter(t => t.programId === p.id && t.status !== 'Archived');
                 const pOpTasks = pTasks.filter(t => t.level === 'Operational' || !t.level);
                 const pMktTasks = pTasks.filter(t => t.level === 'Marketing');
 
@@ -1831,19 +1914,17 @@
                 }
             });
 
-            activeTasks.filter(t => agIds.includes(t.groupId)).forEach(t => {
+            activeTasks.filter(t => agIds.includes(t.groupId) && t.status !== 'Archived').forEach(t => {
                 const tgt = new Date(t.targetDate + "T00:00:00");
                 const isComplete = t.status === "Complete";
                 const isUnassigned = !t.assignee || t.assignee.trim() === '';
                 const isOverdue = !isComplete && (today > tgt);
 
-                // Process KPI Counters
                 if (!isComplete) tot++;
                 if (isComplete) comp++;
                 if (!isComplete && isUnassigned) unassigned++;
                 if (isOverdue) over++;
 
-                // Process Lists
                 if (t.targetDate === todayStr && !isComplete) todayTasks.push(t);
                 
                 const inNext7 = tgt >= today && tgt <= new Date(today.getTime() + (7*86400000));
@@ -1990,11 +2071,21 @@
             if (document.getElementById('prog-edit-id').value) {
                 const linked = activeTasks.filter(t => t.programId === p.id && !t.isOneOff);
                 linked.forEach(t => { const tpl = templates.find(x => x.id === t.templateId); if(tpl) { t.targetDate = calculateNewTargetDate(p, tpl); window.cloudSaveActiveTask(t); } });
+                logActivity(p.groupId, 'Program Update', `Updated logistics/dates for Program ${p.id}`);
+            } else {
+                logActivity(p.groupId, 'Program Create', `Created new Program ${p.season} ${p.type}`);
             }
             closeModals(); showToast("Program Saved", "Successfully updated.");
         }
 
-        function cloneProgram(id) { const p = programs.find(x => x.id === id); if(!p) return; const clone = {...p, id: generateId('PRG')}; window.cloudSaveProgram(clone); showToast("Cloned", "Program duplicated successfully."); }
+        function cloneProgram(id) { 
+            const p = programs.find(x => x.id === id); 
+            if(!p) return; 
+            const clone = {...p, id: generateId('PRG')}; 
+            window.cloudSaveProgram(clone); 
+            logActivity(p.groupId, 'Program Cloned', `Cloned Program ${p.id} to new ID ${clone.id}`);
+            showToast("Cloned", "Program duplicated successfully."); 
+        }
 
         /* --- TASK PROFILES --- */
         function updateTplPreHeaderOptions() {
@@ -2037,10 +2128,23 @@
                             ${isManager ? `
                             <button onclick="openEditTemplate('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneTemplate('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
+                            <!-- ADDED INLINE DELETE BUTTON FOR PROFILES -->
+                            <button onclick="deleteTemplate('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
                             ` : '-'}
                         </td>
                     </tr>`;
             });
+        }
+
+        // ADDED: Profile inline delete function
+        function deleteTemplate(id) { 
+            if(confirm("Delete this profile rule forever?")) { 
+                const t = templates.find(x => x.id === id);
+                if (t) {
+                    window.cloudDeleteTemplate(id); 
+                    logActivity(t.groupId, 'Profile Rule Deleted', `Deleted Rule: ${t.name}`);
+                }
+            } 
         }
 
         function openAddTemplateModal() { 
@@ -2071,7 +2175,13 @@
             document.getElementById('template-modal').classList.remove('hidden');
         }
         
-        function cloneTemplate(id) { const t = templates.find(x => x.id === id); if(!t) return; window.cloudSaveTemplate({...t, id: generateId('TPL')}); showToast("Cloned", "Task Profile rule duplicated."); }
+        function cloneTemplate(id) { 
+            const t = templates.find(x => x.id === id); 
+            if(!t) return; 
+            window.cloudSaveTemplate({...t, id: generateId('TPL')}); 
+            logActivity(t.groupId, 'Profile Rule Cloned', `Cloned Rule: ${t.name}`);
+            showToast("Cloned", "Task Profile rule duplicated."); 
+        }
         
         function saveTemplate(e) {
             e.preventDefault();
@@ -2084,10 +2194,32 @@
                 seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
                 offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value.trim()
             };
-            window.cloudSaveTemplate(t); closeModals(); showToast("Task Profile Saved", "Master list updated.");
+            window.cloudSaveTemplate(t); 
+            logActivity(t.groupId, document.getElementById('tpl-edit-id').value ? 'Profile Rule Updated' : 'Profile Rule Created', `Rule: ${t.name}`);
+            closeModals(); showToast("Task Profile Saved", "Master list updated.");
         }
 
         /* --- TASKS --- */
+
+        // ADDED: View Toggler for Task List
+        function setTaskView(view) {
+            currentTaskView = view;
+            const btnAct = document.getElementById('btn-tasks-active');
+            const btnArch = document.getElementById('btn-tasks-archived');
+            const bulkEditBtn = document.getElementById('btn-task-bulk-edit');
+            const bulkArchBtn = document.getElementById('btn-task-bulk-archive');
+
+            if (view === 'active') {
+                btnAct.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
+                btnArch.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
+                bulkEditBtn.style.display = 'block'; bulkArchBtn.style.display = 'block';
+            } else {
+                btnAct.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
+                btnArch.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
+                bulkEditBtn.style.display = 'none'; bulkArchBtn.style.display = 'none'; // Hide bulk actions in archive mode
+            }
+            renderActiveTasks();
+        }
 
         function renderActiveTasks() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
@@ -2096,6 +2228,30 @@
             const tb = document.getElementById('active-task-table-body'); if(!tb) return; tb.innerHTML = '';
             
             const canEdit = hasPermission('editTasks');
+            
+            // Set Table Headers dynamically based on view
+            const tHead = document.getElementById('task-table-head');
+            if (currentTaskView === 'active') {
+                tHead.innerHTML = `<tr>
+                    <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
+                    <th class="px-3 py-3 font-bold">Program Link / Group</th>
+                    <th class="px-3 py-3 font-bold">Level</th>
+                    <th class="px-3 py-3 font-bold">Task Name & Desc</th>
+                    <th class="px-3 py-3 font-bold">Target Date</th>
+                    <th class="px-3 py-3 font-bold">Assigned To</th>
+                    <th class="px-3 py-3 font-bold">Notes</th>
+                    <th class="px-3 py-3 font-bold">Status Update</th>
+                    <th class="px-3 py-3 text-center font-bold">Actions</th>
+                </tr>`;
+            } else {
+                tHead.innerHTML = `<tr>
+                    <th class="px-3 py-3 font-bold pl-5">Program Link / Group</th>
+                    <th class="px-3 py-3 font-bold">Task Name</th>
+                    <th class="px-3 py-3 font-bold">Archived Date</th>
+                    <th class="px-3 py-3 font-bold">Removed By</th>
+                    <th class="px-3 py-3 font-bold">Reason & Details</th>
+                </tr>`;
+            }
 
             const fGrp = document.getElementById('filter-task-group').value; const fPrg = document.getElementById('filter-task-program').value;
             const fAss = document.getElementById('filter-task-assignee').value; const fSt = document.getElementById('filter-task-status').value;
@@ -2104,7 +2260,12 @@
             activeTasks.forEach(t => {
                 if (!agIds.includes(t.groupId)) return;
                 if(fGrp !== 'ALL' && t.groupId !== fGrp) return; if(fPrg !== 'ALL' && t.programId !== fPrg) return;
-                if(fSt !== 'ALL' && t.status !== fSt) return;
+                
+                // Active/Archive View Filter
+                if (currentTaskView === 'active' && t.status === 'Archived') return;
+                if (currentTaskView === 'archived' && t.status !== 'Archived') return;
+                
+                if(currentTaskView === 'active' && fSt !== 'ALL' && t.status !== fSt) return;
                 
                 const taskLevel = t.level || 'Operational';
                 if(fLev !== 'ALL' && taskLevel !== fLev) return;
@@ -2119,58 +2280,128 @@
                 else if (t.isOneOff) pName = `[${t.groupId}] One-Off Task`;
                 else pName = `[${t.groupId}] Unknown Program`;
 
-                const levelBadge = taskLevel === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
+                if (currentTaskView === 'archived') {
+                    // Render Archived View Rows
+                    const aDate = t.archivedAt ? new Date(t.archivedAt).toLocaleDateString() : 'Unknown';
+                    tb.innerHTML += `
+                        <tr class="hover:bg-gray-50 opacity-60">
+                            <td class="px-3 py-2 font-bold text-gray-500 text-[11px] pl-5">${pName}</td>
+                            <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name}</td>
+                            <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap">${aDate}</td>
+                            <td class="px-3 py-2 text-xs font-bold text-gray-600">${t.archivedBy || 'System'}</td>
+                            <td class="px-3 py-2 text-[10px] text-gray-500"><strong class="text-rose-600">${t.archiveReason || 'Other'}</strong><br>${t.archiveNotes || ''}</td>
+                        </tr>`;
+                } else {
+                    // Render Active View Rows
+                    const levelBadge = taskLevel === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
 
-                const today = new Date(); today.setHours(0,0,0,0);
-                const tgt = new Date(t.targetDate + "T00:00:00");
-                let stHTML = `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-[10px]">Upcoming</span>`;
-                
-                if (t.status === "Complete") stHTML = `<span class="bg-gray-200 text-gray-500 line-through px-2 py-1 rounded text-[10px]">Complete</span>`;
-                else if (t.status === "In Progress") stHTML = `<span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold">In Progress</span>`;
-                else if (today > tgt) stHTML = `<span class="bg-rose-100 text-rose-700 font-bold border border-rose-200 px-2 py-1 rounded text-[10px]">OVERDUE</span>`;
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    const tgt = new Date(t.targetDate + "T00:00:00");
+                    let stHTML = `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-[10px]">Upcoming</span>`;
+                    
+                    if (t.status === "Complete") stHTML = `<span class="bg-gray-200 text-gray-500 line-through px-2 py-1 rounded text-[10px]">Complete</span>`;
+                    else if (t.status === "In Progress") stHTML = `<span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded text-[10px] font-bold">In Progress</span>`;
+                    else if (today > tgt) stHTML = `<span class="bg-rose-100 text-rose-700 font-bold border border-rose-200 px-2 py-1 rounded text-[10px]">OVERDUE</span>`;
 
-                const notesText = `History: ${t.notes || 'None'}\nCompletion: ${t.completionNotes || 'None'}`;
-                const hasAnyNotes = (t.notes && t.notes.trim() !== '') || (t.completionNotes && t.completionNotes.trim() !== '');
-                const notesDisplay = hasAnyNotes ? `<div class="text-[10px] text-gray-500 italic max-w-[150px] truncate cursor-help" title="${notesText.replace(/"/g, '&quot;')}"><i class="fa-regular fa-comment-dots text-i9blue"></i> ${t.notes || t.completionNotes}</div>` : `<span class="text-gray-300 text-[10px]">-</span>`;
-                
-                const descDisplay = t.desc && t.desc.trim() !== '' ? `<div class="text-[9px] text-gray-500 font-normal mt-0.5 max-w-[200px] truncate" title="${t.desc.replace(/"/g, '&quot;')}">${t.desc}</div>` : '';
+                    const notesText = `History: ${t.notes || 'None'}\nCompletion: ${t.completionNotes || 'None'}`;
+                    const hasAnyNotes = (t.notes && t.notes.trim() !== '') || (t.completionNotes && t.completionNotes.trim() !== '');
+                    const notesDisplay = hasAnyNotes ? `<div class="text-[10px] text-gray-500 italic max-w-[150px] truncate cursor-help" title="${notesText.replace(/"/g, '&quot;')}"><i class="fa-regular fa-comment-dots text-i9blue"></i> ${t.notes || t.completionNotes}</div>` : `<span class="text-gray-300 text-[10px]">-</span>`;
+                    
+                    const descDisplay = t.desc && t.desc.trim() !== '' ? `<div class="text-[9px] text-gray-500 font-normal mt-0.5 max-w-[200px] truncate" title="${t.desc.replace(/"/g, '&quot;')}">${t.desc}</div>` : '';
 
-                let assigneeDropdown = `<select onchange="updateTaskAssignee('${t.id}', this.value)" class="bg-transparent border-b border-gray-300 text-[11px] font-bold text-emerald-800 w-full p-1 outline-none appearance-none hover:bg-gray-50 cursor-pointer ${isUn ? 'text-rose-500' : ''}" ${canEdit ? '' : 'disabled'}>
-                    <option value="" class="text-gray-500">-- Unassigned --</option>
-                    ${users.map(u => `<option value="${u.name}" ${t.assignee === u.name ? 'selected' : ''}>${u.name}</option>`).join('')}
-                </select>`;
+                    let assigneeDropdown = `<select onchange="updateTaskAssignee('${t.id}', this.value)" class="bg-transparent border-b border-gray-300 text-[11px] font-bold text-emerald-800 w-full p-1 outline-none appearance-none hover:bg-gray-50 cursor-pointer ${isUn ? 'text-rose-500' : ''}" ${canEdit ? '' : 'disabled'}>
+                        <option value="" class="text-gray-500">-- Unassigned --</option>
+                        ${users.map(u => `<option value="${u.name}" ${t.assignee === u.name ? 'selected' : ''}>${u.name}</option>`).join('')}
+                    </select>`;
 
-                tb.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
-                        <td class="px-3 py-2 font-bold text-i9blue text-[11px]">${pName}</td>
-                        <td class="px-3 py-2">${levelBadge}</td>
-                        <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name} ${descDisplay}</td>
-                        <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap">${formatTargetDate(t.targetDate)}</td>
-                        <td class="px-3 py-2 relative">${assigneeDropdown}</td>
-                        <td class="px-3 py-2">${notesDisplay}</td>
-                        <td class="px-3 py-2 whitespace-nowrap">
-                            ${stHTML}
-                            <select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none" ${canEdit ? '' : 'disabled'}>
-                                <option value="Pending" ${t.status==='Pending'?'selected':''}>Pending</option>
-                                <option value="In Progress" ${t.status==='In Progress'?'selected':''}>In Progress</option>
-                                <option value="Complete" ${t.status==='Complete'?'selected':''}>Done</option>
-                            </select>
-                        </td>
-                        <td class="px-3 py-2 text-center whitespace-nowrap">
-                            ${canEdit ? `
-                                <button onclick="openEditActiveTask('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="cloneTask('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            ` : '-'}
-                        </td>
-                    </tr>`;
+                    tb.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
+                            <td class="px-3 py-2 font-bold text-i9blue text-[11px]">${pName}</td>
+                            <td class="px-3 py-2">${levelBadge}</td>
+                            <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name} ${descDisplay}</td>
+                            <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap">${formatTargetDate(t.targetDate)}</td>
+                            <td class="px-3 py-2 relative">${assigneeDropdown}</td>
+                            <td class="px-3 py-2">${notesDisplay}</td>
+                            <td class="px-3 py-2 whitespace-nowrap">
+                                ${stHTML}
+                                <select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none" ${canEdit ? '' : 'disabled'}>
+                                    <option value="Pending" ${t.status==='Pending'?'selected':''}>Pending</option>
+                                    <option value="In Progress" ${t.status==='In Progress'?'selected':''}>In Progress</option>
+                                    <option value="Complete" ${t.status==='Complete'?'selected':''}>Done</option>
+                                </select>
+                            </td>
+                            <td class="px-3 py-2 text-center whitespace-nowrap">
+                                ${canEdit ? `
+                                    <button onclick="openEditActiveTask('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="cloneTask('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1" title="Duplicate Task"><i class="fa-regular fa-copy"></i></button>
+                                    <button onclick="openArchiveTaskModal('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1" title="Archive / Remove Task"><i class="fa-solid fa-box-archive"></i></button>
+                                ` : '-'}
+                            </td>
+                        </tr>`;
+                }
             });
         }
         
-        function updateActiveTaskStatus(id, st) { const t = activeTasks.find(x => x.id === id); if(t) { t.status = st; window.cloudSaveActiveTask(t); } }
-        function updateTaskAssignee(id, newAssignee) { const t = activeTasks.find(x => x.id === id); if(t) { t.assignee = newAssignee; window.cloudSaveActiveTask(t); showToast("Reassigned", "Assignee updated directly."); } }
+        function updateActiveTaskStatus(id, st) { 
+            const t = activeTasks.find(x => x.id === id); 
+            if(t) { 
+                t.status = st; window.cloudSaveActiveTask(t); 
+                logActivity(t.groupId, 'Task Status Update', `Task ${t.name} marked as ${st}`);
+            } 
+        }
         
-        // MODIFIED TO ACCEPT PREFILL DATE FROM CALENDAR
+        function updateTaskAssignee(id, newAssignee) { 
+            const t = activeTasks.find(x => x.id === id); 
+            if(t) { 
+                t.assignee = newAssignee; window.cloudSaveActiveTask(t); 
+                logActivity(t.groupId, 'Task Reassigned', `Task ${t.name} assigned to ${newAssignee || 'Unassigned'}`);
+                showToast("Reassigned", "Assignee updated directly."); 
+            } 
+        }
+
+        // ADDED ARCHIVE MODAL FUNCTIONS
+        function openArchiveTaskModal(id) {
+            document.getElementById('archive-task-ids').value = id;
+            document.getElementById('archive-reason').value = '';
+            document.getElementById('archive-notes').value = '';
+            document.getElementById('archive-task-modal').classList.remove('hidden');
+        }
+
+        function bulkArchiveTasks() {
+            const ids = getSelected('task-cb');
+            if(ids.length === 0) return alert("Select tasks to archive first.");
+            document.getElementById('archive-task-ids').value = ids.join(',');
+            document.getElementById('archive-reason').value = '';
+            document.getElementById('archive-notes').value = '';
+            document.getElementById('archive-task-modal').classList.remove('hidden');
+        }
+
+        function submitArchiveTasks(e) {
+            e.preventDefault();
+            const rawIds = document.getElementById('archive-task-ids').value;
+            const ids = rawIds.split(',');
+            const reason = document.getElementById('archive-reason').value;
+            const notes = document.getElementById('archive-notes').value.trim();
+
+            ids.forEach(id => {
+                const t = activeTasks.find(x => x.id === id);
+                if (t) {
+                    t.status = 'Archived';
+                    t.archiveReason = reason;
+                    t.archiveNotes = notes;
+                    t.archivedBy = currentUser.name;
+                    t.archivedAt = new Date().toISOString();
+                    window.cloudSaveActiveTask(t);
+                    logActivity(t.groupId, 'Task Removed/Archived', `Task ${t.name} removed. Reason: ${reason}`);
+                }
+            });
+
+            closeModals();
+            showToast("Tasks Archived", `${ids.length} task(s) removed from active view.`);
+            document.getElementById('selectAllTasks').checked = false;
+        }
+        
         function openAddOneOffTaskModal(prefillDate = '') { 
             document.getElementById('at-edit-id').value = ''; 
             document.getElementById('at-is-oneoff').value = 'true'; 
@@ -2218,24 +2449,34 @@
                     t.notes = document.getElementById('at-notes').value.trim();
                     t.completionNotes = document.getElementById('at-completion-notes').value.trim();
                     window.cloudSaveActiveTask(t); 
+                    logActivity(t.groupId, 'Task Update', `Updated task details: ${t.name}`);
                 }
             } else if (isOneOff) {
                 const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
                 if(p) {
-                    window.cloudSaveActiveTask({ 
+                    const newTask = { 
                         id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", 
                         level: document.getElementById('at-level').value, name: document.getElementById('at-name').value.trim(), 
                         desc: document.getElementById('at-desc').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), 
                         defaultRole: "Custom", targetDate: document.getElementById('at-date').value, 
                         status: document.getElementById('at-status').value, 
                         isOneOff: true, notes: document.getElementById('at-notes').value.trim(), completionNotes: document.getElementById('at-completion-notes').value.trim() 
-                    });
+                    };
+                    window.cloudSaveActiveTask(newTask);
+                    logActivity(p.groupId, 'Task Create', `Created One-Off Task: ${newTask.name}`);
                 }
             }
             closeModals();
         }
         
-        function cloneTask(id) { const t = activeTasks.find(x=>x.id===id); if(t) { window.cloudSaveActiveTask({...t, id: generateId('ATK')}); showToast("Cloned", "Task duplicated successfully."); } }
+        function cloneTask(id) { 
+            const t = activeTasks.find(x=>x.id===id); 
+            if(t) { 
+                window.cloudSaveActiveTask({...t, id: generateId('ATK')}); 
+                logActivity(t.groupId, 'Task Cloned', `Cloned Task: ${t.name}`);
+                showToast("Cloned", "Task duplicated successfully."); 
+            } 
+        }
 
         /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
         function openUserManagementModal() { switchTab('admin'); } 
@@ -2263,7 +2504,7 @@
                 </div>`; 
             });
         }
-        function unarchiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Restore this group to Active status?")) { g.status = 'Active'; window.cloudSaveGroup(g); } }
+        function unarchiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Restore this group to Active status?")) { g.status = 'Active'; window.cloudSaveGroup(g); logActivity(id, 'System Config', `Restored group ${id}`); } }
 
         function renderTerritoryCheckboxes() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
@@ -2280,10 +2521,11 @@
                 window.cloudSaveGroup({ id: gId, name: gName, fullName: `${gId} - ${gName}`, status: 'Active' });
                 if(currentUser && !currentUser.territories.includes('ALL')) { currentUser.territories.push(gId); window.currentUser = currentUser; window.cloudSaveUser(currentUser); }
                 document.getElementById('new-group-name').value=''; document.getElementById('new-group-id').value=''; 
+                logActivity('SYSTEM', 'Group Creation', `Created new group: ${gId} - ${gName}`);
             }
         }
-        function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); } }
-        function deleteGroup(id) { if(confirm("Permanently destroy this group?")) window.cloudDeleteGroup(id); }
+        function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); logActivity('SYSTEM', 'Group Archived', `Archived group ${id}`);} }
+        function deleteGroup(id) { if(confirm("Permanently destroy this group?")) { window.cloudDeleteGroup(id); logActivity('SYSTEM', 'Group Deleted', `Hard deleted group ${id}`); } }
         function renderUsersTable() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -2304,7 +2546,7 @@
             if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
             if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
         }
-        function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); } }
+        function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); logActivity('SYSTEM', 'User Denied/Removed', `Removed user ${em} from portal`); } }
         function openAdminEdit(em) {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -2318,10 +2560,16 @@
         }
         function adminSaveUser(e) {
             e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
-            if(u) { u.role = document.getElementById('admin-u-role').value; u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); window.cloudSaveUser(u); document.getElementById('admin-edit-user-modal').classList.add('hidden'); showToast("Saved", `Permissions updated for ${u.name}`); }
+            if(u) { 
+                u.role = document.getElementById('admin-u-role').value; 
+                u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); 
+                window.cloudSaveUser(u); 
+                document.getElementById('admin-edit-user-modal').classList.add('hidden'); 
+                showToast("Saved", `Permissions updated for ${u.name}`);
+                logActivity('SYSTEM', 'User Role Update', `Updated access/role for ${u.username}`);
+            }
         }
 
-        // ADDED DYNAMIC PERMISSIONS RENDERER
         function renderPermissions() {
             const tb = document.getElementById('permissions-table-body'); if(!tb) return; 
             const groupId = document.getElementById('perm-group-select').value;
@@ -2350,6 +2598,7 @@
             
             window.groupPermissions[groupId][tier][field] = val; 
             window.cloudSavePermissions(groupId, window.groupPermissions[groupId]); 
+            logActivity(groupId, 'System Config', `Updated Group System Permissions Matrix`);
         }
 
         /* --- MULTI-SELECT & BULK ACTIONS --- */
@@ -2359,16 +2608,16 @@
         function bulkDelete(type) {
             let cls, action;
             if(type === 'programs') { cls = 'prog-cb'; action = window.cloudDeleteProgram; }
-            else if(type === 'tasks') { cls = 'task-cb'; action = window.cloudDeleteActiveTask; }
             else if(type === 'templates') { cls = 'tpl-cb'; action = window.cloudDeleteTemplate; }
+            else return; // activeTasks are bulk archived now, not deleted
             
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
             if(confirm(`Delete ${ids.length} selected items forever?`)) {
                 ids.forEach(id => action(id));
                 if(type==='programs') document.getElementById('selectAllProgs').checked=false;
-                if(type==='tasks') document.getElementById('selectAllTasks').checked=false;
                 if(type==='templates') document.getElementById('selectAllTpls').checked=false;
+                logActivity('SYSTEM', 'Bulk Delete', `Bulk deleted ${ids.length} items from ${type}`);
             }
         }
 
@@ -2419,6 +2668,7 @@
                         window.cloudSaveProgram(p);
                     }
                 });
+                logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} programs`);
             } else if (mode === 'tasks') {
                 ids = getSelected('task-cb');
                 const doAss = document.getElementById('be-cb-assignee').checked; const assVal = document.getElementById('be-assignee').value;
@@ -2432,6 +2682,7 @@
                         window.cloudSaveActiveTask(t);
                     }
                 });
+                logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} tasks`);
             } else if (mode === 'templates') {
                 ids = getSelected('tpl-cb');
                 const doRole = document.getElementById('be-cb-tpl-role').checked; const roleVal = document.getElementById('be-tpl-role').value;
@@ -2449,6 +2700,7 @@
                         window.cloudSaveTemplate(t);
                     }
                 });
+                logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} task profiles`);
             }
             
             closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
