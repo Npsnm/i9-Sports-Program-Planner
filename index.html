@@ -63,8 +63,11 @@
                     </div>
                 </div>
 
-                <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                <button onclick="openReportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-chart-line"></i> Custom Report
+                </button>
+                <button onclick="exportCurrentViewToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-file-excel"></i> Export View
                 </button>
                 <button onclick="logout()" class="bg-blue-900 hover:bg-blue-950 text-blue-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
                     <i class="fa-solid fa-right-from-bracket"></i> Sign Out
@@ -1032,6 +1035,40 @@
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-rose-600 text-white rounded font-bold shadow">Confirm Removal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CUSTOM REPORTING MODAL -->
+    <div id="reporting-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-chart-line text-i9gold"></i> Generate Custom Report</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="generateCustomReport(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold mb-1">Data Type</label>
+                    <select id="report-type" class="w-full p-2 border rounded bg-gray-50 font-semibold text-i9blue">
+                        <option value="tasks">Active Tasks</option>
+                        <option value="programs">Programs</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Start Date</label>
+                        <input type="date" id="report-start" required class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">End Date</label>
+                        <input type="date" id="report-end" required class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-500">The report will include all data falling within this date range (Target Date for tasks, Start Date for programs) for your authorized groups.</p>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold shadow transition"><i class="fa-solid fa-download"></i> Download CSV</button>
                 </div>
             </form>
         </div>
@@ -2951,7 +2988,148 @@
             const titleEl = document.getElementById('brand-title-display'); if(titleEl) titleEl.textContent = currentBranding.title;
             const logoImg = document.getElementById('brand-logo-img'); if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
         }
-        function exportToCSV() { alert("Exporting current active tasks view to CSV..."); }
+
+        // --- CSV DOWNLOAD UTILITY ---
+        function downloadCSV(csvContent, filename) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- CONTEXT AWARE EXPORT (CURRENT VIEW) ---
+        function exportCurrentViewToCSV() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return alert("Please log in first.");
+            
+            const agIds = getAuthorizedGroups().map(g => g.id);
+            let csv = "";
+            let filename = "";
+
+            // 1. Check if Task List is active
+            if (!document.getElementById('view-tasks').classList.contains('hidden')) {
+                filename = `Task_List_Export_${new Date().toISOString().split('T')[0]}.csv`;
+                csv = "Group ID,Program ID,Task Name,Level,Status,Target Date,Assignee,Notes,Completion Notes\n";
+                
+                const fGrp = document.getElementById('filter-task-group').value; 
+                const fPrg = document.getElementById('filter-task-program').value;
+                const fAss = document.getElementById('filter-task-assignee').value; 
+                const fSt = document.getElementById('filter-task-status').value;
+                const fLev = document.getElementById('filter-task-level').value;
+
+                activeTasks.forEach(t => {
+                    if (!agIds.includes(t.groupId)) return;
+                    if(fGrp !== 'ALL' && t.groupId !== fGrp) return; 
+                    if(fPrg !== 'ALL' && t.programId !== fPrg) return;
+                    if(currentTaskView === 'active' && t.status === 'Archived') return;
+                    if(currentTaskView === 'archived' && t.status !== 'Archived') return;
+                    if(currentTaskView === 'active' && fSt !== 'ALL' && t.status !== fSt) return;
+                    if(fLev !== 'ALL' && (t.level || 'Operational') !== fLev) return;
+                    
+                    let isUn = (!t.assignee || t.assignee.trim() === '');
+                    if (fAss === 'ME' && t.assignee !== currentUser.name) return;
+                    if (fAss === 'UNASSIGNED' && !isUn) return;
+
+                    csv += `"${t.groupId}","${t.programId}","${t.name}","${t.level || 'Operational'}","${t.status}","${t.targetDate}","${t.assignee || 'Unassigned'}","${(t.notes || '').replace(/"/g, '""')}","${(t.completionNotes || '').replace(/"/g, '""')}"\n`;
+                });
+            } 
+            // 2. Check if Programs page is active
+            else if (!document.getElementById('view-control').classList.contains('hidden')) {
+                filename = `Programs_Export_${new Date().toISOString().split('T')[0]}.csv`;
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue\n";
+                
+                const fGrp = document.getElementById('filter-prog-group').value; 
+                const fYr = document.getElementById('filter-prog-year').value;
+                const fSea = document.getElementById('filter-prog-season').value; 
+                const fTyp = document.getElementById('filter-prog-type').value;
+
+                programs.forEach(p => {
+                    if (!agIds.includes(p.groupId)) return;
+                    if(fGrp !== 'ALL' && p.groupId !== fGrp) return; 
+                    if(fYr !== 'ALL' && p.year !== fYr) return;
+                    if(fSea !== 'ALL' && p.season !== fSea) return; 
+                    if(fTyp !== 'ALL' && p.type !== fTyp) return;
+
+                    csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart}","${p.dateFinal || ''}","${p.weeks}","${p.venue || ''}"\n`;
+                });
+            }
+            // 3. Check if Task Profiles page is active
+            else if (!document.getElementById('view-templates').classList.contains('hidden')) {
+                filename = `Task_Profiles_Export_${new Date().toISOString().split('T')[0]}.csv`;
+                csv = "Group Scope,Level,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+                
+                const fGrp = document.getElementById('filter-template-group').value; 
+                const fTyp = document.getElementById('filter-template-type').value;
+
+                templates.forEach(t => {
+                    if (fGrp !== 'ALL' && t.groupId !== fGrp) return;
+                    if (fGrp === 'ALL' && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return;
+                    if (fTyp !== 'ALL' && t.type !== fTyp) return;
+
+                    csv += `"${t.groupId}","${t.level || 'Operational'}","${t.type}","${t.preHeader || ''}","${t.name}","${t.seasons.join(' ')}","${t.offsetNum}","${t.offsetDir}","${t.anchor}","${t.role || ''}"\n`;
+                });
+            } 
+            else {
+                return alert("Export is only available on the Task List, Programs, or Task Profiles tabs.");
+            }
+
+            if (csv.split("\n").length <= 1) return alert("No data matches current filters to export.");
+            downloadCSV(csv, filename);
+        }
+
+        // --- CUSTOM DATE RANGE REPORTING ---
+        function openReportModal() {
+            document.getElementById('report-start').value = '';
+            document.getElementById('report-end').value = '';
+            document.getElementById('reporting-modal').classList.remove('hidden');
+        }
+
+        function generateCustomReport(e) {
+            e.preventDefault();
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            const agIds = getAuthorizedGroups().map(g => g.id);
+            
+            const type = document.getElementById('report-type').value;
+            const startObj = new Date(document.getElementById('report-start').value + "T00:00:00");
+            const endObj = new Date(document.getElementById('report-end').value + "T23:59:59");
+            
+            let csv = "";
+            
+            if (type === 'tasks') {
+                csv = "Group ID,Task Name,Level,Status,Target Date,Assignee,Notes\n";
+                activeTasks.forEach(t => {
+                    if (!agIds.includes(t.groupId) || t.status === 'Archived' || !t.targetDate) return;
+                    const tgt = new Date(t.targetDate + "T00:00:00");
+                    if (tgt >= startObj && tgt <= endObj) {
+                        csv += `"${t.groupId}","${t.name}","${t.level || 'Operational'}","${t.status}","${t.targetDate}","${t.assignee || 'Unassigned'}","${(t.notes || '').replace(/"/g, '""')}"\n`;
+                    }
+                });
+            } else if (type === 'programs') {
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue\n";
+                programs.forEach(p => {
+                    if (!agIds.includes(p.groupId) || !p.dateStart) return;
+                    const startDate = new Date(p.dateStart + "T00:00:00");
+                    if (startDate >= startObj && startDate <= endObj) {
+                        csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart}","${p.dateFinal || ''}","${p.weeks}","${p.venue || ''}"\n`;
+                    }
+                });
+            }
+
+            closeModals();
+            
+            if (csv.split("\n").length <= 1) {
+                showToast("No Data", "No records found in that date range.");
+                return;
+            }
+            
+            downloadCSV(csv, `Custom_Report_${type}_${new Date().getTime()}.csv`);
+            showToast("Report Downloaded", "Your custom CSV report has been generated.");
+        }
     </script>
 </body>
 </html>
