@@ -1613,13 +1613,13 @@ function executePriceAdjustment(event) {
             const endYear = currentYear + 4;
             
             let yearsSet = new Set();
-            for(let y = startYear; y <= endYear; y++) yearsSet.add(y.toString());
+            for (let y = startYear; y <= endYear; y++) yearsSet.add(y.toString());
             
             if (window.programs) {
                 window.programs.forEach(p => { if (p.year) yearsSet.add(p.year.toString()); });
             }
             
-            let sortedYears = Array.from(yearsSet).sort((a,b) => parseInt(a) - parseInt(b));
+            let sortedYears = Array.from(yearsSet).sort((a, b) => parseInt(a) - parseInt(b));
             
             const yearEls = ['prog-year', 'filter-prog-year', 'be-year'];
             yearEls.forEach(id => {
@@ -1627,9 +1627,13 @@ function executePriceAdjustment(event) {
                 if (el) {
                     let prevVal = el.value;
                     let html = id === 'filter-prog-year' ? '<option value="ALL">All Years</option>' : '';
-                    sortedYears.forEach(y => { html += `<option value="${y}">${y}</option>`; });
+                    sortedYears.forEach(y => {
+                        html += `<option value="${y}">${y}</option>`;
+                    });
                     el.innerHTML = html;
-                    if (prevVal && sortedYears.includes(prevVal)) el.value = prevVal;
+                    if (prevVal && sortedYears.includes(prevVal)) {
+                        el.value = prevVal;
+                    }
                 }
             });
         }
