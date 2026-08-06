@@ -728,7 +728,167 @@
         </div>
     </div>
 
-    <!-- BRANDING MODAL (Kept hidden but functional if needed elsewhere) -->
+    <!-- PROGRAM MODAL (ADDED) -->
+    <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-calendar-days text-i9gold"></i> Add / Edit Program</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveProgram(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="prog-edit-id">
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div><label class="block font-bold mb-1">Group</label><select id="prog-group" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                    <div><label class="block font-bold mb-1">Year</label><select id="prog-year" class="w-full p-2 border rounded bg-gray-50"><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                    <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-3 rounded border border-blue-100">
+                        <label class="block font-bold mb-2">Program Type</label>
+                        <div class="flex flex-col gap-2">
+                            <label><input type="radio" name="prog-type-radio" value="League" checked onchange="updateProgPreHeaderOptions()"> League</label>
+                            <label><input type="radio" name="prog-type-radio" value="Camp" onchange="updateProgPreHeaderOptions()"> Camp</label>
+                            <label><input type="radio" name="prog-type-radio" value="Training/Clinic" onchange="updateProgPreHeaderOptions()"> Training/Clinic</label>
+                            <label><input type="radio" name="prog-type-radio" value="School" onchange="updateProgPreHeaderOptions()"> School</label>
+                        </div>
+                    </div>
+                    <div id="prog-pre-container" class="bg-gray-50 p-3 rounded border">
+                        <label class="block font-bold mb-1">Timing / Pre-Header</label>
+                        <select id="prog-pre" class="w-full p-2 border rounded bg-white"></select>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <label class="block font-bold mb-2">Milestone Tracking Level</label>
+                    <div class="flex gap-4 mb-4">
+                        <label><input type="radio" name="prog-deadline-count" value="1" onchange="updateDeadlineCount()"> 1 (Start Only)</label>
+                        <label><input type="radio" name="prog-deadline-count" value="2" onchange="updateDeadlineCount()"> 2 (Start, Final)</label>
+                        <label><input type="radio" name="prog-deadline-count" value="3" onchange="updateDeadlineCount()"> 3 (Start, Final, Early)</label>
+                        <label><input type="radio" name="prog-deadline-count" value="4" onchange="updateDeadlineCount()" checked> 4 (All Anchors)</label>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div id="prog-dl-1-container"><label class="block font-bold mb-1 text-[10px]">Start Date</label><input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-2-container"><label class="block font-bold mb-1 text-[10px]">Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-3-container"><label class="block font-bold mb-1 text-[10px]">Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-4-container"><label class="block font-bold mb-1 text-[10px]">Offseason Deadline</label><input type="date" id="prog-date-offseason" class="w-full p-2 border rounded bg-gray-50"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t pt-4">
+                    <div>
+                        <label class="block font-bold mb-1">Days of Week</label>
+                        <div class="grid grid-cols-4 gap-1 text-[10px]">
+                            <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label><label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
+                            <label><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label><label><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
+                            <label><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label><label><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
+                            <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Duration (Weeks)</label>
+                        <input type="number" id="prog-weeks" class="w-full p-2 border rounded bg-gray-50" min="1" max="52" placeholder="e.g. 7">
+                        <label class="block font-bold mb-1 mt-2">Venue / Location</label>
+                        <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Program</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TASK TEMPLATE / PROFILE MODAL (ADDED) -->
+    <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-layer-group text-i9gold"></i> Add / Edit Task Profile Rule</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="tpl-edit-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Applies to Group</label><select id="tpl-group" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                    <div><label class="block font-bold mb-1">Program Type</label><select id="tpl-type" onchange="updateTplPreHeaderOptions()" class="w-full p-2 border rounded bg-gray-50"><option value="ALL">All Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option></select></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Required Pre-Header</label><select id="tpl-preheader" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                    <div><label class="block font-bold mb-1">Task Level (Dept)</label><select id="tpl-level" class="w-full p-2 border rounded bg-gray-50"><option value="Operational">Operational</option><option value="Marketing">Marketing</option></select></div>
+                </div>
+                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="tpl-name" required class="w-full p-2 border rounded bg-gray-50"></div>
+                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="tpl-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
+                
+                <div>
+                    <label class="block font-bold mb-1">Applies to Seasons</label>
+                    <div class="flex gap-4">
+                        <label><input type="checkbox" class="tpl-season-cb" value="Spring"> Spring</label>
+                        <label><input type="checkbox" class="tpl-season-cb" value="Summer"> Summer</label>
+                        <label><input type="checkbox" class="tpl-season-cb" value="Fall"> Fall</label>
+                        <label><input type="checkbox" class="tpl-season-cb" value="Winter"> Winter</label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 border-t pt-4">
+                    <div><label class="block font-bold mb-1">Offset Days</label><input type="number" id="tpl-offset-num" required class="w-full p-2 border rounded bg-gray-50" min="0"></div>
+                    <div><label class="block font-bold mb-1">Direction</label><select id="tpl-offset-dir" class="w-full p-2 border rounded bg-gray-50"><option value="Before">Before</option><option value="After">After</option></select></div>
+                    <div><label class="block font-bold mb-1">Anchor Deadline</label><select id="tpl-anchor" class="w-full p-2 border rounded bg-gray-50"><option value="dateStart">1. Start Date</option><option value="dateFinal">2. Final Deadline</option><option value="dateEarly">3. Early Deadline</option><option value="dateOffseason">4. Offseason</option></select></div>
+                </div>
+                
+                <div><label class="block font-bold mb-1">Default Assigned Role (Text)</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Program Director, Site Coord"></div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Profile Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACTIVE TASK MODAL (ADDED) -->
+    <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue" id="active-task-title"><i class="fa-solid fa-list-check text-i9gold"></i> Add / Edit Task</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="at-edit-id">
+                <input type="hidden" id="at-is-oneoff">
+                
+                <div id="at-program-select-container" class="hidden">
+                    <label class="block font-bold mb-1">Link to Program (Optional)</label>
+                    <select id="at-program" class="w-full p-2 border rounded bg-gray-50"></select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Task Level (Dept)</label><select id="at-level" class="w-full p-2 border rounded bg-gray-50"><option value="Operational">Operational</option><option value="Marketing">Marketing</option></select></div>
+                    <div><label class="block font-bold mb-1">Status</label><select id="at-status" class="w-full p-2 border rounded bg-gray-50"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div>
+                </div>
+
+                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50"></div>
+                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="at-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div><label class="block font-bold mb-1">Assign To</label><select id="at-assignee" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                </div>
+
+                <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+                <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BRANDING MODAL -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
             <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -863,6 +1023,81 @@
         calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
         let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
+
+        // ADDED DATE FORMATTER
+        function formatTargetDate(dStr) {
+            if (!dStr) return '';
+            const parts = dStr.split('-');
+            if (parts.length !== 3) return dStr;
+            return `${parts[1]}/${parts[2]}/${parts[0]}`;
+        }
+
+        // ADDED DATE CALCULATOR
+        function calculateNewTargetDate(p, tpl) {
+            let anchorDateStr = p[tpl.anchor]; // e.g. p['dateStart']
+            if (!anchorDateStr) return '';
+            let d = new Date(anchorDateStr + "T00:00:00");
+            let offset = tpl.offsetNum || 0;
+            if (tpl.offsetDir === 'Before') offset = -offset;
+            d.setDate(d.getDate() + offset);
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        // ADDED TASK GENERATOR
+        function generateTaskPlan(progId) {
+            const p = programs.find(x => x.id === progId);
+            if (!p) return;
+            
+            let genCount = 0;
+            templates.forEach(tpl => {
+                // Match group (ALL or specific)
+                if (tpl.groupId !== 'ALL' && tpl.groupId !== p.groupId) return;
+                // Match type
+                if (tpl.type !== 'ALL' && tpl.type !== p.type) return;
+                // Match season
+                if (tpl.seasons && !tpl.seasons.includes(p.season)) return;
+                // Preheader logic
+                if (tpl.preHeader && p.preHeader && tpl.preHeader !== p.preHeader && tpl.preHeader !== 'ALL') return;
+
+                // Check if task already exists
+                const existing = activeTasks.find(t => t.programId === p.id && t.templateId === tpl.id);
+                if (existing) return;
+
+                const tDate = calculateNewTargetDate(p, tpl);
+                if (!tDate) return;
+
+                const newTask = {
+                    id: generateId('ATK'),
+                    programId: p.id,
+                    groupId: p.groupId,
+                    templateId: tpl.id,
+                    type: p.type,
+                    preHeader: p.preHeader,
+                    level: tpl.level || 'Operational',
+                    name: tpl.name,
+                    desc: tpl.desc || '',
+                    targetDate: tDate,
+                    assignee: '', 
+                    status: 'Pending',
+                    isOneOff: false,
+                    notes: '',
+                    completionNotes: ''
+                };
+                window.cloudSaveActiveTask(newTask);
+                genCount++;
+            });
+            showToast("Task Plan Generated", `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
+        }
+
+        // ADDED BRANDING SAVER
+        function saveBranding(e) {
+            e.preventDefault();
+            currentBranding.title = document.getElementById('branding-title-input').value;
+            window.cloudSaveBranding(currentBranding);
+            applyBrandingUI();
+            closeModals();
+            showToast("Branding Saved", "Theme updated successfully.");
+        }
 
         function getUSHoliday(dateObj) {
             const y = dateObj.getFullYear();
