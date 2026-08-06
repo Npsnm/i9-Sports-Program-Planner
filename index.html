@@ -29,7 +29,7 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        /* Slide Pane Transitions */
+        /* Bulk Edit Slide Pane */
         .slide-pane { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
         .slide-pane.open { transform: translateX(0); }
     </style>
@@ -357,7 +357,7 @@
                             <th class="px-4 py-3 font-bold">Group / Identity</th>
                             <th class="px-4 py-3 font-bold">Type</th>
                             <th class="px-4 py-3 font-bold">Milestone Deadlines</th>
-                            <th class="px-4 py-3 font-bold">Logistics & Base Price</th>
+                            <th class="px-4 py-3 font-bold">Logistics & Price</th>
                             <th class="px-4 py-3 font-bold text-center">Actions</th>
                         </tr>
                     </thead>
@@ -603,50 +603,6 @@
             <div class="flex justify-end gap-2 pt-2 border-t">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 rounded font-bold text-xs">Close History</button>
             </div>
-        </div>
-    </div>
-
-    <!-- PROGRAM PRICING SLIDE-OVER PANE -->
-    <div id="pricing-pane-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300"></div>
-    <div id="pricing-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col">
-        <div class="bg-i9blue text-white p-4 flex justify-between items-center">
-            <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-tags text-i9gold"></i> Milestone Pricing Schedule</h3>
-            <button onclick="closePricingPane()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
-        </div>
-        <div class="p-6 overflow-y-auto flex-grow text-xs space-y-6">
-            <p class="text-gray-500">Configure distinct pricing for each registration milestone deadline. Saving these prices automatically publishes Note Events to the Task List and Calendar.</p>
-            
-            <form id="pricing-pane-form" onsubmit="saveProgramPricingSchedule(event)" class="space-y-4">
-                <input type="hidden" id="pp-prog-id">
-                
-                <div class="bg-gray-50 p-3 rounded border border-gray-200 space-y-3">
-                    <div>
-                        <label class="font-bold block text-[10px] text-gray-700">1. Offseason Price ($)</label>
-                        <input type="number" step="0.01" id="pp-price-offseason" class="w-full p-2 border rounded bg-white" placeholder="e.g. 129.00">
-                    </div>
-                    <div>
-                        <label class="font-bold block text-[10px] text-gray-700">2. Early Deadline Price ($)</label>
-                        <input type="number" step="0.01" id="pp-price-early" class="w-full p-2 border rounded bg-white" placeholder="e.g. 149.00">
-                    </div>
-                    <div>
-                        <label class="font-bold block text-[10px] text-gray-700">3. Final Deadline Price ($)</label>
-                        <input type="number" step="0.01" id="pp-price-final" class="w-full p-2 border rounded bg-white" placeholder="e.g. 169.00">
-                    </div>
-                    <div>
-                        <label class="font-bold block text-[10px] text-gray-700">4. Late Registration Price ($)</label>
-                        <input type="number" step="0.01" id="pp-price-late" class="w-full p-2 border rounded bg-white" placeholder="e.g. 189.00">
-                    </div>
-                </div>
-
-                <div class="p-3 bg-blue-50 border border-blue-200 rounded text-blue-900 text-[10px]">
-                    <i class="fa-solid fa-circle-info text-i9blue mr-1"></i>
-                    Price updates sync as automated Note Events on target milestone dates across the calendar and task lists.
-                </div>
-            </form>
-        </div>
-        <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
-            <button onclick="closePricingPane()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
-            <button type="submit" form="pricing-pane-form" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 font-bold rounded text-xs text-white shadow">Save Pricing & Publish Notes</button>
         </div>
     </div>
 
@@ -964,7 +920,7 @@
                         <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
                     </div>
                     <div class="col-span-1 md:col-span-2">
-                        <label class="block font-bold mb-1 text-emerald-600">Base Registration Price ($)</label>
+                        <label class="block font-bold mb-1 text-emerald-600">Program Pricing ($)</label>
                         <input type="number" id="prog-price" step="0.01" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. 149.00">
                         
                         <label class="block font-bold mb-1 mt-2 text-i9blue">Bye Weeks / Skipped Dates</label>
@@ -1363,7 +1319,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "3.1.0 (Auto Logout, Tiered Pricing & Note Events)";
+        const APP_VERSION = "3.0.0 (Marketing Cats, Notes, History & Date Resync)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
@@ -1412,24 +1368,6 @@
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
         var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
-
-        // --- 30-MINUTE INACTIVITY TIMEOUT LOGIC ---
-        const INACTIVITY_LIMIT_MS = 30 * 60 * 1000; // 30 Minutes
-        let inactivityTimer = null;
-
-        function resetInactivityTimer() {
-            if (!currentUser && (!window.currentUser)) return;
-            if (inactivityTimer) clearTimeout(inactivityTimer);
-            
-            inactivityTimer = setTimeout(() => {
-                showToast("Session Expired", "Auto-logged out after 30 minutes of inactivity.");
-                logout();
-            }, INACTIVITY_LIMIT_MS);
-        }
-
-        ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
-            window.addEventListener(evt, resetInactivityTimer, { passive: true });
-        });
 
         window.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
@@ -1538,89 +1476,6 @@
                 });
             }
             document.getElementById('history-modal').classList.remove('hidden');
-        }
-
-        /* --- MILESTONE PRICING SCHEDULE SLIDE PANE --- */
-        function openPricingPane(progId) {
-            const p = programs.find(x => x.id === progId);
-            if (!p) return;
-            document.getElementById('pp-prog-id').value = p.id;
-            
-            const ps = p.pricingSchedule || {};
-            document.getElementById('pp-price-offseason').value = ps.dateOffseason || '';
-            document.getElementById('pp-price-early').value = ps.dateEarly || '';
-            document.getElementById('pp-price-final').value = ps.dateFinal || '';
-            document.getElementById('pp-price-late').value = ps.dateLate || '';
-            
-            document.getElementById('pricing-pane-overlay').classList.remove('hidden');
-            setTimeout(() => document.getElementById('pricing-pane').classList.add('open'), 10);
-        }
-
-        function closePricingPane() {
-            document.getElementById('pricing-pane').classList.remove('open');
-            setTimeout(() => document.getElementById('pricing-pane-overlay').classList.add('hidden'), 300);
-        }
-
-        function saveProgramPricingSchedule(e) {
-            e.preventDefault();
-            const progId = document.getElementById('pp-prog-id').value;
-            const p = programs.find(x => x.id === progId);
-            if (!p) return;
-
-            const ps = {
-                dateOffseason: document.getElementById('pp-price-offseason').value,
-                dateEarly: document.getElementById('pp-price-early').value,
-                dateFinal: document.getElementById('pp-price-final').value,
-                dateLate: document.getElementById('pp-price-late').value
-            };
-
-            p.pricingSchedule = ps;
-            window.cloudSaveProgram(p);
-
-            // Auto-Generate / Update Price Note Events
-            const milestoneMap = [
-                { anchorKey: 'dateOffseason', label: 'Offseason Price Increase', priceVal: ps.dateOffseason },
-                { anchorKey: 'dateEarly', label: 'Early Deadline Price Increase', priceVal: ps.dateEarly },
-                { anchorKey: 'dateFinal', label: 'Final Deadline Price Increase', priceVal: ps.dateFinal }
-            ];
-
-            let createdNoteCount = 0;
-            milestoneMap.forEach(m => {
-                if (p[m.anchorKey] && m.priceVal) {
-                    const taskName = `[Price Alert] ${p.preHeader || ''} ${p.season} ${p.type}: ${m.label} ($${m.priceVal})`;
-                    const existingNote = activeTasks.find(t => t.programId === p.id && t.isNote && t.notes === `PRICE_AUTONOTE_${m.anchorKey}`);
-
-                    if (existingNote) {
-                        existingNote.name = taskName;
-                        existingNote.targetDate = p[m.anchorKey];
-                        window.cloudSaveActiveTask(existingNote);
-                    } else {
-                        const newNoteTask = {
-                            id: generateId('ATK'),
-                            programId: p.id,
-                            groupId: p.groupId,
-                            type: p.type,
-                            preHeader: "Price Note",
-                            level: "Operational",
-                            name: taskName,
-                            desc: `Milestone price set to $${m.priceVal} effective on ${p[m.anchorKey]}`,
-                            targetDate: p[m.anchorKey],
-                            assignee: '',
-                            status: 'Pending',
-                            isOneOff: true,
-                            isNote: true,
-                            notes: `PRICE_AUTONOTE_${m.anchorKey}`,
-                            completionNotes: ''
-                        };
-                        window.cloudSaveActiveTask(newNoteTask);
-                        createdNoteCount++;
-                    }
-                }
-            });
-
-            logActivity(p.groupId, 'Pricing Schedule Saved', `Updated milestone pricing schedule for ${p.season} ${p.type}`, p.id);
-            showToast("Pricing Schedule Updated", `Saved prices & published ${createdNoteCount} new Note Event(s).`);
-            closePricingPane();
         }
 
         function generateTaskPlan(progId, targetLevel) {
@@ -1901,7 +1756,6 @@
         async function loginWithGoogle() { try { await window.signInWithGoogle(); showToast("Success", "Verifying Google Account..."); } catch (error) { showError(error.message); } }
         
         async function logout() {
-            if (inactivityTimer) clearTimeout(inactivityTimer);
             try { if (window.signOut) await window.signOut(); } catch (e) { console.error("Sign out error:", e); }
             currentUser = null; window.currentUser = null;
             const overlay = document.getElementById('auth-overlay');
@@ -1918,7 +1772,6 @@
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
             populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
-            resetInactivityTimer();
         }
 
         function checkPendingAlerts() {
@@ -2499,7 +2352,7 @@
                     byeDisplay = `<br><span class="text-amber-600 font-bold">Skips: ${formattedDates}</span>`;
                 }
 
-                const priceDisplay = p.price ? `<span class="text-emerald-700 font-bold">$${p.price}</span>` : '<span class="text-gray-400 italic">No Base Price</span>';
+                const priceDisplay = p.price ? `<span class="text-emerald-700 font-bold">$${p.price}</span>` : '<span class="text-gray-400 italic">No Price</span>';
 
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
@@ -2518,7 +2371,6 @@
                                 <button onclick="generateTaskPlan('${p.id}', 'Operational')" class="text-[9px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-gears"></i> Gen Ops</button>
                                 <button onclick="generateTaskPlan('${p.id}', 'Marketing')" class="text-[9px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-bullhorn"></i> Gen Mktg</button>
                             </div>
-                            <button onclick="openPricingPane('${p.id}')" class="text-emerald-600 hover:text-emerald-800 mx-1" title="Milestone Pricing Schedule"><i class="fa-solid fa-tags"></i></button>
                             <button onclick="syncProgramTasks('${p.id}')" class="text-indigo-500 hover:text-indigo-700 mx-1" title="Sync Task Dates"><i class="fa-solid fa-rotate"></i></button>
                             <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
@@ -3590,4 +3442,102 @@
 
         // --- TWO-STEP CSV IMPORT LOGIC ---
 
-        function openImportI seem to be encountering an error. Can I try something else for you?
+        function openImportModal(type) {
+            document.getElementById('import-type').value = type;
+            document.getElementById('import-file-input').value = ''; 
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function downloadImportTemplate() {
+            const type = document.getElementById('import-type').value;
+            let csv = "";
+            let filename = "";
+
+            if (type === 'programs') {
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n";
+                filename = "Program_Import_Template.csv";
+            } else if (type === 'templates') {
+                csv = "Group Scope,Level,Marketing Category,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+                filename = "Task_Profile_Import_Template.csv";
+            }
+
+            downloadCSV(csv, filename);
+            showToast("Template Downloaded", "Fill this out and upload it in Step 2.");
+        }
+
+        function executeImport() {
+            const type = document.getElementById('import-type').value;
+            const fileInput = document.getElementById('import-file-input');
+            const file = fileInput.files[0];
+
+            if (!file) return alert("Please select a file to import in Step 2.");
+            if (file.size > 5 * 1024 * 1024) return alert("File is too large. Please upload a CSV smaller than 5MB.");
+
+            showToast("Importing", "Parsing file data...");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const rows = text.split(/\r?\n/);
+                let importCount = 0;
+                
+                for (let i = 1; i < rows.length; i++) {
+                    if (!rows[i] || rows[i].trim() === '') continue; 
+                    
+                    const cols = rows[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    const cleanCols = cols.map(col => col.replace(/^"|"$/g, '').trim());
+                    
+                    if (type === 'programs') {
+                        const newProg = {
+                            id: generateId('PRG'),
+                            groupId: cleanCols[0],
+                            preHeader: cleanCols[1] || '',
+                            year: cleanCols[2],
+                            season: cleanCols[3],
+                            type: cleanCols[4],
+                            dateStart: cleanCols[5] || '',
+                            dateFinal: cleanCols[6] || '',
+                            weeks: cleanCols[7] || '',
+                            venue: cleanCols[8] || '',
+                            price: cleanCols[9] || '',
+                            deadlineCount: 4,
+                            days: '',
+                            byeDates: [],
+                            secStartDates: []
+                        };
+                        window.cloudSaveProgram(newProg);
+                        importCount++;
+                    } else if (type === 'templates') {
+                        const newTpl = {
+                            id: generateId('TPL'),
+                            groupId: cleanCols[0],
+                            level: cleanCols[1] || 'Operational',
+                            marketingCategory: cleanCols[2] || '',
+                            type: cleanCols[3],
+                            preHeader: cleanCols[4] || '',
+                            name: cleanCols[5],
+                            seasons: cleanCols[6] ? cleanCols[6].split(' ') : [],
+                            offsetNum: parseInt(cleanCols[7]) || 0,
+                            offsetDir: cleanCols[8] || 'Before',
+                            anchor: cleanCols[9] || 'dateStart',
+                            role: cleanCols[10] || ''
+                        };
+                        window.cloudSaveTemplate(newTpl);
+                        importCount++;
+                    }
+                }
+                
+                logActivity('SYSTEM', 'Data Import', `Imported ${importCount} new ${type} from CSV.`);
+                showToast("Import Complete", `Successfully imported ${importCount} items.`);
+                closeModals();
+            };
+            
+            reader.onerror = function() {
+                alert("Failed to read file! Please check the file and try again.");
+            };
+            
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
