@@ -91,7 +91,7 @@
             <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-layer-group"></i> Task Profiles
             </button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden permission-manage-groups">
+            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden">
                 <i class="fa-solid fa-users-gear"></i> Admin Dashboard
                 <span id="admin-alert-badge" class="absolute -top-1 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
             </button>
@@ -169,6 +169,9 @@
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
                         <select id="filter-task-program" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2"><option value="ALL">All Programs</option></select>
+                        <select id="filter-task-level" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold text-i9blue">
+                            <option value="ALL">All Levels</option><option value="Operational">Operational Tasks</option><option value="Marketing">Marketing Tasks</option>
+                        </select>
                         <select id="filter-task-assignee" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
                             <option value="ALL">All Assignees</option><option value="ME">Assigned to Me</option><option value="UNASSIGNED">🚨 Missing Assignment</option>
                         </select>
@@ -193,9 +196,11 @@
                         <tr>
                             <th class="px-3 py-3 w-10 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
                             <th class="px-3 py-3 font-bold">Program Link</th>
+                            <th class="px-3 py-3 font-bold">Level</th>
                             <th class="px-3 py-3 font-bold">Task Name</th>
                             <th class="px-3 py-3 font-bold">Target Date</th>
                             <th class="px-3 py-3 font-bold">Assigned To</th>
+                            <th class="px-3 py-3 font-bold">Notes</th>
                             <th class="px-3 py-3 font-bold">Status Update</th>
                             <th class="px-3 py-3 text-center font-bold">Actions</th>
                         </tr>
@@ -302,6 +307,7 @@
                         <tr>
                             <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllTpls" onchange="toggleSelectAll('tpl-cb', this.checked)"></th>
                             <th class="px-4 py-3 font-bold">Group Scope</th>
+                            <th class="px-4 py-3 font-bold">Level</th>
                             <th class="px-4 py-3 font-bold">Type & Pre-Header</th>
                             <th class="px-4 py-3 font-bold">Task Name</th>
                             <th class="px-4 py-3 font-bold">Seasons</th>
@@ -708,8 +714,20 @@
                     <div><label class="block font-bold mb-1">Program Type</label><select id="tpl-type" required onchange="updateTplPreHeaderOptions()" class="w-full p-2 border rounded bg-gray-50 font-semibold"><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option></select></div>
                     <div><label class="block font-bold mb-1">Pre-Header (Optional)</label><select id="tpl-preheader" class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
                 </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Task Level</label>
+                        <select id="tpl-level" required class="w-full p-2 border rounded bg-gray-50 font-semibold text-i9blue">
+                            <option value="Operational">Operational</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                    <div><label class="block font-bold mb-1">Default Assignee Role</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50 placeholder-gray-400" placeholder="(Optional)"></div>
+                </div>
+
                 <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="tpl-name" required class="w-full p-2 border rounded bg-gray-50"></div>
                 <div><label class="block font-bold mb-1">Description (Optional)</label><textarea id="tpl-desc" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+                
                 <div>
                     <label class="block font-bold mb-1">Applicable Seasons</label>
                     <div class="flex gap-3 text-[11px] p-2 bg-gray-50 border rounded">
@@ -719,6 +737,7 @@
                         <label><input type="checkbox" class="tpl-season-cb" value="Winter" checked> Winter</label>
                     </div>
                 </div>
+                
                 <div class="grid grid-cols-3 gap-2 border-t pt-3 mt-3">
                     <div><label class="block font-bold mb-1 text-[10px]">Offset (Days)</label><input type="number" id="tpl-offset-num" min="0" required class="w-full p-2 border rounded bg-gray-50"></div>
                     <div><label class="block font-bold mb-1 text-[10px]">Direction</label><select id="tpl-offset-dir" class="w-full p-2 border rounded bg-gray-50"><option value="Before">Before</option><option value="After">After</option></select></div>
@@ -732,7 +751,7 @@
                         </select>
                     </div>
                 </div>
-                <div><label class="block font-bold mb-1">Default Assignee Role (Optional)</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50"></div>
+                
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button>
                     <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Profile Rule</button>
@@ -741,22 +760,46 @@
         </div>
     </div>
 
+    <!-- ACTIVE TASK EDIT MODAL -->
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <h3 class="text-sm font-bold text-i9blue" id="active-task-title">Edit Assigned Task</h3>
             <form onsubmit="saveActiveTask(event)" class="space-y-3 text-xs">
                 <input type="hidden" id="at-edit-id"> <input type="hidden" id="at-is-oneoff" value="false">
-                <div id="at-program-select-container" class="hidden"><label class="block font-bold mb-1 text-emerald-700">Link to Program</label><select id="at-program" class="w-full p-2 border rounded bg-emerald-50"></select></div>
-                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50"></div>
+                
+                <div id="at-program-select-container" class="hidden">
+                    <label class="block font-bold mb-1 text-emerald-700">Link to Program</label>
+                    <select id="at-program" class="w-full p-2 border rounded bg-emerald-50"></select>
+                </div>
+                
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div>
+                        <label class="block font-bold mb-1">Task Level</label>
+                        <select id="at-level" class="w-full p-2 border rounded bg-gray-50 font-semibold text-i9blue">
+                            <option value="Operational">Operational</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
                     <div><label class="block font-bold mb-1">Assignee</label><select id="at-assignee" class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
                 </div>
-                <div class="flex justify-end gap-2 pt-2 border-t"><button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button><button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold">Save</button></div>
+
+                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50"></div>
+                <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
+                
+                <div>
+                    <label class="block font-bold mb-1">Task Notes / History</label>
+                    <textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-16 placeholder-gray-400" placeholder="Add operational or marketing notes here..."></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold">Save Changes</button>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- BRANDING MODAL -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
             <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -885,7 +928,7 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "1.7.1 (Settings Restructure)";
+        const APP_VERSION = "1.8.0 (Operational vs Marketing Roles)";
         
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1165,10 +1208,38 @@
 
             programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
                 const pTasks = activeTasks.filter(t => t.programId === p.id);
-                const pTot = pTasks.length; const pComp = pTasks.filter(t => t.status === "Complete").length;
-                const pct = pTot > 0 ? Math.round((pComp/pTot)*100) : 0;
+                const pOpTasks = pTasks.filter(t => t.level === 'Operational' || !t.level);
+                const pMktTasks = pTasks.filter(t => t.level === 'Marketing');
 
-                if(dashProg) { dashProg.innerHTML += `<div class="mb-3"><div class="flex justify-between text-[11px] font-bold mb-1 text-gray-700"><span>[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</span><span class="text-i9blue">${pComp}/${pTot} (${pct}%)</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-i9blue h-2 rounded-full" style="width: ${pct}%"></div></div></div>`; }
+                const pTotOp = pOpTasks.length; const pCompOp = pOpTasks.filter(t => t.status === "Complete").length;
+                const pTotMkt = pMktTasks.length; const pCompMkt = pMktTasks.filter(t => t.status === "Complete").length;
+
+                const pctOp = pTotOp > 0 ? Math.round((pCompOp/pTotOp)*100) : 0;
+                const pctMkt = pTotMkt > 0 ? Math.round((pCompMkt/pTotMkt)*100) : 0;
+
+                if(dashProg) { 
+                    dashProg.innerHTML += `
+                    <div class="mb-4 bg-gray-50 border p-3 rounded">
+                        <h4 class="text-[11px] font-bold text-gray-800 mb-2 border-b pb-1">[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</h4>
+                        
+                        <div class="mb-2">
+                            <div class="flex justify-between text-[10px] font-bold mb-1 text-gray-600">
+                                <span><i class="fa-solid fa-gears text-i9blue mr-1"></i> Operational Execution</span>
+                                <span class="text-i9blue">${pCompOp}/${pTotOp} (${pctOp}%)</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-i9blue h-1.5 rounded-full" style="width: ${pctOp}%"></div></div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold mb-1 text-gray-600">
+                                <span><i class="fa-solid fa-bullhorn text-emerald-600 mr-1"></i> Marketing Execution</span>
+                                <span class="text-emerald-600">${pCompMkt}/${pTotMkt} (${pctMkt}%)</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${pctMkt}%"></div></div>
+                        </div>
+                    </div>`; 
+                }
+                
                 pTasks.forEach(t => {
                     tot++; if (t.status === "Complete") comp++;
                     else {
@@ -1342,10 +1413,13 @@
                 return true;
             }).forEach(t => {
                 const grpDisplay = t.groupId === 'ALL' ? '<span class="text-i9blue font-bold">ALL (Network)</span>' : `<span class="text-gray-800 font-bold">${t.groupId}</span>`;
+                const levelDisplay = t.level === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px]">Marketing</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px]">Operational</span>`;
+                
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2 text-center"><input type="checkbox" class="tpl-cb" value="${t.id}"></td>
                         <td class="px-4 py-2 text-[11px]">${grpDisplay}</td>
+                        <td class="px-4 py-2 font-bold text-gray-800">${levelDisplay}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${t.type}${t.preHeader ? `<br><span class="text-gray-500 font-normal">${t.preHeader}</span>` : ''}</td>
                         <td class="px-4 py-2 text-i9blue font-medium">${t.name}</td>
                         <td class="px-4 py-2 text-[10px] text-gray-500">${t.seasons.join(', ')}</td>
@@ -1370,6 +1444,7 @@
             document.getElementById('tpl-offset-num').value = '0';
             document.getElementById('tpl-role').value = '';
             document.getElementById('tpl-group').value = 'ALL';
+            document.getElementById('tpl-level').value = 'Operational';
             
             updateTplPreHeaderOptions();
             document.getElementById('template-modal').classList.remove('hidden'); 
@@ -1381,6 +1456,7 @@
             document.getElementById('tpl-group').value = t.groupId || 'ALL';
             document.getElementById('tpl-type').value = t.type; updateTplPreHeaderOptions(); 
             document.getElementById('tpl-preheader').value = t.preHeader || '';
+            document.getElementById('tpl-level').value = t.level || 'Operational';
             document.getElementById('tpl-name').value = t.name; document.getElementById('tpl-desc').value = t.desc || '';
             document.querySelectorAll('.tpl-season-cb').forEach(cb => cb.checked = t.seasons.includes(cb.value));
             document.getElementById('tpl-offset-num').value = t.offsetNum; document.getElementById('tpl-offset-dir').value = t.offsetDir;
@@ -1396,8 +1472,9 @@
             const seasons = Array.from(document.querySelectorAll('.tpl-season-cb:checked')).map(cb=>cb.value);
             const t = {
                 id: id, groupId: document.getElementById('tpl-group').value, type: document.getElementById('tpl-type').value, 
-                preHeader: document.getElementById('tpl-preheader').value, name: document.getElementById('tpl-name').value, 
-                desc: document.getElementById('tpl-desc').value, seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
+                preHeader: document.getElementById('tpl-preheader').value, level: document.getElementById('tpl-level').value,
+                name: document.getElementById('tpl-name').value, desc: document.getElementById('tpl-desc').value, 
+                seasons: seasons, offsetNum: parseInt(document.getElementById('tpl-offset-num').value), 
                 offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value.trim()
             };
             window.cloudSaveTemplate(t); closeModals(); showToast("Task Profile Saved", "Master list updated.");
@@ -1436,7 +1513,7 @@
                 if(tgt !== "TBD") {
                     window.cloudSaveActiveTask({
                         id: generateId('ATK'), programId: p.id, templateId: t.id, groupId: p.groupId, type: p.type,
-                        preHeader: t.preHeader || '', name: t.name, desc: t.desc || '', assignee: "", defaultRole: t.role || '', targetDate: tgt, status: "Pending", isOneOff: false
+                        preHeader: t.preHeader || '', level: t.level || 'Operational', name: t.name, desc: t.desc || '', assignee: "", defaultRole: t.role || '', targetDate: tgt, status: "Pending", isOneOff: false, notes: ""
                     });
                     count++;
                 }
@@ -1455,12 +1532,16 @@
 
             const fGrp = document.getElementById('filter-task-group').value; const fPrg = document.getElementById('filter-task-program').value;
             const fAss = document.getElementById('filter-task-assignee').value; const fSt = document.getElementById('filter-task-status').value;
+            const fLev = document.getElementById('filter-task-level').value;
             
             activeTasks.forEach(t => {
                 if (!agIds.includes(t.groupId)) return;
                 if(fGrp !== 'ALL' && t.groupId !== fGrp) return; if(fPrg !== 'ALL' && t.programId !== fPrg) return;
                 if(fSt !== 'ALL' && t.status !== fSt) return;
                 
+                const taskLevel = t.level || 'Operational';
+                if(fLev !== 'ALL' && taskLevel !== fLev) return;
+
                 let isUn = (!t.assignee || t.assignee.trim() === '');
                 if (fAss === 'ME' && t.assignee !== currentUser.name) return;
                 if (fAss === 'UNASSIGNED' && !isUn) return;
@@ -1468,19 +1549,25 @@
                 const p = programs.find(x => x.id === t.programId);
                 const pName = p ? `[${p.groupId}] ${p.preHeader} ${p.season}` : 'Unknown';
 
+                const levelBadge = taskLevel === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
+
                 const today = new Date(); today.setHours(0,0,0,0);
                 const tgt = new Date(t.targetDate + "T00:00:00");
                 let stHTML = `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-[10px]">Upcoming</span>`;
                 if (t.status === "Complete") stHTML = `<span class="bg-gray-200 text-gray-500 line-through px-2 py-1 rounded text-[10px]">Complete</span>`;
                 else if (today > tgt) stHTML = `<span class="bg-rose-100 text-rose-700 font-bold border border-rose-200 px-2 py-1 rounded text-[10px]">OVERDUE</span>`;
 
+                const notesDisplay = t.notes && t.notes.trim() !== '' ? `<div class="text-[10px] text-gray-500 italic max-w-xs truncate cursor-help" title="${t.notes.replace(/"/g, '&quot;')}"><i class="fa-regular fa-comment-dots text-i9blue"></i> ${t.notes}</div>` : `<span class="text-gray-300 text-[10px]">-</span>`;
+
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
                         <td class="px-3 py-2 font-bold text-i9blue text-[11px]">${pName}</td>
+                        <td class="px-3 py-2">${levelBadge}</td>
                         <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name}</td>
                         <td class="px-3 py-2 font-mono font-bold text-gray-700">${t.targetDate}</td>
                         <td class="px-3 py-2">${isUn ? `<span class="text-rose-500 font-bold text-[10px]"><i class="fa-solid fa-circle-exclamation"></i> UNASSIGNED</span>` : `<span class="text-emerald-700 font-bold text-[11px]">${t.assignee}</span>`}</td>
+                        <td class="px-3 py-2">${notesDisplay}</td>
                         <td class="px-3 py-2 whitespace-nowrap">
                             ${stHTML}
                             <select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none">
@@ -1500,12 +1587,13 @@
         function updateActiveTaskStatus(id, st) { const t = activeTasks.find(x => x.id === id); if(t) { t.status = st; window.cloudSaveActiveTask(t); } }
         
         function openAddOneOffTaskModal() { 
-            // Crucial fix: Clear hidden ID value out and fields so it correctly creates a new entry instead of overwriting a blank ID
             document.getElementById('at-edit-id').value = ''; 
             document.getElementById('at-is-oneoff').value = 'true'; 
+            document.getElementById('at-level').value = 'Operational';
             document.getElementById('at-name').value = ''; 
             document.getElementById('at-date').value = ''; 
             document.getElementById('at-assignee').value = ''; 
+            document.getElementById('at-notes').value = ''; 
             
             document.getElementById('at-program-select-container').classList.remove('hidden'); 
             document.getElementById('active-task-title').textContent = "Add One-Off Task"; 
@@ -1516,7 +1604,9 @@
             const t = activeTasks.find(x => x.id === id); if(!t) return;
             document.getElementById('at-edit-id').value = t.id; document.getElementById('at-is-oneoff').value = t.isOneOff.toString();
             document.getElementById('at-program-select-container').classList.add('hidden');
+            document.getElementById('at-level').value = t.level || 'Operational';
             document.getElementById('at-name').value = t.name; document.getElementById('at-date').value = t.targetDate; document.getElementById('at-assignee').value = t.assignee || '';
+            document.getElementById('at-notes').value = t.notes || '';
             document.getElementById('active-task-title').textContent = "Edit Assigned Task"; document.getElementById('active-task-modal').classList.remove('hidden');
         }
         
@@ -1524,11 +1614,18 @@
             e.preventDefault(); const id = document.getElementById('at-edit-id').value; const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
             if(id) {
                 const t = activeTasks.find(x => x.id === id);
-                if(t) { t.name = document.getElementById('at-name').value.trim(); t.targetDate = document.getElementById('at-date').value; t.assignee = document.getElementById('at-assignee').value.trim(); window.cloudSaveActiveTask(t); }
+                if(t) { 
+                    t.level = document.getElementById('at-level').value;
+                    t.name = document.getElementById('at-name').value.trim(); 
+                    t.targetDate = document.getElementById('at-date').value; 
+                    t.assignee = document.getElementById('at-assignee').value.trim(); 
+                    t.notes = document.getElementById('at-notes').value.trim();
+                    window.cloudSaveActiveTask(t); 
+                }
             } else if (isOneOff) {
                 const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
                 if(p) {
-                    window.cloudSaveActiveTask({ id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", name: document.getElementById('at-name').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), defaultRole: "Custom", targetDate: document.getElementById('at-date').value, status: "Pending", isOneOff: true });
+                    window.cloudSaveActiveTask({ id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", level: document.getElementById('at-level').value, name: document.getElementById('at-name').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), defaultRole: "Custom", targetDate: document.getElementById('at-date').value, status: "Pending", isOneOff: true, notes: document.getElementById('at-notes').value.trim() });
                 }
             }
             closeModals();
