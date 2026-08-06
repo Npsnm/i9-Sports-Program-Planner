@@ -106,7 +106,6 @@
 
         <!-- TAB 1: HOME DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
-            <!-- Clickable KPI Bar -->
             <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <button onclick="setDashboardFilter('active')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
@@ -178,17 +177,14 @@
         <!-- TAB 2: CALENDAR VIEW -->
         <section id="view-calendar" class="tab-view hidden space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
-                <!-- Top Row: Title -->
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-regular fa-calendar text-i9gold"></i> Task Calendar</h2>
-                        <p class="text-xs text-gray-500">Visual overview of upcoming operational and marketing tasks.</p>
+                        <p class="text-xs text-gray-500">Visual overview of upcoming operational and marketing tasks. Click a day to quick-add a task.</p>
                     </div>
                 </div>
 
-                <!-- Middle Row: View & Standard Dropdown Filters -->
                 <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
-                    <!-- 3-Part Oval Segmented Control -->
                     <div class="inline-flex bg-gray-100 p-1 rounded-full border border-gray-200 shadow-inner relative">
                         <input type="radio" name="cal-view-type" id="view-month" value="month" class="hidden peer/month" checked onchange="renderCalendar()">
                         <label for="view-month" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/month:bg-white peer-checked/month:text-i9blue peer-checked/month:shadow z-10">Month</label>
@@ -200,7 +196,6 @@
                         <label for="view-day" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/day:bg-white peer-checked/day:text-i9blue peer-checked/day:shadow z-10">Day</label>
                     </div>
 
-                    <!-- Filter Options -->
                     <select id="filter-cal-group" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
                         <option value="ALL">All Authorized Groups</option>
                     </select>
@@ -213,9 +208,7 @@
                     </select>
                 </div>
 
-                <!-- Bottom Row: Clickable Legend Filters AND Date Navigation -->
                 <div class="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-3">
-                    <!-- Legend Filters -->
                     <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-600" id="calendar-legend-filters">
                         <button onclick="toggleCalFilter('milestones')" id="cal-filt-milestones" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
                             <div class="w-3.5 h-3.5 bg-indigo-100 border border-indigo-400 rounded-full"></div> Milestones
@@ -237,7 +230,6 @@
                         </button>
                     </div>
                     
-                    <!-- Date Controls Moved Here -->
                     <div class="flex items-center gap-2">
                         <button onclick="goToToday()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
                         <button onclick="changeCalendarDate(-1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-left"></i></button>
@@ -269,7 +261,6 @@
                     </button>
                 </div>
 
-                <!-- ADDED TOGGLE FOR ACTIVE VS ARCHIVED -->
                 <div class="flex gap-2 text-xs font-bold mb-2">
                     <button onclick="setTaskView('active')" id="btn-tasks-active" class="px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition">Active Tasks</button>
                     <button onclick="setTaskView('archived')" id="btn-tasks-archived" class="px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition">Archived / Removed</button>
@@ -293,7 +284,6 @@
                         <button onclick="bulkEditOpen('tasks')" id="btn-task-bulk-edit" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <!-- MODIFIED: Changed from Bulk Delete to Bulk Archive -->
                         <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                             <i class="fa-solid fa-box-archive"></i> Archive Selected
                         </button>
@@ -355,8 +345,7 @@
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllProgs" onchange="toggleSelectAll('prog-cb', this.checked)"></th>
-                            <th class="px-4 py-3 font-bold">Group</th>
-                            <th class="px-4 py-3 font-bold">Identity</th>
+                            <th class="px-4 py-3 font-bold">Group / Identity</th>
                             <th class="px-4 py-3 font-bold">Type</th>
                             <th class="px-4 py-3 font-bold">Milestone Deadlines</th>
                             <th class="px-4 py-3 font-bold">Logistics</th>
@@ -409,8 +398,7 @@
                             <th class="px-4 py-3 w-10 text-center"><input type="checkbox" id="selectAllTpls" onchange="toggleSelectAll('tpl-cb', this.checked)"></th>
                             <th class="px-4 py-3 font-bold">Group Scope</th>
                             <th class="px-4 py-3 font-bold">Level</th>
-                            <th class="px-4 py-3 font-bold">Type & Pre-Header</th>
-                            <th class="px-4 py-3 font-bold">Task Name</th>
+                            <th class="px-4 py-3 font-bold">Type & Name</th>
                             <th class="px-4 py-3 font-bold">Seasons</th>
                             <th class="px-4 py-3 font-bold">Offset Rule</th>
                             <th class="px-4 py-3 font-bold">Default Role</th>
@@ -422,7 +410,7 @@
             </div>
         </section>
 
-        <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) - FIXED VISIBILITY BLEED -->
+        <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) -->
         <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
@@ -488,7 +476,6 @@
                     </div>
                 </div>
 
-                <!-- ADDED SYSTEM ACTIVITY LOG -->
                 <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-2">
                     <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
                         <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-i9blue"></i> System Activity & Audit Log</h4>
@@ -606,7 +593,14 @@
 
                 <!-- Task Bulk Edit Fields -->
                 <div id="bulk-edit-tasks-fields" class="hidden space-y-4">
-                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-assignee"><div class="flex-grow"><label class="font-bold block text-[10px]">Assignee</label><select id="be-assignee" class="w-full p-1.5 border rounded"></select></div></div>
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border">
+                        <input type="checkbox" id="be-cb-assignee">
+                        <div class="flex-grow">
+                            <label class="font-bold block text-[10px]">Assignee</label>
+                            <select id="be-assignee" class="w-full p-1.5 border rounded" onchange="if(this.value==='CUSTOM') document.getElementById('be-assignee-custom').classList.remove('hidden'); else document.getElementById('be-assignee-custom').classList.add('hidden');"></select>
+                            <input type="text" id="be-assignee-custom" class="w-full p-1.5 border rounded mt-1 hidden" placeholder="Type external name...">
+                        </div>
+                    </div>
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-status"><div class="flex-grow"><label class="font-bold block text-[10px]">Status</label><select id="be-status" class="w-full p-1.5 border rounded"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div></div>
                     <div class="flex items-center gap-3 bg-gray-50 p-2 rounded border"><input type="checkbox" id="be-cb-date"><div class="flex-grow"><label class="font-bold block text-[10px]">Target Date</label><input type="date" id="be-date" class="w-full p-1.5 border rounded"></div></div>
                 </div>
@@ -803,14 +797,19 @@
                         <label><input type="radio" name="prog-deadline-count" value="4" onchange="updateDeadlineCount()" checked> 4 (All Anchors)</label>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div id="prog-dl-1-container"><label class="block font-bold mb-1 text-[10px]">Start Date</label><input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50"></div>
+                        <div id="prog-dl-1-container">
+                            <label class="block font-bold mb-1 text-[10px]">Start Date</label>
+                            <input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50">
+                            <!-- ADDED: Optional Secondary Start Date -->
+                            <div class="mt-2"><label class="block font-bold mb-1 text-[10px] text-gray-500">Secondary Start Date (Optional)</label><input type="date" id="prog-date-start-2" class="w-full p-1.5 border rounded bg-gray-50" title="Use if program starts on multiple days (e.g. Sat & Sun)"></div>
+                        </div>
                         <div id="prog-dl-2-container"><label class="block font-bold mb-1 text-[10px]">Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
                         <div id="prog-dl-3-container"><label class="block font-bold mb-1 text-[10px]">Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
                         <div id="prog-dl-4-container"><label class="block font-bold mb-1 text-[10px]">Offseason Deadline</label><input type="date" id="prog-date-offseason" class="w-full p-2 border rounded bg-gray-50"></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4 border-t pt-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
                     <div class="col-span-1">
                         <label class="block font-bold mb-1">Days of Week</label>
                         <div class="grid grid-cols-4 gap-1 text-[10px]">
@@ -823,12 +822,24 @@
                     <div class="col-span-1">
                         <label class="block font-bold mb-1">Duration (Weeks)</label>
                         <input type="number" id="prog-weeks" class="w-full p-2 border rounded bg-gray-50" min="1" max="52" placeholder="e.g. 7">
-                        <label class="block font-bold mb-1 mt-2">Bye Week Date (Optional)</label>
-                        <input type="date" id="prog-bye-week" class="w-full p-2 border rounded bg-gray-50" title="Select a date representing the week off">
-                    </div>
-                    <div class="col-span-1">
-                        <label class="block font-bold mb-1">Venue / Location</label>
+                        <label class="block font-bold mb-1 mt-2">Venue / Location</label>
                         <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
+                    </div>
+                    <div class="col-span-1 md:col-span-3">
+                        <label class="block font-bold mb-1 text-i9blue">Bye Weeks / Skipped Dates</label>
+                        <div class="flex gap-4 mb-2 text-[10px]">
+                            <label><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
+                            <label><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
+                            <label><input type="radio" name="prog-bye-count" value="2" onchange="updateByeCount()"> 2</label>
+                            <label><input type="radio" name="prog-bye-count" value="3" onchange="updateByeCount()"> 3</label>
+                            <label><input type="radio" name="prog-bye-count" value="4" onchange="updateByeCount()"> 4</label>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 hidden" id="bye-weeks-container">
+                            <input type="date" id="prog-bye-1" class="w-full p-2 border rounded bg-gray-50 hidden">
+                            <input type="date" id="prog-bye-2" class="w-full p-2 border rounded bg-gray-50 hidden">
+                            <input type="date" id="prog-bye-3" class="w-full p-2 border rounded bg-gray-50 hidden">
+                            <input type="date" id="prog-bye-4" class="w-full p-2 border rounded bg-gray-50 hidden">
+                        </div>
                     </div>
                 </div>
 
@@ -912,7 +923,11 @@
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Assign To</label><select id="at-assignee" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                    <div>
+                        <label class="block font-bold mb-1">Assign To</label>
+                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50" onchange="if(this.value==='CUSTOM') document.getElementById('at-assignee-custom').classList.remove('hidden'); else document.getElementById('at-assignee-custom').classList.add('hidden');"></select>
+                        <input type="text" id="at-assignee-custom" class="w-full p-2 border rounded bg-gray-50 mt-1 hidden" placeholder="Enter custom / external name...">
+                    </div>
                 </div>
 
                 <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
@@ -926,7 +941,7 @@
         </div>
     </div>
 
-    <!-- ARCHIVE TASK MODAL (ADDED) -->
+    <!-- ARCHIVE TASK MODAL -->
     <div id="archive-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -947,8 +962,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block font-bold mb-1">Removal Notes / Details</label>
-                    <textarea id="archive-notes" required class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Please provide specific details..."></textarea>
+                    <label class="block font-bold mb-1">Removal Notes / Details (Optional)</label>
+                    <textarea id="archive-notes" class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Provide any optional details..."></textarea>
                 </div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
@@ -1050,6 +1065,15 @@
                 }
             });
 
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
+                window.activityLogs = snap.docs.map(d => d.data());
+                window.renderActivityLog();
+                // Re-render tables so the embedded "Last Edited" logic updates inline
+                if(document.getElementById('view-control').classList.contains('hidden') === false) window.renderControlCenter();
+                if(document.getElementById('view-tasks').classList.contains('hidden') === false) window.renderActiveTasks();
+                if(document.getElementById('view-templates').classList.contains('hidden') === false) window.renderTemplates();
+            });
+
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
                 window.programs = snap.docs.map(d => d.data());
                 window.populateYearDropdowns(); window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
@@ -1063,12 +1087,6 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
                 window.activeTasks = snap.docs.map(d => d.data());
                 window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
-            });
-
-            // ADDED: Activity Log Snapshot Sync
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
-                window.activityLogs = snap.docs.map(d => d.data());
-                window.renderActivityLog();
             });
 
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
@@ -1095,12 +1113,12 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.6.0 (Archiving & Audit Trails)";
+        const APP_VERSION = "2.7.0 (Custom Assignees & Date Skips)";
         
         let calendarDate = new Date();
         calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
-        let currentTaskView = 'active'; // ADDED toggling for active/archived tasks
+        let currentTaskView = 'active'; 
         let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
 
         function formatTargetDate(dStr) {
@@ -1120,13 +1138,13 @@
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
 
-        // ADDED SYSTEM ACTIVITY LOGGER
         window.activityLogs = [];
-        function logActivity(groupId, action, details) {
+        function logActivity(groupId, action, details, itemId = null) {
             if(!currentUser) return;
             const log = {
                 id: generateId('LOG'),
                 groupId: groupId || 'SYSTEM',
+                itemId: itemId,
                 userName: currentUser.name,
                 userEmail: currentUser.username,
                 action: action,
@@ -1136,7 +1154,17 @@
             window.cloudSave('activity_logs', log.id, log);
         }
 
-        // RENDER ACTIVITY LOG FOR ADMINS
+        // Inline latest log fetcher
+        function getRecentLogHTML(itemId) {
+            if(!window.activityLogs) return '';
+            const logs = window.activityLogs.filter(l => l.itemId === itemId).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            if(logs.length > 0) {
+                const lg = logs[0];
+                return `<div class="text-[9px] text-gray-400 mt-1 italic" title="${lg.details}"><i class="fa-solid fa-clock-rotate-left"></i> ${lg.action} by ${lg.userName} (${new Date(lg.timestamp).toLocaleDateString()})</div>`;
+            }
+            return '';
+        }
+
         window.renderActivityLog = function() {
             const tb = document.getElementById('activity-log-table');
             if(!tb) return; tb.innerHTML = '';
@@ -1193,7 +1221,7 @@
                 window.cloudSaveActiveTask(newTask);
                 genCount++;
             });
-            logActivity(p.groupId, 'Task Generation', `Generated ${genCount} tasks from templates for Program ${p.id}`);
+            logActivity(p.groupId, 'Task Generation', `Generated ${genCount} tasks from templates for Program ${p.id}`, p.id);
             showToast("Task Plan Generated", `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
         }
 
@@ -1592,6 +1620,8 @@
             if(asSel) {
                 asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
                 users.forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
+                asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
+                bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
             }
             
             renderPermissions(); 
@@ -1736,7 +1766,7 @@
 
             const dayTasks = activeTasks.filter(t => {
                 if(t.targetDate !== dayStr) return false;
-                if(t.status === 'Archived') return false; // Do not show archived tasks on calendar
+                if(t.status === 'Archived') return false; 
                 if(!agIds.includes(t.groupId)) return false;
                 if(fGroup !== 'ALL' && t.groupId !== fGroup) return false; 
                 
@@ -1772,19 +1802,22 @@
                     if(fProgramId !== 'ALL' && p.id !== fProgramId) return false;
                     if(fProgType !== 'ALL' && p.type !== fProgType) return false;
                     if(fSeason !== 'ALL' && p.season !== fSeason) return false;
-                    return p.dateStart === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr || p.byeWeek === dayStr;
+                    
+                    const isBye = Array.isArray(p.byeDates) && p.byeDates.includes(dayStr);
+                    return p.dateStart === dayStr || p.dateStart2 === dayStr || p.dateFinal === dayStr || p.dateEarly === dayStr || p.dateOffseason === dayStr || isBye;
                 });
 
                 dayPrograms.forEach(p => {
                     const milestoneTypes = [];
                     if(p.dateStart === dayStr) milestoneTypes.push("Start Date");
+                    if(p.dateStart2 === dayStr) milestoneTypes.push("Secondary Start");
                     if(p.dateFinal === dayStr) milestoneTypes.push("Final Deadline");
                     if(p.dateEarly === dayStr) milestoneTypes.push("Early Deadline");
                     if(p.dateOffseason === dayStr) milestoneTypes.push("Offseason Deadline");
-                    if(p.byeWeek === dayStr) milestoneTypes.push("Bye Week"); 
+                    if(Array.isArray(p.byeDates) && p.byeDates.includes(dayStr)) milestoneTypes.push("Bye / Skip Date"); 
                     
                     milestoneTypes.forEach(mt => {
-                        const styleCls = mt === "Bye Week" ? "bg-amber-100 text-amber-800 border-amber-300" : "bg-indigo-100 text-indigo-800 border-indigo-300";
+                        const styleCls = mt.includes("Bye") ? "bg-amber-100 text-amber-800 border-amber-300" : "bg-indigo-100 text-indigo-800 border-indigo-300";
                         milestonesHTML += `<div onclick="event.stopPropagation(); openEditProgramModal('${p.id}')" class="text-[9px] font-bold leading-tight truncate px-1 py-0.5 mb-1 rounded border shadow-sm cursor-pointer hover:opacity-80 transition-opacity ${styleCls}" title="${p.groupId} ${p.preHeader} ${p.season} ${p.type}\n${mt}"><i class="fa-solid fa-flag text-[8px] mr-1"></i>${p.groupId} ${p.season}: ${mt}</div>`;
                     });
                 });
@@ -1962,15 +1995,22 @@
                 if(fGrp !== 'ALL' && p.groupId !== fGrp) return; if(fYr !== 'ALL' && p.year !== fYr) return;
                 if(fSea !== 'ALL' && p.season !== fSea) return; if(fTyp !== 'ALL' && p.type !== fTyp) return;
 
-                const byeDisplay = p.byeWeek ? `<br><span class="text-amber-600 font-bold">Bye: ${formatTargetDate(p.byeWeek)}</span>` : '';
+                let byeDisplay = '';
+                if(Array.isArray(p.byeDates) && p.byeDates.length > 0) {
+                    const formattedDates = p.byeDates.map(d => formatTargetDate(d)).join(', ');
+                    byeDisplay = `<br><span class="text-amber-600 font-bold">Skips: ${formattedDates}</span>`;
+                }
 
                 tb.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
-                        <td class="px-4 py-2 font-bold text-i9blue">${p.groupId}</td>
-                        <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
+                        <td class="px-4 py-2">
+                            <span class="font-bold text-i9blue">${p.groupId}</span><br>
+                            <span class="font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</span>
+                            ${getRecentLogHTML(p.id)}
+                        </td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
-                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateStart2 ? `<br>Start 2: ${formatTargetDate(p.dateStart2)}` : ''}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
                         <td class="px-4 py-2 text-[10px] text-gray-600">${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'} ${byeDisplay}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
@@ -1991,6 +2031,17 @@
             document.getElementById('prog-dl-4-container').classList.toggle('hidden', count < 4);
         }
 
+        // ADDED: Multiple Bye Dates radial logic
+        function updateByeCount() {
+            const count = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
+            const container = document.getElementById('bye-weeks-container');
+            if(count > 0) container.classList.remove('hidden'); else container.classList.add('hidden');
+            for(let i=1; i<=4; i++) {
+                const el = document.getElementById('prog-bye-' + i);
+                if(i <= count) el.classList.remove('hidden'); else { el.classList.add('hidden'); el.value = ''; }
+            }
+        }
+
         function updateProgPreHeaderOptions() {
             const select = document.getElementById('prog-pre'); select.innerHTML = '<option value="">-- None --</option>';
             const container = document.getElementById('prog-pre-container');
@@ -2004,15 +2055,18 @@
             
             document.querySelector(`input[name="prog-deadline-count"][value="4"]`).checked = true;
             updateDeadlineCount();
+
+            document.querySelector(`input[name="prog-bye-count"][value="0"]`).checked = true;
+            updateByeCount();
             
             document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = false);
             
             document.getElementById('prog-date-start').value = '';
+            document.getElementById('prog-date-start-2').value = '';
             document.getElementById('prog-date-final').value = '';
             document.getElementById('prog-date-early').value = '';
             document.getElementById('prog-date-offseason').value = '';
             document.getElementById('prog-weeks').value = '';
-            document.getElementById('prog-bye-week').value = '';
             document.getElementById('prog-venue').value = '';
             
             document.getElementById('program-modal').classList.remove('hidden'); 
@@ -2037,12 +2091,26 @@
             document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = dArr.includes(cb.value));
             
             document.getElementById('prog-date-start').value = p.dateStart || '';
+            document.getElementById('prog-date-start-2').value = p.dateStart2 || '';
             document.getElementById('prog-date-final').value = p.dateFinal || '';
             document.getElementById('prog-date-early').value = p.dateEarly || '';
             document.getElementById('prog-date-offseason').value = p.dateOffseason || '';
             document.getElementById('prog-weeks').value = p.weeks || '';
-            document.getElementById('prog-bye-week').value = p.byeWeek || '';
             document.getElementById('prog-venue').value = p.venue || '';
+
+            // Handle Bye Dates binding
+            const byeCount = p.byeDates ? p.byeDates.length : 0;
+            const byeRb = document.querySelector(`input[name="prog-bye-count"][value="${byeCount}"]`);
+            if(byeRb) byeRb.checked = true; else document.querySelector(`input[name="prog-bye-count"][value="0"]`).checked = true;
+            updateByeCount();
+            
+            if(p.byeDates) {
+                for(let i=0; i<p.byeDates.length; i++) {
+                    const idx = i + 1;
+                    if(idx <= 4) document.getElementById('prog-bye-' + idx).value = p.byeDates[i];
+                }
+            }
+
             document.getElementById('program-modal').classList.remove('hidden');
         }
 
@@ -2053,17 +2121,25 @@
             const dCount = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
             const days = Array.from(document.querySelectorAll('.prog-day-cb:checked')).map(cb => cb.value).join(', ');
             
+            const byeCount = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
+            let byeDatesArray = [];
+            for(let i=1; i<=byeCount; i++) {
+                const val = document.getElementById('prog-bye-' + i).value;
+                if (val) byeDatesArray.push(val);
+            }
+
             const p = {
                 id: id, groupId: document.getElementById('prog-group').value, year: document.getElementById('prog-year').value,
                 type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
                 season: document.getElementById('prog-season').value, 
                 deadlineCount: dCount, days: days,
                 dateStart: document.getElementById('prog-date-start').value,
+                dateStart2: document.getElementById('prog-date-start-2').value,
                 dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
                 dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
                 dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
                 weeks: document.getElementById('prog-weeks').value,
-                byeWeek: document.getElementById('prog-bye-week').value,
+                byeDates: byeDatesArray,
                 venue: document.getElementById('prog-venue').value
             };
             window.cloudSaveProgram(p);
@@ -2071,9 +2147,9 @@
             if (document.getElementById('prog-edit-id').value) {
                 const linked = activeTasks.filter(t => t.programId === p.id && !t.isOneOff);
                 linked.forEach(t => { const tpl = templates.find(x => x.id === t.templateId); if(tpl) { t.targetDate = calculateNewTargetDate(p, tpl); window.cloudSaveActiveTask(t); } });
-                logActivity(p.groupId, 'Program Update', `Updated logistics/dates for Program ${p.id}`);
+                logActivity(p.groupId, 'Program Update', `Updated logistics/dates for Program ${p.id}`, p.id);
             } else {
-                logActivity(p.groupId, 'Program Create', `Created new Program ${p.season} ${p.type}`);
+                logActivity(p.groupId, 'Program Create', `Created new Program ${p.season} ${p.type}`, p.id);
             }
             closeModals(); showToast("Program Saved", "Successfully updated.");
         }
@@ -2083,7 +2159,7 @@
             if(!p) return; 
             const clone = {...p, id: generateId('PRG')}; 
             window.cloudSaveProgram(clone); 
-            logActivity(p.groupId, 'Program Cloned', `Cloned Program ${p.id} to new ID ${clone.id}`);
+            logActivity(p.groupId, 'Program Cloned', `Cloned Program ${p.id} to new ID ${clone.id}`, clone.id);
             showToast("Cloned", "Program duplicated successfully."); 
         }
 
@@ -2120,7 +2196,7 @@
                         <td class="px-4 py-2 text-[11px]">${grpDisplay}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${levelDisplay}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${t.type}${t.preHeader ? `<br><span class="text-gray-500 font-normal">${t.preHeader}</span>` : ''}</td>
-                        <td class="px-4 py-2 text-i9blue font-medium">${t.name}</td>
+                        <td class="px-4 py-2 text-i9blue font-medium">${t.name} ${getRecentLogHTML(t.id)}</td>
                         <td class="px-4 py-2 text-[10px] text-gray-500">${t.seasons.join(', ')}</td>
                         <td class="px-4 py-2 text-gray-700 font-mono text-[10px]">${t.offsetNum} Days ${t.offsetDir} ${t.anchor.replace('date','')}</td>
                         <td class="px-4 py-2 text-gray-500 text-[10px]">${t.role}</td>
@@ -2128,7 +2204,6 @@
                             ${isManager ? `
                             <button onclick="openEditTemplate('${t.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="cloneTemplate('${t.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                            <!-- ADDED INLINE DELETE BUTTON FOR PROFILES -->
                             <button onclick="deleteTemplate('${t.id}')" class="text-rose-600 hover:text-rose-800 mx-1"><i class="fa-solid fa-trash"></i></button>
                             ` : '-'}
                         </td>
@@ -2136,13 +2211,12 @@
             });
         }
 
-        // ADDED: Profile inline delete function
         function deleteTemplate(id) { 
             if(confirm("Delete this profile rule forever?")) { 
                 const t = templates.find(x => x.id === id);
                 if (t) {
                     window.cloudDeleteTemplate(id); 
-                    logActivity(t.groupId, 'Profile Rule Deleted', `Deleted Rule: ${t.name}`);
+                    logActivity(t.groupId, 'Profile Rule Deleted', `Deleted Rule: ${t.name}`, t.id);
                 }
             } 
         }
@@ -2178,8 +2252,9 @@
         function cloneTemplate(id) { 
             const t = templates.find(x => x.id === id); 
             if(!t) return; 
-            window.cloudSaveTemplate({...t, id: generateId('TPL')}); 
-            logActivity(t.groupId, 'Profile Rule Cloned', `Cloned Rule: ${t.name}`);
+            const newT = {...t, id: generateId('TPL')};
+            window.cloudSaveTemplate(newT); 
+            logActivity(t.groupId, 'Profile Rule Cloned', `Cloned Rule: ${t.name}`, newT.id);
             showToast("Cloned", "Task Profile rule duplicated."); 
         }
         
@@ -2195,13 +2270,12 @@
                 offsetDir: document.getElementById('tpl-offset-dir').value, anchor: document.getElementById('tpl-anchor').value, role: document.getElementById('tpl-role').value.trim()
             };
             window.cloudSaveTemplate(t); 
-            logActivity(t.groupId, document.getElementById('tpl-edit-id').value ? 'Profile Rule Updated' : 'Profile Rule Created', `Rule: ${t.name}`);
+            logActivity(t.groupId, document.getElementById('tpl-edit-id').value ? 'Profile Rule Updated' : 'Profile Rule Created', `Rule: ${t.name}`, t.id);
             closeModals(); showToast("Task Profile Saved", "Master list updated.");
         }
 
         /* --- TASKS --- */
 
-        // ADDED: View Toggler for Task List
         function setTaskView(view) {
             currentTaskView = view;
             const btnAct = document.getElementById('btn-tasks-active');
@@ -2216,7 +2290,7 @@
             } else {
                 btnAct.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
                 btnArch.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
-                bulkEditBtn.style.display = 'none'; bulkArchBtn.style.display = 'none'; // Hide bulk actions in archive mode
+                bulkEditBtn.style.display = 'none'; bulkArchBtn.style.display = 'none';
             }
             renderActiveTasks();
         }
@@ -2229,7 +2303,6 @@
             
             const canEdit = hasPermission('editTasks');
             
-            // Set Table Headers dynamically based on view
             const tHead = document.getElementById('task-table-head');
             if (currentTaskView === 'active') {
                 tHead.innerHTML = `<tr>
@@ -2261,7 +2334,6 @@
                 if (!agIds.includes(t.groupId)) return;
                 if(fGrp !== 'ALL' && t.groupId !== fGrp) return; if(fPrg !== 'ALL' && t.programId !== fPrg) return;
                 
-                // Active/Archive View Filter
                 if (currentTaskView === 'active' && t.status === 'Archived') return;
                 if (currentTaskView === 'archived' && t.status !== 'Archived') return;
                 
@@ -2281,7 +2353,6 @@
                 else pName = `[${t.groupId}] Unknown Program`;
 
                 if (currentTaskView === 'archived') {
-                    // Render Archived View Rows
                     const aDate = t.archivedAt ? new Date(t.archivedAt).toLocaleDateString() : 'Unknown';
                     tb.innerHTML += `
                         <tr class="hover:bg-gray-50 opacity-60">
@@ -2292,7 +2363,6 @@
                             <td class="px-3 py-2 text-[10px] text-gray-500"><strong class="text-rose-600">${t.archiveReason || 'Other'}</strong><br>${t.archiveNotes || ''}</td>
                         </tr>`;
                 } else {
-                    // Render Active View Rows
                     const levelBadge = taskLevel === 'Marketing' ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-bullhorn text-[9px]"></i> MKTG</span>` : `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-gears text-[9px]"></i> OPS</span>`;
 
                     const today = new Date(); today.setHours(0,0,0,0);
@@ -2309,9 +2379,13 @@
                     
                     const descDisplay = t.desc && t.desc.trim() !== '' ? `<div class="text-[9px] text-gray-500 font-normal mt-0.5 max-w-[200px] truncate" title="${t.desc.replace(/"/g, '&quot;')}">${t.desc}</div>` : '';
 
+                    // Grid Assignee Dropdown containing current custom value if it exists
+                    const isCustomExt = t.assignee && !users.find(u => u.name === t.assignee);
                     let assigneeDropdown = `<select onchange="updateTaskAssignee('${t.id}', this.value)" class="bg-transparent border-b border-gray-300 text-[11px] font-bold text-emerald-800 w-full p-1 outline-none appearance-none hover:bg-gray-50 cursor-pointer ${isUn ? 'text-rose-500' : ''}" ${canEdit ? '' : 'disabled'}>
                         <option value="" class="text-gray-500">-- Unassigned --</option>
                         ${users.map(u => `<option value="${u.name}" ${t.assignee === u.name ? 'selected' : ''}>${u.name}</option>`).join('')}
+                        ${isCustomExt ? `<option value="${t.assignee}" selected>${t.assignee} (External)</option>` : ''}
+                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>
                     </select>`;
 
                     tb.innerHTML += `
@@ -2319,7 +2393,7 @@
                             <td class="px-3 py-2 text-center"><input type="checkbox" class="task-cb" value="${t.id}"></td>
                             <td class="px-3 py-2 font-bold text-i9blue text-[11px]">${pName}</td>
                             <td class="px-3 py-2">${levelBadge}</td>
-                            <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name} ${descDisplay}</td>
+                            <td class="px-3 py-2 font-medium text-gray-900 text-xs">${t.name} ${descDisplay} ${getRecentLogHTML(t.id)}</td>
                             <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap">${formatTargetDate(t.targetDate)}</td>
                             <td class="px-3 py-2 relative">${assigneeDropdown}</td>
                             <td class="px-3 py-2">${notesDisplay}</td>
@@ -2347,20 +2421,27 @@
             const t = activeTasks.find(x => x.id === id); 
             if(t) { 
                 t.status = st; window.cloudSaveActiveTask(t); 
-                logActivity(t.groupId, 'Task Status Update', `Task ${t.name} marked as ${st}`);
+                logActivity(t.groupId, 'Task Status Update', `Task ${t.name} marked as ${st}`, t.id);
             } 
         }
         
-        function updateTaskAssignee(id, newAssignee) { 
+        // MODIFIED for Custom External String Override
+        function updateTaskAssignee(id, val) { 
+            if (val === 'CUSTOM') {
+                const customName = prompt("Enter the name of the external or non-member assignee:");
+                if (customName) val = customName;
+                else { renderActiveTasks(); return; } // Reset if cancelled
+            }
+            
             const t = activeTasks.find(x => x.id === id); 
             if(t) { 
-                t.assignee = newAssignee; window.cloudSaveActiveTask(t); 
-                logActivity(t.groupId, 'Task Reassigned', `Task ${t.name} assigned to ${newAssignee || 'Unassigned'}`);
+                t.assignee = val; window.cloudSaveActiveTask(t); 
+                logActivity(t.groupId, 'Task Reassigned', `Task ${t.name} assigned to ${val || 'Unassigned'}`, t.id);
                 showToast("Reassigned", "Assignee updated directly."); 
+                renderActiveTasks();
             } 
         }
 
-        // ADDED ARCHIVE MODAL FUNCTIONS
         function openArchiveTaskModal(id) {
             document.getElementById('archive-task-ids').value = id;
             document.getElementById('archive-reason').value = '';
@@ -2393,7 +2474,7 @@
                     t.archivedBy = currentUser.name;
                     t.archivedAt = new Date().toISOString();
                     window.cloudSaveActiveTask(t);
-                    logActivity(t.groupId, 'Task Removed/Archived', `Task ${t.name} removed. Reason: ${reason}`);
+                    logActivity(t.groupId, 'Task Removed/Archived', `Task ${t.name} removed. Reason: ${reason}`, t.id);
                 }
             });
 
@@ -2409,7 +2490,11 @@
             document.getElementById('at-name').value = ''; 
             document.getElementById('at-desc').value = ''; 
             document.getElementById('at-date').value = typeof prefillDate === 'string' && prefillDate ? prefillDate : ''; 
+            
             document.getElementById('at-assignee').value = ''; 
+            document.getElementById('at-assignee-custom').value = '';
+            document.getElementById('at-assignee-custom').classList.add('hidden');
+
             document.getElementById('at-notes').value = ''; 
             document.getElementById('at-completion-notes').value = '';
             document.getElementById('at-status').value = 'Pending';
@@ -2428,7 +2513,24 @@
             document.getElementById('at-name').value = t.name; 
             document.getElementById('at-desc').value = t.desc || ''; 
             document.getElementById('at-date').value = t.targetDate; 
-            document.getElementById('at-assignee').value = t.assignee || '';
+            
+            // Custom Assignee Logic in Modal
+            const assigneeSel = document.getElementById('at-assignee');
+            const customInp = document.getElementById('at-assignee-custom');
+            if(t.assignee && !users.find(u => u.name === t.assignee)) {
+                let optExists = Array.from(assigneeSel.options).some(o => o.value === t.assignee);
+                if(!optExists) {
+                    let opt = document.createElement('option');
+                    opt.value = t.assignee; opt.text = `${t.assignee} (External)`;
+                    assigneeSel.add(opt, assigneeSel.options[1]);
+                }
+                assigneeSel.value = t.assignee;
+                customInp.classList.add('hidden');
+            } else {
+                assigneeSel.value = t.assignee || '';
+                customInp.classList.add('hidden');
+            }
+
             document.getElementById('at-notes').value = t.notes || '';
             document.getElementById('at-completion-notes').value = t.completionNotes || '';
             
@@ -2437,6 +2539,10 @@
         
         function saveActiveTask(e) {
             e.preventDefault(); const id = document.getElementById('at-edit-id').value; const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
+            
+            let assigneeVal = document.getElementById('at-assignee').value;
+            if (assigneeVal === 'CUSTOM') assigneeVal = document.getElementById('at-assignee-custom').value.trim();
+
             if(id) {
                 const t = activeTasks.find(x => x.id === id);
                 if(t) { 
@@ -2445,11 +2551,11 @@
                     t.name = document.getElementById('at-name').value.trim(); 
                     t.desc = document.getElementById('at-desc').value.trim(); 
                     t.targetDate = document.getElementById('at-date').value; 
-                    t.assignee = document.getElementById('at-assignee').value.trim(); 
+                    t.assignee = assigneeVal; 
                     t.notes = document.getElementById('at-notes').value.trim();
                     t.completionNotes = document.getElementById('at-completion-notes').value.trim();
                     window.cloudSaveActiveTask(t); 
-                    logActivity(t.groupId, 'Task Update', `Updated task details: ${t.name}`);
+                    logActivity(t.groupId, 'Task Update', `Updated task details: ${t.name}`, t.id);
                 }
             } else if (isOneOff) {
                 const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
@@ -2457,13 +2563,13 @@
                     const newTask = { 
                         id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", 
                         level: document.getElementById('at-level').value, name: document.getElementById('at-name').value.trim(), 
-                        desc: document.getElementById('at-desc').value.trim(), assignee: document.getElementById('at-assignee').value.trim(), 
+                        desc: document.getElementById('at-desc').value.trim(), assignee: assigneeVal, 
                         defaultRole: "Custom", targetDate: document.getElementById('at-date').value, 
                         status: document.getElementById('at-status').value, 
                         isOneOff: true, notes: document.getElementById('at-notes').value.trim(), completionNotes: document.getElementById('at-completion-notes').value.trim() 
                     };
                     window.cloudSaveActiveTask(newTask);
-                    logActivity(p.groupId, 'Task Create', `Created One-Off Task: ${newTask.name}`);
+                    logActivity(p.groupId, 'Task Create', `Created One-Off Task: ${newTask.name}`, newTask.id);
                 }
             }
             closeModals();
@@ -2472,8 +2578,9 @@
         function cloneTask(id) { 
             const t = activeTasks.find(x=>x.id===id); 
             if(t) { 
-                window.cloudSaveActiveTask({...t, id: generateId('ATK')}); 
-                logActivity(t.groupId, 'Task Cloned', `Cloned Task: ${t.name}`);
+                const newT = {...t, id: generateId('ATK')};
+                window.cloudSaveActiveTask(newT); 
+                logActivity(t.groupId, 'Task Cloned', `Cloned Task: ${t.name}`, newT.id);
                 showToast("Cloned", "Task duplicated successfully."); 
             } 
         }
@@ -2609,7 +2716,7 @@
             let cls, action;
             if(type === 'programs') { cls = 'prog-cb'; action = window.cloudDeleteProgram; }
             else if(type === 'templates') { cls = 'tpl-cb'; action = window.cloudDeleteTemplate; }
-            else return; // activeTasks are bulk archived now, not deleted
+            else return; 
             
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
@@ -2671,7 +2778,10 @@
                 logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} programs`);
             } else if (mode === 'tasks') {
                 ids = getSelected('task-cb');
-                const doAss = document.getElementById('be-cb-assignee').checked; const assVal = document.getElementById('be-assignee').value;
+                const doAss = document.getElementById('be-cb-assignee').checked; 
+                let assVal = document.getElementById('be-assignee').value;
+                if(assVal === 'CUSTOM') assVal = document.getElementById('be-assignee-custom').value.trim();
+
                 const doStat = document.getElementById('be-cb-status').checked; const statVal = document.getElementById('be-status').value;
                 const doDate = document.getElementById('be-cb-date').checked; const dateVal = document.getElementById('be-date').value;
                 
