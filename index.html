@@ -316,7 +316,7 @@
         </section>
 
         <!-- TAB 5: ADMIN DASHBOARD (USERS & GROUPS) -->
-        <section id="view-admin" class="tab-view hidden space-y-6 permission-manage-groups">
+        <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
                 <p class="text-xs text-gray-500">Approve users, configure groups, and send invitations.</p>
@@ -1057,7 +1057,7 @@
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
-            applyPermissions(); populateFilterOptions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts();
+            applyPermissions(); populateFilterOptions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable();
         }
 
         function checkPendingAlerts() {
