@@ -63,9 +63,6 @@
                     </div>
                 </div>
 
-                <button id="btn-manage-branding" onclick="openBrandingModal()" class="bg-blue-800 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 border border-blue-600/50 shadow-sm hidden admin-only">
-                    <i class="fa-solid fa-palette text-i9gold"></i> Branding
-                </button>
                 <button onclick="exportToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-file-excel"></i> Export CSV
                 </button>
@@ -109,117 +106,139 @@
 
         <!-- TAB 1: HOME DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
+            <!-- Clickable KPI Bar -->
             <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border border-gray-100 flex justify-between items-center">
+                <button onclick="setDashboardFilter('active')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Total Active Tasks</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-i9blue transition">Active Tasks</p>
                         <p id="kpi-total" class="text-2xl font-black text-gray-800">0</p>
                     </div>
                     <div class="p-3 bg-blue-50 text-i9blue rounded-lg"><i class="fa-solid fa-list-ul text-lg"></i></div>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border border-gray-100 flex justify-between items-center">
+                </button>
+                <button onclick="setDashboardFilter('completed')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Completed</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-emerald-600 transition">Completed</p>
                         <p id="kpi-completed" class="text-2xl font-black text-emerald-600">0</p>
                     </div>
                     <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-circle-check text-lg"></i></div>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500 border border-gray-100 flex justify-between items-center">
+                </button>
+                <button onclick="setDashboardFilter('unassigned')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Unassigned Alerts</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-amber-600 transition">Unassigned</p>
                         <p id="kpi-unassigned" class="text-2xl font-black text-amber-600">0</p>
                     </div>
                     <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-user-minus text-lg"></i></div>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-rose-500 border border-gray-100 flex justify-between items-center">
+                </button>
+                <button onclick="setDashboardFilter('overdue')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-rose-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Overdue</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-rose-600 transition">Overdue</p>
                         <p id="kpi-overdue" class="text-2xl font-black text-rose-600">0</p>
                     </div>
                     <div class="p-3 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-triangle-exclamation text-lg"></i></div>
-                </div>
+                </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
-                        <i class="fa-solid fa-chart-column text-i9red"></i> Program Execution Progress
-                    </h3>
-                    <div id="dashboard-season-progress" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content: Today & Focused Filter -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-calendar-day text-i9gold"></i> Today at a Glance
+                        </h3>
+                        <div id="dashboard-today-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                    </div>
+                    
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 id="dash-focused-title" class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-list text-i9blue"></i> Focused Task Viewer: Active Tasks
+                        </h3>
+                        <div id="dashboard-focused-list" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+                    </div>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> High-Priority Overdue Items
-                    </h3>
-                    <div id="dashboard-overdue-list" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+                
+                <!-- Side Panel: Progress & My Tasks -->
+                <div class="space-y-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-user-check text-emerald-600"></i> My Upcoming Tasks <span class="text-[10px] text-gray-400 font-normal">(Next 7 Days)</span>
+                        </h3>
+                        <div id="dashboard-my-tasks" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-chart-column text-i9red"></i> Program Execution
+                        </h3>
+                        <div id="dashboard-season-progress" class="space-y-4 max-h-60 overflow-y-auto pr-1"></div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- TAB 2: CALENDAR VIEW -->
         <section id="view-calendar" class="tab-view hidden space-y-4">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
+                <!-- Top Row: Title & Navigation -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-regular fa-calendar text-i9gold"></i> Task Calendar</h2>
                         <p class="text-xs text-gray-500">Visual overview of upcoming operational and marketing tasks.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="goToToday()" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
-                        <button onclick="changeCalendarDate(-1)" class="p-1.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded text-gray-600 shadow-sm"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[140px] text-center text-sm uppercase tracking-wide">August 2026</span>
-                        <button onclick="changeCalendarDate(1)" class="p-1.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded text-gray-600 shadow-sm"><i class="fa-solid fa-chevron-right"></i></button>
-                        <input type="date" id="calendar-jump-date" onchange="jumpToDate(this.value)" class="ml-2 p-1.5 border border-gray-300 rounded bg-gray-50 text-[10px] text-gray-700 outline-none cursor-pointer shadow-sm" title="Direct jump to date">
+                        <button onclick="goToToday()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
+                        <button onclick="changeCalendarDate(-1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[150px] text-center text-sm uppercase tracking-wide">August 2026</span>
+                        <button onclick="changeCalendarDate(1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-right"></i></button>
+                        <input type="date" id="calendar-jump-date" onchange="jumpToDate(this.value)" class="ml-1 p-1.5 border border-gray-300 rounded-lg bg-gray-50 text-xs text-gray-700 outline-none cursor-pointer shadow-sm transition hover:bg-white" title="Direct jump to date">
                     </div>
                 </div>
 
-                <!-- Calendar Filters -->
-                <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
-                    <div class="flex flex-wrap gap-2">
-                        <select id="filter-cal-view" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-bold">
-                            <option value="month">Month View</option>
-                            <option value="week">Week View</option>
-                            <option value="day">Day View</option>
-                        </select>
-                        <select id="filter-cal-status" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold">
-                            <option value="ALL">All Statuses</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Complete">Complete</option>
-                        </select>
-                        <select id="filter-cal-prog-type" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
-                            <option value="ALL">All Program Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option>
-                        </select>
-                        <select id="filter-cal-level" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold text-i9blue">
-                            <option value="ALL">All Levels</option><option value="Operational">Operational Tasks</option><option value="Marketing">Marketing Tasks</option>
-                        </select>
-                        <select id="filter-cal-program" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 max-w-[200px]"><option value="ALL">All Specific Programs</option></select>
-                        <select id="filter-cal-season" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
-                            <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
-                        </select>
+                <!-- Middle Row: View & Standard Dropdown Filters -->
+                <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
+                    <!-- 3-Part Oval Segmented Control -->
+                    <div class="inline-flex bg-gray-100 p-1 rounded-full border border-gray-200 shadow-inner relative">
+                        <input type="radio" name="cal-view-type" id="view-month" value="month" class="hidden peer/month" checked onchange="renderCalendar()">
+                        <label for="view-month" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/month:bg-white peer-checked/month:text-i9blue peer-checked/month:shadow z-10">Month</label>
+                        
+                        <input type="radio" name="cal-view-type" id="view-week" value="week" class="hidden peer/week" onchange="renderCalendar()">
+                        <label for="view-week" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/week:bg-white peer-checked/week:text-i9blue peer-checked/week:shadow z-10">Week</label>
+                        
+                        <input type="radio" name="cal-view-type" id="view-day" value="day" class="hidden peer/day" onchange="renderCalendar()">
+                        <label for="view-day" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/day:bg-white peer-checked/day:text-i9blue peer-checked/day:shadow z-10">Day</label>
                     </div>
+
+                    <select id="filter-cal-prog-type" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                        <option value="ALL">All Program Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option>
+                    </select>
+                    <select id="filter-cal-program" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 max-w-[200px] outline-none focus:border-i9blue transition hover:bg-white"><option value="ALL">All Specific Programs</option></select>
+                    <select id="filter-cal-season" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                        <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
+                    </select>
                 </div>
 
-                <div class="flex items-center gap-4 text-[10px] font-bold text-gray-600">
-                    <span class="flex items-center gap-1"><div class="w-3 h-3 bg-blue-100 border border-blue-300 rounded"></div> Pending Ops</span>
-                    <span class="flex items-center gap-1"><div class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></div> Pending Mktg</span>
-                    <span class="flex items-center gap-1"><div class="w-3 h-3 bg-amber-100 border border-amber-300 rounded"></div> In Progress</span>
-                    <span class="flex items-center gap-1"><div class="w-3 h-3 bg-rose-100 border-2 border-rose-400 rounded"></div> Overdue</span>
-                    <span class="flex items-center gap-1"><div class="w-3 h-3 bg-gray-200 border border-gray-300 rounded"></div> Complete</span>
+                <!-- Bottom Row: Clickable Legend Filters (Replaces Status & Level Dropdowns) -->
+                <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-600 border-t border-gray-100 pt-3" id="calendar-legend-filters">
+                    <button onclick="toggleCalFilter('pendingOps')" id="cal-filt-pendingOps" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                        <div class="w-3.5 h-3.5 bg-blue-100 border border-blue-300 rounded-full"></div> Pending Ops
+                    </button>
+                    <button onclick="toggleCalFilter('pendingMktg')" id="cal-filt-pendingMktg" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                        <div class="w-3.5 h-3.5 bg-emerald-100 border border-emerald-300 rounded-full"></div> Pending Mktg
+                    </button>
+                    <button onclick="toggleCalFilter('inProgress')" id="cal-filt-inProgress" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                        <div class="w-3.5 h-3.5 bg-amber-100 border border-amber-300 rounded-full"></div> In Progress
+                    </button>
+                    <button onclick="toggleCalFilter('overdue')" id="cal-filt-overdue" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                        <div class="w-3.5 h-3.5 bg-rose-100 border border-rose-400 rounded-full"></div> Overdue
+                    </button>
+                    <button onclick="toggleCalFilter('complete')" id="cal-filt-complete" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer shadow-sm">
+                        <div class="w-3.5 h-3.5 bg-gray-200 border border-gray-300 rounded-full"></div> Complete
+                    </button>
                 </div>
             </div>
             
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 overflow-x-auto">
                 <div class="min-w-[800px]" id="calendar-container">
-                    <div id="calendar-header-grid" class="grid grid-cols-7 gap-2 mb-2">
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Sun</div>
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Mon</div>
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Tue</div>
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Wed</div>
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Thu</div>
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Fri</div>
-                        <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Sat</div>
-                    </div>
+                    <div id="calendar-header-grid" class="grid grid-cols-7 gap-2 mb-2"></div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
                 </div>
             </div>
@@ -701,220 +720,6 @@
         </div>
     </div>
 
-    <!-- MODALS (Program, Template, Active Task, Branding) -->
-    <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 class="text-sm font-bold text-i9blue">Add/Edit Program</h3>
-            <form onsubmit="saveProgram(event)" class="space-y-4 text-xs">
-                <input type="hidden" id="prog-edit-id">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Group</label><select id="prog-group" required class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
-                    <div><label class="block font-bold mb-1">Year</label><select id="prog-year" required class="w-full p-2 border rounded bg-gray-50"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select></div>
-                </div>
-                <div>
-                    <label class="block font-bold mb-1">Program Type</label>
-                    <div class="flex gap-3 p-2 border rounded bg-gray-50">
-                        <label><input type="radio" name="prog-type-radio" value="League" checked onchange="updateProgPreHeaderOptions()"> League</label>
-                        <label><input type="radio" name="prog-type-radio" value="Camp" onchange="updateProgPreHeaderOptions()"> Camp</label>
-                        <label><input type="radio" name="prog-type-radio" value="Training/Clinic" onchange="updateProgPreHeaderOptions()"> Clinic</label>
-                        <label><input type="radio" name="prog-type-radio" value="School" onchange="updateProgPreHeaderOptions()"> School</label>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div id="prog-pre-container"><label class="block font-bold mb-1">Pre-Header</label><select id="prog-pre" class="w-full p-2 border rounded bg-gray-50"></select></div>
-                    <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
-                </div>
-                
-                <div>
-                    <label class="block font-bold mb-1">Days of Operation</label>
-                    <div class="flex flex-wrap gap-2 p-2 bg-gray-50 border border-gray-200 rounded text-[11px] font-semibold text-gray-700">
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label>
-                    </div>
-                </div>
-
-                <div class="border-t pt-3 mt-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block font-bold text-i9blue">Program Deadlines</label>
-                        <div class="flex gap-3 text-[11px] font-bold">
-                            <span class="text-gray-500">Count:</span>
-                            <label><input type="radio" name="prog-deadline-count" value="1" onchange="updateDeadlineCount()"> 1</label>
-                            <label><input type="radio" name="prog-deadline-count" value="2" onchange="updateDeadlineCount()"> 2</label>
-                            <label><input type="radio" name="prog-deadline-count" value="3" onchange="updateDeadlineCount()"> 3</label>
-                            <label><input type="radio" name="prog-deadline-count" value="4" checked onchange="updateDeadlineCount()"> 4</label>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block font-bold mb-1 text-[10px]">1. Start Date (Main)</label><input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div id="prog-dl-2-container"><label class="block font-bold mb-1 text-[10px]">2. Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div id="prog-dl-3-container"><label class="block font-bold mb-1 text-[10px]">3. Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div id="prog-dl-4-container"><label class="block font-bold mb-1 text-[10px]">4. Offseason Deadline</label><input type="date" id="prog-date-offseason" class="w-full p-2 border rounded bg-gray-50"></div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Length (Wks)</label><input type="number" id="prog-weeks" value="7" class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1">Venue</label><input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50"></div>
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold">Save Program</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- TEMPLATE CREATION MODAL -->
-    <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 class="text-sm font-bold text-i9blue">Add/Edit Task Profile Rule</h3>
-            <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
-                <input type="hidden" id="tpl-edit-id">
-                
-                <div>
-                    <label class="block font-bold mb-1 text-emerald-700">Apply to Group</label>
-                    <select id="tpl-group" required class="w-full p-2 border rounded bg-emerald-50 font-semibold"></select>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Program Type</label><select id="tpl-type" required onchange="updateTplPreHeaderOptions()" class="w-full p-2 border rounded bg-gray-50 font-semibold"><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option></select></div>
-                    <div><label class="block font-bold mb-1">Pre-Header (Optional)</label><select id="tpl-preheader" class="w-full p-2 border rounded bg-gray-50 font-semibold"></select></div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold mb-1">Task Level</label>
-                        <select id="tpl-level" required class="w-full p-2 border rounded bg-gray-50 font-semibold text-i9blue">
-                            <option value="Operational">Operational</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
-                    </div>
-                    <div><label class="block font-bold mb-1">Default Assignee Role</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50 placeholder-gray-400" placeholder="(Optional)"></div>
-                </div>
-
-                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="tpl-name" required class="w-full p-2 border rounded bg-gray-50"></div>
-                <div><label class="block font-bold mb-1">Description (Optional)</label><textarea id="tpl-desc" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
-                
-                <div>
-                    <label class="block font-bold mb-1">Applicable Seasons</label>
-                    <div class="flex gap-3 text-[11px] p-2 bg-gray-50 border rounded">
-                        <label><input type="checkbox" class="tpl-season-cb" value="Spring" checked> Spring</label>
-                        <label><input type="checkbox" class="tpl-season-cb" value="Summer" checked> Summer</label>
-                        <label><input type="checkbox" class="tpl-season-cb" value="Fall" checked> Fall</label>
-                        <label><input type="checkbox" class="tpl-season-cb" value="Winter" checked> Winter</label>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-2 border-t pt-3 mt-3">
-                    <div><label class="block font-bold mb-1 text-[10px]">Offset (Days)</label><input type="number" id="tpl-offset-num" min="0" required class="w-full p-2 border rounded bg-gray-50"></div>
-                    <div><label class="block font-bold mb-1 text-[10px]">Direction</label><select id="tpl-offset-dir" class="w-full p-2 border rounded bg-gray-50"><option value="Before">Before</option><option value="After">After</option></select></div>
-                    <div>
-                        <label class="block font-bold mb-1 text-[10px]">Anchor Deadline</label>
-                        <select id="tpl-anchor" class="w-full p-2 border rounded bg-gray-50">
-                            <option value="dateStart">1. Start Date</option>
-                            <option value="dateFinal">2. Final Deadline</option>
-                            <option value="dateEarly">3. Early Deadline</option>
-                            <option value="dateOffseason">4. Offseason</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded-lg font-semibold">Cancel</button>
-                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded-lg font-bold">Save Profile Rule</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ACTIVE TASK EDIT MODAL -->
-    <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4 max-h-[95vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-1 border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue" id="active-task-title">Edit Assigned Task</h3>
-                <div class="flex items-center gap-2">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">Status:</label>
-                    <select id="at-status" class="p-1 border border-gray-300 rounded text-xs font-bold outline-none cursor-pointer focus:border-i9blue">
-                        <option value="Pending" class="text-gray-700">Pending</option>
-                        <option value="In Progress" class="text-amber-600">In Progress</option>
-                        <option value="Complete" class="text-emerald-600">Complete</option>
-                    </select>
-                </div>
-            </div>
-            
-            <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
-                <input type="hidden" id="at-edit-id"> <input type="hidden" id="at-is-oneoff" value="false">
-                
-                <div class="flex flex-wrap gap-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                    <div class="flex-grow min-w-[120px]">
-                        <label class="block font-bold mb-1 text-[10px] text-gray-500 uppercase tracking-wider">Task Level</label>
-                        <select id="at-level" class="w-full p-2 border rounded font-semibold text-i9blue">
-                            <option value="Operational">Operational</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
-                    </div>
-                    <div id="at-program-select-container" class="hidden flex-grow min-w-[150px]">
-                        <label class="block font-bold mb-1 text-[10px] text-emerald-700 uppercase tracking-wider">Link to Program</label>
-                        <select id="at-program" class="w-full p-2 border border-emerald-300 rounded font-semibold text-emerald-800 bg-emerald-50"></select>
-                    </div>
-                    <div id="at-assignee-modal-container" class="flex-grow min-w-[150px]">
-                        <label class="block font-bold mb-1 text-[10px] text-gray-500 uppercase tracking-wider">Assignee</label>
-                        <select id="at-assignee" class="w-full p-2 border rounded font-semibold text-gray-800"></select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-bold mb-1 text-gray-700">1. Task Name</label>
-                    <input type="text" id="at-name" required class="w-full p-2.5 border rounded-lg bg-gray-50 font-bold">
-                </div>
-                
-                <div>
-                    <label class="block font-bold mb-1 text-gray-700">2. Task Description (Optional)</label>
-                    <textarea id="at-desc" class="w-full p-2.5 border rounded-lg bg-gray-50 h-16 placeholder-gray-400" placeholder="Instructions, details, or steps..."></textarea>
-                </div>
-                
-                <div>
-                    <label class="block font-bold mb-1 text-gray-700">3. Target Date</label>
-                    <input type="date" id="at-date" required class="w-full max-w-[200px] p-2.5 border rounded-lg bg-gray-50 font-mono">
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold mb-1 text-gray-700">4. Task Notes / History</label>
-                        <textarea id="at-notes" class="w-full p-2.5 border rounded-lg bg-gray-50 h-20 placeholder-gray-400" placeholder="Log operational updates or ongoing notes here..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1 text-emerald-700">5. Completion Notes</label>
-                        <textarea id="at-completion-notes" class="w-full p-2.5 border border-emerald-200 rounded-lg bg-emerald-50 h-20 placeholder-emerald-600/50" placeholder="Final sign-off notes, outcomes, or closing remarks..."></textarea>
-                    </div>
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-3 border-t">
-                    <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 rounded-lg font-semibold text-gray-700">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded-lg font-bold shadow-sm">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- BRANDING MODAL -->
-    <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
-            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
-            <form onsubmit="saveBranding(event)" class="space-y-4">
-                <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
-                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1031,9 +836,12 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "2.0.1 (Calendar Filter Fixes)";
+        const APP_VERSION = "2.1.0 (Dashboard & Format overhaul)";
         
-        let calendarDate = new Date(); // Keep track of current calendar view date
+        let calendarDate = new Date();
+        calendarDate.setHours(0,0,0,0);
+        let currentDashFilter = 'active';
+        let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true };
 
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
@@ -1313,10 +1121,7 @@
         /* --- CALENDAR SYSTEM --- */
         function goToToday() {
             calendarDate = new Date();
-            const jumpInput = document.getElementById('calendar-jump-date');
-            if(jumpInput) {
-                jumpInput.value = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(calendarDate.getDate()).padStart(2,'0')}`;
-            }
+            calendarDate.setHours(0,0,0,0);
             renderCalendar();
         }
 
@@ -1324,17 +1129,31 @@
             if(!val) return;
             const [y, m, d] = val.split('-');
             calendarDate = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            calendarDate.setHours(0,0,0,0);
             renderCalendar();
         }
 
         function changeCalendarDate(offset) {
-            const view = document.getElementById('filter-cal-view').value;
+            const view = document.querySelector('input[name="cal-view-type"]:checked').value;
             if (view === 'month') {
                 calendarDate.setMonth(calendarDate.getMonth() + offset);
             } else if (view === 'week') {
                 calendarDate.setDate(calendarDate.getDate() + (offset * 7));
             } else if (view === 'day') {
                 calendarDate.setDate(calendarDate.getDate() + offset);
+            }
+            renderCalendar();
+        }
+
+        function toggleCalFilter(key) {
+            calFilters[key] = !calFilters[key];
+            const btn = document.getElementById('cal-filt-' + key);
+            if(calFilters[key]) {
+                btn.classList.remove('opacity-40', 'grayscale');
+                btn.classList.add('bg-gray-50');
+            } else {
+                btn.classList.add('opacity-40', 'grayscale');
+                btn.classList.remove('bg-gray-50');
             }
             renderCalendar();
         }
@@ -1348,12 +1167,10 @@
             if(!grid || !headerGrid) return;
 
             const agIds = getAuthorizedGroups().map(g=>g.id);
-            const view = document.getElementById('filter-cal-view').value;
+            const view = document.querySelector('input[name="cal-view-type"]:checked').value;
             
-            // Read Filters
-            const fStatus = document.getElementById('filter-cal-status').value;
+            // Read standard filters
             const fProgType = document.getElementById('filter-cal-prog-type').value;
-            const fLevel = document.getElementById('filter-cal-level').value;
             const fProgramId = document.getElementById('filter-cal-program').value;
             const fSeason = document.getElementById('filter-cal-season').value;
 
@@ -1368,10 +1185,9 @@
             grid.innerHTML = '';
             
             if (view === 'month') {
-                // Month View Setup
                 headerGrid.className = "grid grid-cols-7 gap-2 mb-2";
                 headerGrid.innerHTML = `
-                    <div class="font-bold text-center text-[10px] text-gray-500 uppercase">Sun</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase">Mon</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase">Tue</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase">Wed</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase">Thu</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase">Fri</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase">Sat</div>
+                    <div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Sun</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Mon</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Tue</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Wed</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Thu</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Fri</div><div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">Sat</div>
                 `;
                 grid.className = "grid grid-cols-7 gap-2";
 
@@ -1387,19 +1203,20 @@
                 for(let d=1; d<=daysInMonth; d++) {
                     const renderDate = new Date(y, m, d);
                     const dayStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    grid.innerHTML += generateCalendarDayCell(dayStr, d, renderDate, today, agIds, fStatus, fProgType, fLevel, fProgramId, fSeason);
+                    grid.innerHTML += generateCalendarDayCell(dayStr, d, renderDate, today, agIds, fProgType, fProgramId, fSeason, "h-28", view);
                 }
 
             } else if (view === 'week') {
-                // Week View Setup
                 headerGrid.className = "grid grid-cols-7 gap-2 mb-2";
                 grid.className = "grid grid-cols-7 gap-2";
                 
-                // Get Sunday of current calendarDate week
                 const startOfWeek = new Date(calendarDate);
                 startOfWeek.setDate(calendarDate.getDate() - calendarDate.getDay());
+                startOfWeek.setHours(0,0,0,0);
+                
                 const endOfWeek = new Date(startOfWeek);
                 endOfWeek.setDate(startOfWeek.getDate() + 6);
+                endOfWeek.setHours(0,0,0,0);
                 
                 const displayEl = document.getElementById('calendar-date-display');
                 if(displayEl) displayEl.textContent = `${startOfWeek.toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${endOfWeek.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}`;
@@ -1409,53 +1226,71 @@
                     const currentDay = new Date(startOfWeek);
                     currentDay.setDate(startOfWeek.getDate() + i);
                     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                    headerGrid.innerHTML += `<div class="font-bold text-center text-[10px] text-gray-500 uppercase">${days[i]} ${currentDay.getDate()}</div>`;
+                    headerGrid.innerHTML += `<div class="font-bold text-center text-[10px] text-gray-500 uppercase tracking-wider">${days[i]} ${currentDay.getDate()}</div>`;
                     
                     const dayStr = `${currentDay.getFullYear()}-${String(currentDay.getMonth()+1).padStart(2,'0')}-${String(currentDay.getDate()).padStart(2,'0')}`;
-                    grid.innerHTML += generateCalendarDayCell(dayStr, currentDay.getDate(), currentDay, today, agIds, fStatus, fProgType, fLevel, fProgramId, fSeason, "h-64");
+                    grid.innerHTML += generateCalendarDayCell(dayStr, currentDay.getDate(), currentDay, today, agIds, fProgType, fProgramId, fSeason, "h-64", view);
                 }
 
             } else if (view === 'day') {
-                // Day View Setup
                 headerGrid.className = "grid grid-cols-1 mb-2";
                 grid.className = "grid grid-cols-1 gap-2";
 
                 const daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                headerGrid.innerHTML = `<div class="font-bold text-left text-sm text-i9blue uppercase">${daysFull[calendarDate.getDay()]} Schedule</div>`;
+                headerGrid.innerHTML = `<div class="font-bold text-left text-sm text-i9blue uppercase tracking-wider">${daysFull[calendarDate.getDay()]} Schedule</div>`;
 
                 const displayEl = document.getElementById('calendar-date-display');
                 if(displayEl) displayEl.textContent = calendarDate.toLocaleDateString('en-US', {month: 'long', day:'numeric', year: 'numeric'});
 
                 const dayStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(calendarDate.getDate()).padStart(2,'0')}`;
-                grid.innerHTML += generateCalendarDayCell(dayStr, calendarDate.getDate(), calendarDate, today, agIds, fStatus, fProgType, fLevel, fProgramId, fSeason, "min-h-[400px]");
+                grid.innerHTML += generateCalendarDayCell(dayStr, calendarDate.getDate(), calendarDate, today, agIds, fProgType, fProgramId, fSeason, "min-h-[400px]", view);
             }
         }
 
         // Helper function for Calendar Cells
-        function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agIds, fStatus, fProgType, fLevel, fProgramId, fSeason, heightClass = "h-28") {
+        function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agIds, fProgType, fProgramId, fSeason, heightClass = "h-28", view = "month") {
+            renderDate.setHours(0,0,0,0);
+            const isToday = renderDate.getTime() === todayDate.getTime();
+            
             const dayTasks = activeTasks.filter(t => {
                 if(t.targetDate !== dayStr) return false;
                 if(!agIds.includes(t.groupId)) return false;
                 
-                if(fStatus !== 'ALL' && t.status !== fStatus) return false;
-
+                const isComplete = t.status === 'Complete';
+                const isInProgress = t.status === 'In Progress';
+                const isOverdue = !isComplete && (renderDate < todayDate);
                 const taskLevel = t.level || 'Operational';
-                if(fLevel !== 'ALL' && taskLevel !== fLevel) return false;
+
+                // Check Legend Toggles
+                if(isComplete && !calFilters.complete) return false;
+                if(isOverdue && !calFilters.overdue) return false;
+                if(isInProgress && !calFilters.inProgress) return false;
+                if(!isComplete && !isOverdue && !isInProgress) {
+                    if(taskLevel === 'Operational' && !calFilters.pendingOps) return false;
+                    if(taskLevel === 'Marketing' && !calFilters.pendingMktg) return false;
+                }
+
+                // Check standard dropdowns
                 if(fProgramId !== 'ALL' && t.programId !== fProgramId) return false;
                 
                 const p = programs.find(x => x.id === t.programId);
                 if(p) {
                     if(fProgType !== 'ALL' && p.type !== fProgType) return false;
                     if(fSeason !== 'ALL' && p.season !== fSeason) return false;
-                } else if (fProgType !== 'ALL' || fSeason !== 'ALL') return false; // If one-off and trying to filter by prog details
+                } else if (fProgType !== 'ALL' || fSeason !== 'ALL') return false; 
 
                 return true;
             });
 
-            const isToday = renderDate.getTime() === todayDate.getTime();
-            const dateStyle = isToday ? 'bg-i9blue text-white w-5 h-5 flex items-center justify-center rounded-full' : 'text-gray-400 group-hover:text-i9blue';
-            const cellHighlight = isToday ? 'ring-2 ring-i9blue border-transparent' : 'border-gray-200 hover:border-blue-300';
-            const todayText = isToday ? `<span class="text-[8px] uppercase tracking-wider font-black text-i9blue mr-1">TODAY</span>` : '';
+            let dateStyle = '';
+            if(isToday) {
+                dateStyle = 'bg-i9blue text-white w-6 h-6 flex items-center justify-center rounded-full text-xs shadow-md';
+            } else {
+                dateStyle = 'text-gray-400 group-hover:text-i9blue ' + (view === 'day' ? 'text-4xl opacity-40 mb-2' : 'text-[10px]');
+            }
+
+            const cellHighlight = isToday ? 'ring-2 ring-i9blue border-transparent shadow-sm' : 'border-gray-200 hover:border-blue-300';
+            const todayText = isToday ? `<span class="text-[9px] uppercase tracking-wider font-black text-i9blue mr-2">TODAY</span>` : '';
 
             let tasksHTML = dayTasks.map(t => {
                 const isComplete = t.status === 'Complete';
@@ -1475,20 +1310,66 @@
             }).join('');
 
             return `<div class="${heightClass} border ${cellHighlight} rounded p-1 overflow-y-auto bg-white flex flex-col relative group transition-colors">
-                <div class="flex justify-end items-center mb-2">${todayText}<span class="text-[10px] font-bold ${dateStyle}">${displayDay}</span></div>
+                <div class="flex justify-end items-center mb-2">${todayText}<span class="font-bold ${dateStyle}">${displayDay}</span></div>
                 <div class="flex-grow content-start space-y-1">${tasksHTML}</div>
             </div>`;
         }
 
         /* --- DASHBOARD --- */
+        function setDashboardFilter(f) { 
+            currentDashFilter = f; 
+            renderDashboard(); 
+        }
+
+        function renderDashList(containerId, tasks, emptyMsg) {
+            const el = document.getElementById(containerId);
+            el.innerHTML = '';
+            if(tasks.length === 0) {
+                el.innerHTML = `<p class="text-[11px] text-gray-500 italic p-3 bg-gray-50 rounded">${emptyMsg}</p>`;
+                return;
+            }
+            
+            tasks.sort((a,b) => new Date(a.targetDate) - new Date(b.targetDate));
+            
+            tasks.forEach(t => {
+                const isOverdue = t.status !== 'Complete' && (new Date(t.targetDate + "T00:00:00") < new Date().setHours(0,0,0,0));
+                const borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
+                const levelIcon = t.level === 'Marketing' ? '<i class="fa-solid fa-bullhorn text-emerald-600"></i>' : '<i class="fa-solid fa-gears text-i9blue"></i>';
+
+                el.innerHTML += `
+                <div class="p-2.5 bg-gray-50 border border-gray-200 rounded ${borderLeft} flex justify-between items-center transition hover:bg-gray-100 cursor-pointer mb-2" onclick="openEditActiveTask('${t.id}')">
+                    <div class="overflow-hidden pr-2">
+                        <div class="font-bold text-gray-800 text-xs flex items-center gap-1.5 truncate">${levelIcon} ${t.name}</div>
+                        <div class="text-[10px] text-gray-600 mt-0.5 truncate">Due: ${formatTargetDate(t.targetDate)} | Assigned: ${t.assignee || '<span class="text-rose-500 font-bold">Unassigned</span>'}</div>
+                    </div>
+                    <button class="text-gray-400 hover:text-i9blue flex-shrink-0"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                </div>`;
+            });
+        }
+
         function renderDashboard() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
+            
             let tot = 0, comp = 0, due = 0, over = 0, unassigned = 0;
-            const dashProg = document.getElementById('dashboard-season-progress'); if(dashProg) dashProg.innerHTML = '';
-            const dashOver = document.getElementById('dashboard-overdue-list'); if(dashOver) dashOver.innerHTML = '';
             const today = new Date(); today.setHours(0,0,0,0);
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+            
+            let todayTasks = [];
+            let myTasks = [];
+            let focusedTasks = [];
+
+            // Reset execution progress UI
+            document.getElementById('dashboard-season-progress').innerHTML = '';
+
+            const focusTitle = {
+                'active': '<i class="fa-solid fa-list-ul text-i9blue"></i> Focused Viewer: Active Tasks',
+                'completed': '<i class="fa-solid fa-circle-check text-emerald-600"></i> Focused Viewer: Completed',
+                'unassigned': '<i class="fa-solid fa-user-minus text-amber-600"></i> Focused Viewer: Unassigned',
+                'overdue': '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Focused Viewer: Overdue'
+            };
+            document.getElementById('dash-focused-title').innerHTML = focusTitle[currentDashFilter];
 
             programs.filter(p => agIds.includes(p.groupId)).forEach(p => {
                 const pTasks = activeTasks.filter(t => t.programId === p.id);
@@ -1501,11 +1382,10 @@
                 const pctOp = pTotOp > 0 ? Math.round((pCompOp/pTotOp)*100) : 0;
                 const pctMkt = pTotMkt > 0 ? Math.round((pCompMkt/pTotMkt)*100) : 0;
 
-                if(dashProg) { 
-                    dashProg.innerHTML += `
+                if (pTasks.length > 0) {
+                    document.getElementById('dashboard-season-progress').innerHTML += `
                     <div class="mb-4 bg-gray-50 border p-3 rounded">
                         <h4 class="text-[11px] font-bold text-gray-800 mb-2 border-b pb-1">[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</h4>
-                        
                         <div class="mb-2">
                             <div class="flex justify-between text-[10px] font-bold mb-1 text-gray-600">
                                 <span><i class="fa-solid fa-gears text-i9blue mr-1"></i> Operational Execution</span>
@@ -1513,7 +1393,6 @@
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-i9blue h-1.5 rounded-full" style="width: ${pctOp}%"></div></div>
                         </div>
-
                         <div>
                             <div class="flex justify-between text-[10px] font-bold mb-1 text-gray-600">
                                 <span><i class="fa-solid fa-bullhorn text-emerald-600 mr-1"></i> Marketing Execution</span>
@@ -1523,25 +1402,40 @@
                         </div>
                     </div>`; 
                 }
-                
-                pTasks.forEach(t => {
-                    tot++; if (t.status === "Complete") comp++;
-                    else {
-                        if (!t.assignee || t.assignee.trim() === '') unassigned++;
-                        const tgt = new Date(t.targetDate + "T00:00:00");
-                        if (today > tgt) {
-                            over++;
-                            if(dashOver) dashOver.innerHTML += `<div class="p-2 bg-rose-50 border border-rose-200 rounded text-xs flex justify-between items-center"><div class="font-bold text-rose-800">${t.name}<div class="text-[10px] text-rose-600 font-normal">Assigned: ${t.assignee || 'UNASSIGNED'} | Due: ${formatTargetDate(t.targetDate)}</div></div><button onclick="updateActiveTaskStatus('${t.id}', 'Complete')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded font-bold shadow-sm transition">Mark Done</button></div>`;
-                        } else if (today >= new Date(tgt.getTime() - (7*86400000))) { due++; }
-                    }
-                });
             });
 
-            if (dashOver && dashOver.innerHTML === '') dashOver.innerHTML = '<p class="text-xs text-gray-500 italic p-2 bg-gray-50 rounded">No overdue tasks!</p>';
-            const kTot = document.getElementById('kpi-total'); if(kTot) kTot.textContent = tot;
-            const kComp = document.getElementById('kpi-completed'); if(kComp) kComp.textContent = comp;
-            const kOver = document.getElementById('kpi-overdue'); if(kOver) kOver.textContent = over;
-            const kUn = document.getElementById('kpi-unassigned'); if(kUn) kUn.textContent = unassigned;
+            activeTasks.filter(t => agIds.includes(t.groupId)).forEach(t => {
+                const tgt = new Date(t.targetDate + "T00:00:00");
+                const isComplete = t.status === "Complete";
+                const isUnassigned = !t.assignee || t.assignee.trim() === '';
+                const isOverdue = !isComplete && (today > tgt);
+
+                // Process KPI Counters
+                if (!isComplete) tot++;
+                if (isComplete) comp++;
+                if (!isComplete && isUnassigned) unassigned++;
+                if (isOverdue) over++;
+
+                // Process Lists
+                if (t.targetDate === todayStr && !isComplete) todayTasks.push(t);
+                
+                const inNext7 = tgt >= today && tgt <= new Date(today.getTime() + (7*86400000));
+                if (t.assignee === currentUser.name && !isComplete && inNext7) myTasks.push(t);
+
+                if (currentDashFilter === 'active' && !isComplete) focusedTasks.push(t);
+                else if (currentDashFilter === 'completed' && isComplete) focusedTasks.push(t);
+                else if (currentDashFilter === 'unassigned' && !isComplete && isUnassigned) focusedTasks.push(t);
+                else if (currentDashFilter === 'overdue' && isOverdue) focusedTasks.push(t);
+            });
+
+            document.getElementById('kpi-total').textContent = tot;
+            document.getElementById('kpi-completed').textContent = comp;
+            document.getElementById('kpi-unassigned').textContent = unassigned;
+            document.getElementById('kpi-overdue').textContent = over;
+
+            renderDashList('dashboard-today-list', todayTasks, "No tasks due today. You're all caught up!");
+            renderDashList('dashboard-my-tasks', myTasks, "No upcoming tasks assigned to you.");
+            renderDashList('dashboard-focused-list', focusedTasks, "No tasks match this filter setting.");
         }
 
         /* --- PROGRAMS --- */
@@ -1567,7 +1461,7 @@
                         <td class="px-4 py-2 font-bold text-i9blue">${p.groupId}</td>
                         <td class="px-4 py-2 font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</td>
                         <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
-                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${p.dateStart || 'TBD'}${p.dateFinal ? `<br>Final: ${p.dateFinal}` : ''}</td>
+                        <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
                         <td class="px-4 py-2 text-[10px] text-gray-600">${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'}</td>
                         <td class="px-4 py-2 text-center whitespace-nowrap">
                             ${isManager ? `
@@ -1766,14 +1660,15 @@
 
         /* --- TASKS --- */
         
-        // Day formatting [DayOfWeek, MM, DD, YYYY]
+        // Target format: DayOfWeek, Month DD, YYYY (e.g. Monday, August 05, 2026)
         function formatTargetDate(dateStr) {
             if(!dateStr) return 'TBD';
             try {
                 const [y, m, d] = dateStr.split('-');
                 const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
                 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                return `${days[dateObj.getDay()]}, ${m}, ${d}, ${y}`;
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                return `${days[dateObj.getDay()]}, ${months[dateObj.getMonth()]} ${String(d).padStart(2,'0')}, ${y}`;
             } catch(e) { return dateStr; }
         }
 
@@ -2170,8 +2065,6 @@
             const titleEl = document.getElementById('brand-title-display'); if(titleEl) titleEl.textContent = currentBranding.title;
             const logoImg = document.getElementById('brand-logo-img'); if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
         }
-        function openBrandingModal() { document.getElementById('branding-modal').classList.remove('hidden'); }
-        function saveBranding(e) { e.preventDefault(); currentBranding.title = document.getElementById('branding-title-input').value.trim(); window.cloudSaveBranding(currentBranding); closeModals(); }
         function exportToCSV() { alert("Exporting current active tasks view to CSV..."); }
     </script>
 </body>
