@@ -141,6 +141,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content: Today & Focused Filter -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                         <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
@@ -157,6 +158,7 @@
                     </div>
                 </div>
                 
+                <!-- Side Panel: Progress & My Tasks -->
                 <div class="space-y-6">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                         <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
@@ -257,7 +259,7 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-list-check text-i9gold"></i> Task Directory</h2>
                         <p class="text-xs text-gray-500">Manage, execute, and track all tasks across your groups.</p>
                     </div>
-                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks">
+                    <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                         <i class="fa-solid fa-plus"></i> Add One-Off Task
                     </button>
                 </div>
@@ -282,13 +284,13 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="bulkEditOpen('tasks')" id="btn-task-bulk-edit" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks">
+                        <button onclick="bulkEditOpen('tasks')" id="btn-task-bulk-edit" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks">
+                        <button onclick="bulkArchiveTasks()" id="btn-task-bulk-archive" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
                             <i class="fa-solid fa-box-archive"></i> Archive Selected
                         </button>
-                        <button onclick="bulkDelete('tasks')" id="btn-task-bulk-delete" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups">
+                        <button onclick="bulkDelete('tasks')" id="btn-task-bulk-delete" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
                             <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
@@ -298,6 +300,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700">
                     <thead class="text-[11px] text-gray-600 uppercase bg-gray-50 border-b border-gray-200" id="task-table-head">
+                        <!-- Rendered dynamically -->
                     </thead>
                     <tbody id="active-task-table-body" class="divide-y divide-gray-200"></tbody>
                 </table>
@@ -312,7 +315,7 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-calendar-days text-i9gold"></i> Programs</h2>
                         <p class="text-xs text-gray-500">Establish program dates, deadlines, and generate task lists.</p>
                     </div>
-                    <div class="flex items-center gap-2 permission-create-program">
+                    <div class="flex items-center gap-2 permission-create-program hidden">
                         <button onclick="openAddProgramModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
                             <i class="fa-solid fa-plus text-i9gold"></i> Add New Program
                         </button>
@@ -322,7 +325,9 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-prog-group" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"><option value="ALL">All Groups</option></select>
-                        <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"></select>
+                        <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                            <!-- Populated dynamically -->
+                        </select>
                         <select id="filter-prog-season" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
                         </select>
@@ -331,13 +336,13 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="openImportModal('programs')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program">
+                        <button onclick="openImportModal('programs')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
                             <i class="fa-solid fa-file-import"></i> Import CSV
                         </button>
-                        <button onclick="bulkEditOpen('programs')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program">
+                        <button onclick="bulkEditOpen('programs')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-create-program hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('programs')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups">
+                        <button onclick="bulkDelete('programs')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
                             <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
@@ -369,7 +374,7 @@
                         <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Task Profiles</h2>
                         <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
                     </div>
-                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template">
+                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
                         <i class="fa-solid fa-plus text-i9gold"></i> Add Profile Rule
                     </button>
                 </div>
@@ -385,13 +390,13 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="openImportModal('templates')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template">
+                        <button onclick="openImportModal('templates')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
                             <i class="fa-solid fa-file-import"></i> Import CSV
                         </button>
-                        <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template">
+                        <button onclick="bulkEditOpen('templates')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-template hidden">
                             <i class="fa-solid fa-pen-to-square"></i> Bulk Edit
                         </button>
-                        <button onclick="bulkDelete('templates')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups">
+                        <button onclick="bulkDelete('templates')" class="bg-red-800 hover:bg-red-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-manage-groups hidden">
                             <i class="fa-solid fa-trash-can"></i> Delete Selected
                         </button>
                     </div>
@@ -418,11 +423,11 @@
             </div>
         </section>
 
-        <!-- TAB 6: ADMIN DASHBOARD -->
+        <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) -->
         <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
-                <p class="text-xs text-gray-500">Approve users, configure groups, review workload, and audit system activity across franchise groups.</p>
+                <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and view team workloads.</p>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -456,26 +461,16 @@
                     </div>
                 </div>
 
-                <!-- RIGHT COLUMN: ASSIGNEE WORKLOAD SUMMARY, GROUPS & INVITES -->
+                <!-- RIGHT COLUMN: WORKLOAD SUMMARY & GROUPS -->
                 <div class="space-y-6">
-                    <!-- ASSIGNEE WORKLOAD SUMMARY TABLE -->
-                    <div class="bg-white rounded-xl shadow-sm border border-indigo-200 overflow-hidden">
+                    <!-- SUGGESTION 2: ASSIGNEE WORKLOAD WIDGET -->
+                    <div class="bg-white rounded-xl shadow-sm border border-indigo-200">
                         <div class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-viewfinder text-i9gold"></i> Assignee Workload Summary</h4>
-                            <span class="text-[10px] text-gray-500 font-semibold">Executive Breakdown</span>
+                            <h4 class="text-xs font-bold text-indigo-900"><i class="fa-solid fa-chart-pie mr-1"></i> Team Workload Summary</h4>
+                            <span class="text-[10px] text-indigo-600 font-bold">Active Open Tasks</span>
                         </div>
-                        <div class="p-3 overflow-y-auto max-h-64">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-indigo-50/50 text-i9blue uppercase font-bold text-[10px]">
-                                    <tr>
-                                        <th class="p-2">Assignee</th>
-                                        <th class="p-2 text-center">Open Tasks</th>
-                                        <th class="p-2 text-center">Overdue</th>
-                                        <th class="p-2 text-center">Completed</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="assignee-workload-table-body" class="divide-y divide-gray-100"></tbody>
-                            </table>
+                        <div id="admin-workload-list" class="p-3 space-y-2 max-h-64 overflow-y-auto text-xs">
+                            <!-- Populated dynamically via JS -->
                         </div>
                     </div>
 
@@ -522,12 +517,14 @@
             </div>
         </section>
 
-        <!-- TAB 7: SETTINGS -->
+        <!-- TAB 7: SETTINGS (PERSONAL & SYSTEM PERMISSIONS) -->
         <section id="view-settings" class="tab-view hidden space-y-6 max-w-3xl mx-auto">
+            
+            <!-- Personal Account Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
                 <div class="border-b pb-4">
                     <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
-                    <p class="text-xs text-gray-500">Manage your personal details, credentials, and system options.</p>
+                    <p class="text-xs text-gray-500">Manage your profile, credentials, and view your system account links.</p>
                 </div>
 
                 <form onsubmit="handleProfileUpdate(event)" class="space-y-3 text-xs border-b pb-6">
@@ -554,13 +551,14 @@
 
                 <div class="space-y-3 text-xs pt-2">
                     <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
-                    <p class="text-gray-500 mb-2">Link your Google Workspace account for single sign-on integration.</p>
+                    <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
                     <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
                         <i class="fa-brands fa-google text-red-500 text-sm"></i> Link Google Account
                     </button>
                 </div>
             </div>
 
+            <!-- Group-Specific Permissions (Manage Groups Tier only) -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4 permission-manage-groups hidden">
                 <div class="border-b pb-4 flex flex-wrap justify-between items-end gap-3">
                     <div>
@@ -587,11 +585,12 @@
                     </table>
                 </div>
             </div>
+
         </section>
 
     </main>
 
-    <!-- FOOTER -->
+    <!-- FOOTER (Version Info) -->
     <footer class="text-center py-4 text-[10px] text-gray-400 mt-auto w-full">
         <p>PD Planner Engine &bull; Build Version <span id="app-version-display"></span></p>
     </footer>
@@ -1067,7 +1066,7 @@
         </div>
     </div>
 
-    <!-- ACTIVE TASK MODAL (WITH GOOGLE CALENDAR EXPORT BUTTON) -->
+    <!-- ACTIVE TASK MODAL -->
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -1127,14 +1126,14 @@
                 <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
                 <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
 
-                <!-- FOOTER ACTIONS WITH GOOGLE CALENDAR EXPORT BUTTON -->
-                <div class="flex justify-between items-center pt-2 border-t">
-                    <button type="button" onclick="exportTaskToGoogleCalendar()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shadow text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-brands fa-google"></i> Export to Google Calendar
+                <div class="flex justify-between items-center border-t pt-3">
+                    <!-- SUGGESTION 1: GOOGLE CALENDAR EXPORT BUTTON -->
+                    <button type="button" onclick="exportTaskToGoogleCalendar()" class="px-3 py-1.5 bg-blue-50 border border-blue-200 text-i9blue hover:bg-blue-100 rounded font-bold flex items-center gap-1.5 transition">
+                        <i class="fa-brands fa-google text-red-500"></i> Push to Google Calendar
                     </button>
                     <div class="flex gap-2">
-                        <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold text-xs">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow text-xs">Save Task</button>
+                        <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
                     </div>
                 </div>
             </form>
@@ -1253,7 +1252,6 @@
         </div>
     </div>
 
-    <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
@@ -1295,31 +1293,30 @@
                         overlay.style.display = 'flex';
                         overlay.classList.remove('hidden');
                     }
-                    const syncText = document.getElementById('sync-status-text');
-                    if (syncText) syncText.textContent = "Disconnected"; 
+                    document.getElementById('sync-status-text').textContent = "Disconnected"; 
                 }
             });
         } catch (e) { console.error("Firebase Init Error:", e); }
 
         function initRealtimeSync() {
             if (!auth.currentUser || !db) return;
-            const syncText = document.getElementById('sync-status-text');
-            if (syncText) syncText.textContent = "Cloud Active";
+            document.getElementById('sync-status-text').textContent = "Cloud Active";
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
-                window.groups = snap.docs.map(d => d.data()); 
-                window.renderGroupPills?.(); window.populateFilterOptions?.(); window.applyPermissions?.();
+                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions(); window.applyPermissions();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
                 let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
                 window.groupPermissions = p;
-                window.renderPermissions?.(); window.applyPermissions?.();
+                window.renderPermissions(); window.applyPermissions();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
                 window.users = snap.docs.map(d => d.data()); 
-                window.renderUsersTable?.(); window.checkPendingAlerts?.(); window.renderAssigneeWorkload?.();
+                window.renderUsersTable();
+                window.checkPendingAlerts();
+                window.renderWorkloadSummary();
                 
                 if (auth.currentUser) {
                     const em = auth.currentUser.email.toLowerCase();
@@ -1330,39 +1327,38 @@
                     }
 
                     if (matched) {
-                        if (!matched.territories) matched.territories = [];
                         window.currentUser = matched;
                         if (typeof currentUser !== 'undefined') currentUser = matched;
-                        window.unlockPortal?.();
+                        window.unlockPortal();
                     }
                 }
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
                 window.activityLogs = snap.docs.map(d => d.data());
-                window.renderActivityLog?.();
-                if(document.getElementById('view-control')?.classList.contains('hidden') === false) window.renderControlCenter?.();
-                if(document.getElementById('view-tasks')?.classList.contains('hidden') === false) window.renderActiveTasks?.();
-                if(document.getElementById('view-templates')?.classList.contains('hidden') === false) window.renderTemplates?.();
+                window.renderActivityLog();
+                if(document.getElementById('view-control').classList.contains('hidden') === false) window.renderControlCenter();
+                if(document.getElementById('view-tasks').classList.contains('hidden') === false) window.renderActiveTasks();
+                if(document.getElementById('view-templates').classList.contains('hidden') === false) window.renderTemplates();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
                 window.programs = snap.docs.map(d => d.data());
-                window.populateYearDropdowns?.(); window.populateFilterOptions?.(); window.renderControlCenter?.(); window.renderActiveTasks?.(); window.renderDashboard?.(); window.renderCalendar?.();
+                window.populateYearDropdowns(); window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'task_templates'), (snap) => {
                 window.templates = snap.docs.map(d => d.data());
-                window.renderTemplates?.();
+                window.renderTemplates();
             });
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
                 window.activeTasks = snap.docs.map(d => d.data());
-                window.renderActiveTasks?.(); window.renderDashboard?.(); window.renderCalendar?.(); window.renderAssigneeWorkload?.();
+                window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar(); window.renderWorkloadSummary();
             });
 
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
-                if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI?.(); }
+                if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI(); }
             });
         }
 
@@ -1385,9 +1381,10 @@
 
     <!-- APPLICATION ENGINE -->
     <script>
-        const APP_VERSION = "3.3.0 (Fully Complete Single-File Code)";
+        const APP_VERSION = "3.2.0 (Google Sync, Workload Summary & Holiday Shifts)";
         
-        let calendarDate = new Date(); calendarDate.setHours(0,0,0,0);
+        let calendarDate = new Date();
+        calendarDate.setHours(0,0,0,0);
         let currentDashFilter = 'active';
         let currentTaskView = 'active'; 
         let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdue: true, complete: true, milestones: true };
@@ -1395,12 +1392,12 @@
         const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
         const DEFAULT_PERMISSIONS = {
             "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
-            "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
-            "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
-            "Program Director": { manageGroups: false, createPrograms: true, editTemplates: false, editTasks: true },
+            "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+            "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
             "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
         };
-
+        
         const MARKETING_CATEGORIES = {
             "HubSpot Email": "bg-orange-500 text-white",
             "Operational Email": "bg-amber-700 text-white",
@@ -1432,15 +1429,16 @@
         window.groupPermissions = {}; 
 
         var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
-        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [], activityLogs = [];
+        var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
-        // 30-MINUTE INACTIVITY TIMEOUT LOGIC
+        // --- 30-MINUTE INACTIVITY TIMEOUT LOGIC ---
         const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
         let inactivityTimer = null;
 
         function resetInactivityTimer() {
             if (!currentUser && (!window.currentUser)) return;
             if (inactivityTimer) clearTimeout(inactivityTimer);
+            
             inactivityTimer = setTimeout(() => {
                 showToast("Session Expired", "Auto-logged out after 30 minutes of inactivity.");
                 logout();
@@ -1454,15 +1452,9 @@
         window.addEventListener('DOMContentLoaded', () => {
             const versionEl = document.getElementById('app-version-display');
             if(versionEl) versionEl.textContent = APP_VERSION;
-            applyBrandingUI(); populateYearDropdowns(); populateMarketingCats();
+            applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
+            populateMarketingCats();
         });
-
-        function applyBrandingUI() {
-            if (window.currentBranding) {
-                const titleEl = document.getElementById('brand-title-display');
-                if (titleEl) titleEl.textContent = window.currentBranding.title;
-            }
-        }
 
         function populateMarketingCats() {
             const sels = ['at-mktg-cat', 'tpl-mktg-cat'];
@@ -1490,127 +1482,6 @@
             return `${parts[1]}/${parts[2]}/${parts[0]}`;
         }
 
-        function getUSHoliday(dateObj) {
-            const y = dateObj.getFullYear(); const m = dateObj.getMonth(); const d = dateObj.getDate();
-            const nthDay = (nth, targetDayOfWeek, month) => {
-                let count = 0;
-                for (let i = 1; i <= 31; i++) {
-                    let tempDate = new Date(y, month, i);
-                    if (tempDate.getMonth() !== month) break;
-                    if (tempDate.getDay() === targetDayOfWeek) count++;
-                    if (count === nth) return i;
-                }
-                return null;
-            };
-            const lastDay = (targetDayOfWeek, month) => {
-                for (let i = 31; i > 0; i--) {
-                    let tempDate = new Date(y, month, i);
-                    if (tempDate.getMonth() === month && tempDate.getDay() === targetDayOfWeek) return i;
-                }
-                return null;
-            };
-
-            if (m === 0 && d === 1) return "New Year's Day";
-            if (m === 0 && d === nthDay(3, 1, 0)) return "MLK Jr. Day";
-            if (m === 1 && d === nthDay(3, 1, 1)) return "Presidents' Day";
-            if (m === 4 && d === lastDay(1, 4)) return "Memorial Day";
-            if (m === 5 && d === 19) return "Juneteenth";
-            if (m === 6 && d === 4) return "Independence Day";
-            if (m === 8 && d === nthDay(1, 1, 8)) return "Labor Day";
-            if (m === 9 && d === nthDay(2, 1, 9)) return "Columbus Day";
-            if (m === 10 && d === 11) return "Veterans Day";
-            if (m === 10 && d === nthDay(4, 4, 10)) return "Thanksgiving";
-            if (m === 11 && d === 25) return "Christmas Day";
-            return null;
-        }
-
-        /* --- AUTOMATED HOLIDAY SHIFT PROMPT --- */
-        function checkAndShiftHoliday(dateStr) {
-            if (!dateStr) return dateStr;
-            const d = new Date(dateStr + "T00:00:00");
-            const holiday = getUSHoliday(d);
-            if (holiday) {
-                const confirmShift = confirm(`Notice: Target date (${formatTargetDate(dateStr)}) falls on ${holiday}.\n\nWould you like to automatically shift the deadline by +1 day?`);
-                if (confirmShift) {
-                    d.setDate(d.getDate() + 1);
-                    const shiftedStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                    showToast("Holiday Shift Applied", `Deadline shifted from ${holiday} to ${formatTargetDate(shiftedStr)}.`);
-                    return shiftedStr;
-                }
-            }
-            return dateStr;
-        }
-
-        /* --- GOOGLE CALENDAR EXPORT FEATURE --- */
-        function exportTaskToGoogleCalendar() {
-            const name = document.getElementById('at-name').value.trim();
-            const dateStr = document.getElementById('at-date').value;
-            const desc = document.getElementById('at-desc').value.trim();
-            const level = document.getElementById('at-level').value;
-            const assignee = document.getElementById('at-assignee').value;
-
-            if (!name || !dateStr) {
-                alert("Please specify a task name and target date before exporting to Google Calendar.");
-                return;
-            }
-
-            const formattedStart = dateStr.replace(/-/g, '');
-            const d = new Date(dateStr + "T00:00:00");
-            d.setDate(d.getDate() + 1);
-            const formattedEnd = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-
-            const detailsText = `${desc ? desc + '\n\n' : ''}Task Level: ${level}\nAssignee: ${assignee || 'Unassigned'}\nSource: Program Director Planner`;
-
-            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(name)}&dates=${formattedStart}/${formattedEnd}&details=${encodeURIComponent(detailsText)}`;
-
-            window.open(gcalUrl, '_blank');
-            showToast("Google Calendar", "Opening Google Calendar event creator...");
-        }
-
-        /* --- ASSIGNEE WORKLOAD SUMMARY FEATURE --- */
-        function renderAssigneeWorkload() {
-            const tb = document.getElementById('assignee-workload-table-body');
-            if (!tb) return;
-            tb.innerHTML = '';
-
-            const agIds = getAuthorizedGroups().map(g => g.id);
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            const visibleTasks = (window.activeTasks || []).filter(t => (t.groupId === 'ALL' || agIds.includes(t.groupId)) && t.status !== 'Archived');
-
-            const workload = {};
-            (window.users || []).forEach(u => { workload[u.name] = { open: 0, overdue: 0, completed: 0 }; });
-            workload['Unassigned'] = { open: 0, overdue: 0, completed: 0 };
-
-            visibleTasks.forEach(t => {
-                const key = t.assignee && t.assignee.trim() ? t.assignee.trim() : 'Unassigned';
-                if (!workload[key]) workload[key] = { open: 0, overdue: 0, completed: 0 };
-
-                if (t.status === 'Complete') {
-                    workload[key].completed++;
-                } else {
-                    workload[key].open++;
-                    if (t.targetDate && t.targetDate < todayStr) workload[key].overdue++;
-                }
-            });
-
-            const rows = Object.entries(workload).filter(([_, stats]) => stats.open > 0 || stats.overdue > 0 || stats.completed > 0);
-
-            if (rows.length === 0) {
-                tb.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-400 italic">No tasks recorded across your franchise groups.</td></tr>`;
-                return;
-            }
-
-            rows.forEach(([name, stats]) => {
-                tb.innerHTML += `<tr class="hover:bg-gray-50">
-                    <td class="p-2 font-bold text-gray-800">${name} ${name === 'Unassigned' ? '<span class="text-rose-500 font-normal text-[10px]">(Missing)</span>' : ''}</td>
-                    <td class="p-2 text-center font-bold text-i9blue">${stats.open}</td>
-                    <td class="p-2 text-center font-bold ${stats.overdue > 0 ? 'text-rose-600' : 'text-gray-400'}">${stats.overdue}</td>
-                    <td class="p-2 text-center text-emerald-600 font-semibold">${stats.completed}</td>
-                </tr>`;
-            });
-        }
-
         function calculateNewTargetDate(p, tpl) {
             let anchorDateStr = p[tpl.anchor]; 
             if (!anchorDateStr) return '';
@@ -1621,6 +1492,25 @@
             return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         }
 
+        // SUGGESTION 3: AUTOMATED HOLIDAY SHIFT HELPER
+        function checkHolidayShift(dateStr, itemName = "Task") {
+            if (!dateStr) return dateStr;
+            const [y, m, d] = dateStr.split('-');
+            const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            const holiday = getUSHoliday(dateObj);
+
+            if (holiday) {
+                if (confirm(`Notice: Target date for "${itemName}" falls on ${holiday} (${formatTargetDate(dateStr)}).\n\nWould you like to shift the deadline +1 day forward to the next business day?`)) {
+                    dateObj.setDate(dateObj.getDate() + 1);
+                    const newDateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
+                    showToast("Holiday Shift Applied", `Deadline pushed +1 day to ${formatTargetDate(newDateStr)}.`);
+                    return newDateStr;
+                }
+            }
+            return dateStr;
+        }
+
+        window.activityLogs = [];
         function logActivity(groupId, action, details, itemId = null) {
             if(!currentUser) return;
             const log = {
@@ -1636,14 +1526,23 @@
             window.cloudSave('activity_logs', log.id, log);
         }
 
-        function renderActivityLog() {
+        function getRecentLogHTML(itemId) {
+            if(!window.activityLogs) return '';
+            const logs = window.activityLogs.filter(l => l.itemId === itemId).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            if(logs.length > 0) {
+                const lg = logs[0];
+                return `<div class="text-[9px] text-gray-400 mt-1 italic" title="${lg.details.replace(/"/g, '&quot;')}"><i class="fa-solid fa-clock-rotate-left"></i> ${lg.action} by ${lg.userName} (${new Date(lg.timestamp).toLocaleDateString()})</div>`;
+            }
+            return '';
+        }
+
+        window.renderActivityLog = function() {
             const tb = document.getElementById('activity-log-table');
             if(!tb) return; tb.innerHTML = '';
             if(!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
-            const terrs = currentUser.territories || [];
             
-            const visibleLogs = (window.activityLogs || []).filter(l => terrs.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const visibleLogs = window.activityLogs.filter(l => currentUser.territories.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
             
             visibleLogs.forEach(l => {
                 tb.innerHTML += `<tr class="hover:bg-gray-50">
@@ -1656,9 +1555,91 @@
             });
         }
 
+        function openHistoryModal(itemId, itemName) {
+            document.getElementById('history-modal-title').textContent = `Change log for: ${itemName}`;
+            const tb = document.getElementById('history-modal-table-body');
+            tb.innerHTML = '';
+            
+            const logs = window.activityLogs.filter(l => l.itemId === itemId).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            if(logs.length === 0) {
+                tb.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">No history logged for this item yet.</td></tr>`;
+            } else {
+                logs.forEach(l => {
+                    tb.innerHTML += `<tr class="hover:bg-gray-50">
+                        <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
+                        <td class="p-3 font-bold text-gray-800">${l.userName}</td>
+                        <td class="p-3 font-bold text-i9blue text-[10px]">${l.action}</td>
+                        <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
+                    </tr>`;
+                });
+            }
+            document.getElementById('history-modal').classList.remove('hidden');
+        }
+
+        // SUGGESTION 2: ASSIGNEE WORKLOAD SUMMARY
+        function renderWorkloadSummary() {
+            const container = document.getElementById('admin-workload-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            const agIds = getAuthorizedGroups().map(g=>g.id);
+            const workloadMap = {};
+
+            users.forEach(u => { workloadMap[u.name] = { total: 0, pending: 0, inProgress: 0, overdue: 0 }; });
+            workloadMap['Unassigned'] = { total: 0, pending: 0, inProgress: 0, overdue: 0 };
+
+            const today = new Date(); today.setHours(0,0,0,0);
+
+            activeTasks.filter(t => agIds.includes(t.groupId) && t.status !== 'Archived' && t.status !== 'Complete' && !t.isNote).forEach(t => {
+                const assigneeKey = (t.assignee && t.assignee.trim() !== '') ? t.assignee : 'Unassigned';
+                if (!workloadMap[assigneeKey]) workloadMap[assigneeKey] = { total: 0, pending: 0, inProgress: 0, overdue: 0 };
+
+                workloadMap[assigneeKey].total++;
+                if (t.status === 'In Progress') workloadMap[assigneeKey].inProgress++;
+                else workloadMap[assigneeKey].pending++;
+
+                const tgt = new Date(t.targetDate + "T00:00:00");
+                if (today > tgt) workloadMap[assigneeKey].overdue++;
+            });
+
+            Object.keys(workloadMap).sort().forEach(name => {
+                const w = workloadMap[name];
+                if (w.total > 0 || users.some(u=>u.name===name)) {
+                    container.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200">
+                        <div>
+                            <p class="font-bold text-gray-800 text-xs">${name}</p>
+                            <p class="text-[10px] text-gray-500">${w.inProgress} In-Progress | ${w.pending} Pending</p>
+                        </div>
+                        <div class="flex gap-1 items-center">
+                            ${w.overdue > 0 ? `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold text-[10px]" title="Overdue">${w.overdue} Overdue</span>` : ''}
+                            <span class="bg-i9blue text-white px-2.5 py-1 rounded font-bold text-[10px]">${w.total} Tasks</span>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+
+        // SUGGESTION 1: EXPORT TASK TO GOOGLE CALENDAR
+        function exportTaskToGoogleCalendar() {
+            const taskName = document.getElementById('at-name').value.trim();
+            const taskDesc = document.getElementById('at-desc').value.trim();
+            const dateStr = document.getElementById('at-date').value;
+
+            if (!taskName || !dateStr) return alert("Please enter a Task Name and Target Date first.");
+
+            const dateClean = dateStr.replace(/-/g, '');
+            const startTime = `${dateClean}T090000Z`;
+            const endTime = `${dateClean}T100000Z`;
+
+            const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(taskName)}&details=${encodeURIComponent(taskDesc)}&dates=${startTime}/${endTime}`;
+            window.open(googleCalUrl, '_blank');
+            showToast("Opening Calendar", "Redirecting to Google Calendar event builder...");
+        }
+
         /* --- MILESTONE PRICING SCHEDULE SLIDE PANE --- */
         function openPricingPane(progId) {
-            const p = (window.programs || []).find(x => x.id === progId);
+            const p = programs.find(x => x.id === progId);
             if (!p) return;
             document.getElementById('pp-prog-id').value = p.id;
             
@@ -1680,7 +1661,7 @@
         function saveProgramPricingSchedule(e) {
             e.preventDefault();
             const progId = document.getElementById('pp-prog-id').value;
-            const p = (window.programs || []).find(x => x.id === progId);
+            const p = programs.find(x => x.id === progId);
             if (!p) return;
 
             const ps = {
@@ -1693,6 +1674,7 @@
             p.pricingSchedule = ps;
             window.cloudSaveProgram(p);
 
+            // Auto-Generate / Update Price Note Events
             const milestoneMap = [
                 { anchorKey: 'dateOffseason', label: 'Offseason Price Increase', priceVal: ps.dateOffseason },
                 { anchorKey: 'dateEarly', label: 'Early Deadline Price Increase', priceVal: ps.dateEarly },
@@ -1703,7 +1685,7 @@
             milestoneMap.forEach(m => {
                 if (p[m.anchorKey] && m.priceVal) {
                     const taskName = `[Price Alert] ${p.preHeader || ''} ${p.season} ${p.type}: ${m.label} ($${m.priceVal})`;
-                    const existingNote = (window.activeTasks || []).find(t => t.programId === p.id && t.isNote && t.notes === `PRICE_AUTONOTE_${m.anchorKey}`);
+                    const existingNote = activeTasks.find(t => t.programId === p.id && t.isNote && t.notes === `PRICE_AUTONOTE_${m.anchorKey}`);
 
                     if (existingNote) {
                         existingNote.name = taskName;
@@ -1739,11 +1721,11 @@
         }
 
         function generateTaskPlan(progId, targetLevel) {
-            const p = (window.programs || []).find(x => x.id === progId);
+            const p = programs.find(x => x.id === progId);
             if (!p) return;
             
             let genCount = 0;
-            (window.templates || []).forEach(tpl => {
+            templates.forEach(tpl => {
                 if ((tpl.level || 'Operational') !== targetLevel) return;
                 
                 if (tpl.groupId !== 'ALL' && tpl.groupId !== p.groupId) return;
@@ -1751,10 +1733,10 @@
                 if (tpl.seasons && !tpl.seasons.includes(p.season)) return;
                 if (tpl.preHeader && p.preHeader && tpl.preHeader !== p.preHeader && tpl.preHeader !== 'ALL') return;
 
-                const existing = (window.activeTasks || []).find(t => t.programId === p.id && t.templateId === tpl.id && t.status !== 'Archived');
+                const existing = activeTasks.find(t => t.programId === p.id && t.templateId === tpl.id && t.status !== 'Archived');
                 if (existing) return;
 
-                const tDate = calculateNewTargetDate(p, tpl);
+                let tDate = calculateNewTargetDate(p, tpl);
                 if (!tDate) return;
 
                 const newTask = {
@@ -1783,6 +1765,29 @@
             showToast(`${targetLevel} Plan Generated`, `Created ${genCount} new tasks for ${p.groupId} ${p.season}.`);
         }
 
+        function syncProgramTasks(progId) {
+            const p = programs.find(x => x.id === progId);
+            if (!p) return;
+
+            const linkedTasks = activeTasks.filter(t => t.programId === p.id && !t.isOneOff && t.status !== 'Archived');
+            let updateCount = 0;
+
+            linkedTasks.forEach(t => {
+                const tpl = templates.find(x => x.id === t.templateId);
+                if (tpl) {
+                    const newDate = calculateNewTargetDate(p, tpl);
+                    if (newDate && t.targetDate !== newDate) {
+                        t.targetDate = newDate;
+                        window.cloudSaveActiveTask(t);
+                        updateCount++;
+                    }
+                }
+            });
+
+            logActivity(p.groupId, 'Task Dates Synced', `Re-aligned ${updateCount} task dates for Program ${p.id}`, p.id);
+            showToast("Sync Complete", `${updateCount} task deadlines were updated to match the current program milestones.`);
+        }
+
         function saveBranding(e) {
             e.preventDefault();
             currentBranding.title = document.getElementById('branding-title-input').value;
@@ -1792,14 +1797,89 @@
             showToast("Branding Saved", "Theme updated successfully.");
         }
 
+        function populateYearDropdowns() {
+            const currentYear = new Date().getFullYear(); 
+            const startYear = 2026;
+            const endYear = currentYear + 4;
+            
+            let yearsSet = new Set();
+            for(let y = startYear; y <= endYear; y++) yearsSet.add(y.toString());
+            
+            if (window.programs) {
+                window.programs.forEach(p => { if (p.year) yearsSet.add(p.year.toString()); });
+            }
+            
+            let sortedYears = Array.from(yearsSet).sort((a,b) => parseInt(a) - parseInt(b));
+            
+            const yearEls = ['prog-year', 'filter-prog-year', 'be-year'];
+            yearEls.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    let prevVal = el.value;
+                    let html = id === 'filter-prog-year' ? '<option value="ALL">All Years</option>' : '';
+                    sortedYears.forEach(y => { html += `<option value="${y}">${y}</option>`; });
+                    el.innerHTML = html;
+                    if (prevVal && sortedYears.includes(prevVal)) el.value = prevVal;
+                }
+            });
+        }
+
+        function getUSHoliday(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = dateObj.getMonth();
+            const d = dateObj.getDate();
+
+            const nthDay = (nth, targetDayOfWeek, month) => {
+                let count = 0;
+                for (let i = 1; i <= 31; i++) {
+                    let tempDate = new Date(y, month, i);
+                    if (tempDate.getMonth() !== month) break;
+                    if (tempDate.getDay() === targetDayOfWeek) count++;
+                    if (count === nth) return i;
+                }
+                return null;
+            };
+
+            const lastDay = (targetDayOfWeek, month) => {
+                for (let i = 31; i > 0; i--) {
+                    let tempDate = new Date(y, month, i);
+                    if (tempDate.getMonth() === month && tempDate.getDay() === targetDayOfWeek) return i;
+                }
+                return null;
+            };
+
+            if (m === 0 && d === 1) return "New Year's Day";
+            if (m === 0 && d === nthDay(3, 1, 0)) return "MLK Jr. Day";
+            if (m === 1 && d === nthDay(3, 1, 1)) return "Presidents' Day";
+            if (m === 4 && d === lastDay(1, 4)) return "Memorial Day";
+            if (m === 5 && d === 19) return "Juneteenth";
+            if (m === 6 && d === 4) return "Independence Day";
+            if (m === 8 && d === nthDay(1, 1, 8)) return "Labor Day";
+            if (m === 9 && d === nthDay(2, 1, 9)) return "Columbus Day";
+            if (m === 10 && d === 11) return "Veterans Day";
+            if (m === 10 && d === nthDay(4, 4, 10)) return "Thanksgiving";
+            if (m === 11 && d === 25) return "Christmas Day";
+
+            return null;
+        }
+
         function showToast(title, message) {
             const container = document.getElementById('toast-container');
             if (!container) return;
             const toast = document.createElement('div');
             toast.className = "bg-gray-900 text-white p-3 rounded-lg shadow-xl text-xs flex items-center gap-3 border border-gray-700 transition-all duration-300 pointer-events-auto";
-            toast.innerHTML = `<div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div><div><p class="font-bold">${title}</p><p class="text-gray-300 text-[11px]">${message}</p></div>`;
+            toast.innerHTML = `
+                <div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div>
+                <div>
+                    <p class="font-bold">${title}</p>
+                    <p class="text-gray-300 text-[11px]">${message}</p>
+                </div>
+            `;
             container.appendChild(toast);
-            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function togglePasswordVisibility(inputId, btn) {
@@ -1811,17 +1891,19 @@
 
         /* --- AUTHENTICATION & USER MANAGEMENT --- */
         function toggleAuthMode(mode) {
-            document.getElementById('auth-error').classList.add('hidden');
+            const err = document.getElementById('auth-error'); err.classList.add('hidden');
             if (mode === 'login') {
                 document.getElementById('form-login').classList.remove('hidden');
                 document.getElementById('form-signup').classList.add('hidden');
                 document.getElementById('tab-login').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
                 document.getElementById('tab-signup').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
+                document.getElementById('auth-title').textContent = "Sign In to PD Planner";
             } else {
                 document.getElementById('form-login').classList.add('hidden');
                 document.getElementById('form-signup').classList.remove('hidden');
                 document.getElementById('tab-signup').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
                 document.getElementById('tab-login').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
+                document.getElementById('auth-title').textContent = "Request Access";
             }
         }
 
@@ -1840,6 +1922,7 @@
             e.preventDefault();
             const em = document.getElementById('login-email').value.trim().toLowerCase();
             const pw = document.getElementById('login-password').value.trim();
+            
             try {
                 showToast("Connecting", "Verifying credentials...");
                 const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
@@ -1851,13 +1934,12 @@
                     showToast("Welcome", "Logged in as System Admin"); return;
                 }
 
-                let matched = (window.users || []).find(u => u.username.toLowerCase() === em);
+                let matched = window.users.find(u => u.username.toLowerCase() === em);
                 if (!matched) {
                     matched = { username: em, name: authUser.displayName || "New User", firstName: "Unknown", lastName: "User", phone: "N/A", role: "Pending", territories: [] };
-                    await window.cloudSaveUser(matched);
+                    await window.cloudSaveUser(matched); window.users.push(matched);
                 }
 
-                if (!matched.territories) matched.territories = [];
                 currentUser = matched; window.currentUser = matched; unlockPortal();
                 showToast("Welcome", `Logged in as ${matched.name}`);
 
@@ -1866,37 +1948,47 @@
 
         async function triggerPasswordReset() {
             const em = document.getElementById('login-email').value.trim();
-            if (!em) return showError("Please enter your email address first.");
-            try { await window.sendPasswordResetEmail(window.auth, em); alert(`A password reset link has been sent to ${em}.`); } catch (error) { showError("Error: " + error.message); }
+            if (!em) return showError("Please enter your email address first to reset your password.");
+            try { await window.sendPasswordResetEmail(window.auth, em); document.getElementById('auth-error').classList.add('hidden'); alert(`Success! A password reset link has been sent to ${em}.`); } catch (error) { showError("Error: " + error.message); }
+        }
+
+        async function adminSendPasswordReset(email) {
+            if(confirm(`Send an automated password reset email to ${email}?`)) {
+                try { await window.sendPasswordResetEmail(window.auth, email); showToast("Success", `Reset link sent to ${email}`); } catch(error) { alert("Error sending reset link: " + error.message); }
+            }
+        }
+
+        function generateInviteEmail() {
+            const email = document.getElementById('invite-email-input').value.trim();
+            const subject = encodeURIComponent("Invitation: Access the Program Director Planner");
+            const body = encodeURIComponent(`Hello,\n\nYou have been invited to join the Program Director Planner portal.\n\nPlease visit the portal, click 'Register / Join Group', and set up your secure account.\n\nThank you.`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; showToast("Draft Generated", "Your email client should open shortly.");
         }
 
         async function signup(e) {
             e.preventDefault();
-            const fName = document.getElementById('signup-first').value.trim();
-            const lName = document.getElementById('signup-last').value.trim();
-            const phone = document.getElementById('signup-phone').value.trim();
-            const em = document.getElementById('signup-email').value.trim();
-            const pw = document.getElementById('signup-password').value.trim();
-            const action = document.querySelector('input[name="signup-action"]:checked').value;
+            const fName = document.getElementById('signup-first').value.trim(); const lName = document.getElementById('signup-last').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim(); const em = document.getElementById('signup-email').value.trim();
+            const pw = document.getElementById('signup-password').value.trim(); const action = document.querySelector('input[name="signup-action"]:checked').value;
             
             const fullName = `${fName} ${lName}`;
             const uObj = { username: em, name: fullName, firstName: fName, lastName: lName, phone: phone, role: 'Pending', territories: [] };
             let newGroupData = null;
 
             if(action === 'create') {
-                const validIds = (window.groups || []).map(g => parseInt(g.id)).filter(id => !isNaN(id));
-                const newId = (validIds.length > 0 ? Math.max(...validIds) : 8765).toString();
+                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                const newId = (validIds.length > 0 ? Math.max(...validIds) : 8764 + 1).toString();
                 const gName = document.getElementById('signup-create-name').value.trim();
                 newGroupData = { id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' };
                 uObj.role = 'Group Owner'; uObj.territories = [newId];
             } else {
                 const joinId = document.getElementById('signup-join-id').value.trim();
-                if(!(window.groups || []).find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
+                if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
                 uObj.territories = [joinId];
             }
 
             try {
-                showToast("Registering", "Creating account...");
+                showToast("Registering", "Creating secure account...");
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
                 if (newGroupData) window.cloudSaveGroup(newGroupData);
                 window.cloudSaveUser(uObj);
@@ -1904,6 +1996,7 @@
         }
 
         async function loginWithGoogle() { try { await window.signInWithGoogle(); showToast("Success", "Verifying Google Account..."); } catch (error) { showError(error.message); } }
+        
         async function logout() {
             if (inactivityTimer) clearTimeout(inactivityTimer);
             try { if (window.signOut) await window.signOut(); } catch (e) { console.error("Sign out error:", e); }
@@ -1918,24 +2011,20 @@
         function unlockPortal() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
-            if (!currentUser.territories) currentUser.territories = [];
-
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
-            
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
-            
-            populateFilterOptions(); populateProfileForm(); applyPermissions(); 
-            renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); renderCalendar(); renderAssigneeWorkload(); checkPendingAlerts(); renderGroupPills(); renderUsersTable();
+            populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
             resetInactivityTimer();
         }
 
         function checkPendingAlerts() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
             const badge = document.getElementById('admin-alert-badge');
-            if (!badge) return;
-            const pendingCount = (window.users || []).filter(u => u.role === 'Pending').length;
-            if (pendingCount > 0 && hasPermission('manageGroups')) {
-                badge.textContent = pendingCount; badge.classList.remove('hidden');
+            if (!badge || !currentUser) return;
+            if(hasPermission('manageGroups')) {
+                const pendingCount = users.filter(u => u.role === 'Pending').length;
+                if(pendingCount > 0) { badge.textContent = pendingCount; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
             } else badge.classList.add('hidden');
         }
 
@@ -1943,36 +2032,43 @@
             if (!currentUser) return false;
             if (currentUser.role === 'System Admin') return true;
             
-            const terrs = currentUser.territories || [];
-            const checkGroups = terrs.includes('ALL') ? (window.groups || []).map(g=>g.id) : terrs;
+            let hasIt = false;
+            const checkGroups = currentUser.territories.includes('ALL') ? groups.map(g=>g.id) : currentUser.territories;
             
             for (let gId of checkGroups) {
-                let gPerms = (window.groupPermissions || {})[gId] || window.DEFAULT_PERMISSIONS;
-                let rolePerms = gPerms[currentUser.role] || window.DEFAULT_PERMISSIONS[currentUser.role] || window.DEFAULT_PERMISSIONS["Staff"];
-                if (rolePerms && rolePerms[permKey]) return true;
+                let gPerms = window.groupPermissions[gId] || window.DEFAULT_PERMISSIONS;
+                let rolePerms = gPerms[currentUser.role] || window.DEFAULT_PERMISSIONS["Staff"];
+                if (rolePerms[permKey]) {
+                    hasIt = true;
+                    break;
+                }
             }
-            return false;
+            return hasIt;
         }
 
+        // BUG FIX: Corrected permission class display toggles
         function applyPermissions() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
-            const terrs = currentUser.territories || [];
-
             document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
-            document.getElementById('user-display-scope').textContent = `Groups: ${terrs.includes('ALL') ? 'All Network' : terrs.join(', ') || 'None'}`;
+            document.getElementById('user-display-scope').textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Network' : currentUser.territories.join(', ') || 'None'}`;
             
             const canManageGroups = hasPermission('manageGroups');
             const canCreatePrograms = hasPermission('createPrograms');
             const canEditTemplates = hasPermission('editTemplates');
             const canEditTasks = hasPermission('editTasks');
+            
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-create-program').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
-            document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.toggle('hidden', !canManageGroups));
-            document.querySelectorAll('.permission-create-program').forEach(el => el.classList.toggle('hidden', !canCreatePrograms));
-            document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.toggle('hidden', !canEditTemplates));
-            document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.toggle('hidden', !canEditTasks));
-
-            if (canManageGroups) document.getElementById('tab-admin').classList.remove('hidden');
+            if (currentUser.role === 'System Admin') document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            if (canManageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('tab-admin').classList.remove('hidden'); }
+            if (canCreatePrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
+            if (canEditTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
+            if (canEditTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
         }
 
         function populateProfileForm() {
@@ -1983,62 +2079,53 @@
         }
 
         function handleProfileUpdate(e) {
-            e.preventDefault(); if (!currentUser) return;
+            e.preventDefault();
+            if (!currentUser) return;
             currentUser.firstName = document.getElementById('setting-first').value.trim();
             currentUser.lastName = document.getElementById('setting-last').value.trim();
             currentUser.name = `${currentUser.firstName} ${currentUser.lastName}`;
             currentUser.phone = document.getElementById('setting-phone').value.trim();
             window.cloudSaveUser(currentUser);
             applyPermissions(); 
-            showToast("Success", "Profile updated.");
+            showToast("Success", "Personal profile details updated.");
         }
 
         async function handleEmailUpdate(e) {
             e.preventDefault(); if (!currentUser) return;
             const newEmail = document.getElementById('setting-new-email').value.trim();
-            try { await window.updateEmail(window.auth.currentUser, newEmail); currentUser.username = newEmail; window.cloudSaveUser(currentUser); showToast("Success", "Email updated."); } catch (err) { alert(err.message); }
+            try { await window.updateEmail(window.auth.currentUser, newEmail); currentUser.username = newEmail; window.currentUser = currentUser; window.cloudSaveUser(currentUser); showToast("Success", "Email updated in cloud."); } catch (err) { alert(err.message); }
         }
 
         async function handlePasswordUpdate(e) {
             e.preventDefault(); if (!currentUser) return;
             const pw = document.getElementById('setting-new-password').value;
-            try { await window.updatePassword(window.auth.currentUser, pw); showToast("Success", "Password updated."); } catch (err) { alert(err.message); }
+            try { await window.updatePassword(window.auth.currentUser, pw); showToast("Success", "Password forcefully updated."); } catch (err) { alert("Security Notice: Please sign out and sign back in before updating password. " + err.message); }
         }
 
-        async function linkGoogleAccount() { try { await window.linkGoogle(); showToast("Success", "Google account linked!"); } catch (err) { alert(err.message); } }
+        async function linkGoogleAccount() { try { await window.linkGoogle(); showToast("Success", "Google account linked successfully!"); } catch (err) { alert(err.message); } }
 
+        /* --- CORE APPLICATION LOGIC & UI --- */
         function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap" + (btn.classList.contains('permission-manage-groups') ? ' hidden permission-manage-groups' : '') + (btn.classList.contains('admin-only') ? ' hidden admin-only' : ''));
             document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.replace('border-i9blue', 'border-transparent'));
-            
-            const targetView = document.getElementById(`view-${tab}`);
-            const targetTab = document.getElementById(`tab-${tab}`);
-            if (targetView) targetView.classList.remove('hidden');
-            if (targetTab) targetTab.classList.replace('border-transparent', 'border-i9blue');
-
+            document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap";
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
             if (tab === 'dashboard') renderDashboard();
             if (tab === 'calendar') renderCalendar();
-            if (tab === 'tasks') renderActiveTasks();
-            if (tab === 'control') renderControlCenter();
-            if (tab === 'templates') renderTemplates();
-            if (tab === 'admin') { renderUsersTable(); renderAssigneeWorkload(); }
             if (tab === 'settings') populateProfileForm();
-            applyPermissions();
+            applyPermissions(); 
         }
 
         function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
-        
         function getAuthorizedGroups() { 
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
-            if (!currentUser) return [];
-            const terrs = currentUser.territories || [];
-            const allGroups = window.groups || [];
-            return terrs.includes('ALL') ? allGroups.filter(g=>g.status!=='Archived') : allGroups.filter(g => terrs.includes(g.id) && g.status!=='Archived'); 
+            return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); 
         }
-
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
 
         function populateFilterOptions() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
             const ag = getAuthorizedGroups();
             const pGroup = document.getElementById('prog-group');
             const atGroup = document.getElementById('at-program');
@@ -2060,11 +2147,11 @@
                 if(permGroupSelect) permGroupSelect.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
             });
 
-            (window.programs || []).forEach(p => { 
+            programs.forEach(p => { 
                 if (ag.some(g=>g.id===p.groupId)) { 
                     const priceDisplay = p.price ? ` - $${p.price}` : '';
-                    if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader || ''} ${p.season} - ${p.type}${priceDisplay}</option>`; 
-                    if(calProgramFilter) calProgramFilter.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader || ''} ${p.season} ${p.type}${priceDisplay}</option>`;
+                    if(atGroup) atGroup.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} - ${p.type}${priceDisplay}</option>`; 
+                    if(calProgramFilter) calProgramFilter.innerHTML += `<option value="${p.id}">[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}${priceDisplay}</option>`;
                 } 
             });
 
@@ -2078,7 +2165,7 @@
             const bulkAsSel = document.getElementById('be-assignee');
             if(asSel) {
                 asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
-                (window.users || []).forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
+                users.forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
                 asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
                 bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
             }
@@ -2089,65 +2176,84 @@
         /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
         function openUserManagementModal() { switchTab('admin'); } 
         function renderGroupPills() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
             const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; 
-            const terrs = currentUser?.territories || [];
-            let visibleGroups = window.groups || [];
-            if (!terrs.includes('ALL')) visibleGroups = visibleGroups.filter(g => terrs.includes(g.id));
+            
+            let visibleGroups = groups;
+            if (!currentUser.territories.includes('ALL')) {
+                visibleGroups = groups.filter(g => currentUser.territories.includes(g.id));
+            }
 
             visibleGroups.forEach(g => { 
                 const isArchived = g.status === 'Archived';
                 ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm ${isArchived ? 'opacity-60' : ''}">
                     <span class="font-bold text-i9blue">${g.fullName} ${isArchived ? '(Archived)' : ''}</span> 
                     <div>
-                        <button onclick="openHardDeleteModal('group', '${g.id}')" class="text-red-800 hover:text-red-900 text-[10px]" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>
+                        ${isArchived ? 
+                            `<button onclick="unarchiveGroup('${g.id}')" class="text-emerald-500 hover:text-emerald-700 mr-2 text-[10px]" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>` : 
+                            `<button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button>`
+                        } 
+                        <button onclick="openHardDeleteModal('group', '${g.id}', 'SYSTEM', '${g.fullName}')" class="text-red-800 hover:text-red-900 text-[10px]" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>`; 
             });
         }
-
-        function renderUsersTable() {
-            const pendingTb = document.getElementById('pending-users-table'); const activeTb = document.getElementById('active-users-table');
-            const pendingBadge = document.getElementById('pending-count-badge'); if(!pendingTb || !activeTb) return;
-            pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
-            
-            const terrs = currentUser?.territories || [];
-            const agIds = getAuthorizedGroups().map(g=>g.id);
-            const visibleUsers = (window.users || []).filter(u => terrs.includes('ALL') || (u.territories || []).some(t => agIds.includes(t)));
-            let pendingCount = 0;
-
-            visibleUsers.forEach(u => {
-                const phoneDisplay = u.phone || "No Phone";
-                const terrList = (u.territories || []).join(', ') || 'N/A';
-                if (u.role === 'Pending') {
-                    pendingCount++;
-                    pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${terrList}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button></td></tr>`;
-                } else {
-                    activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors"><td class="p-2"><div class="font-bold text-gray-900">${u.name}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td><td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${terrs.includes('ALL')?'All Network':terrList}</div></td><td class="p-2 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button></td></tr>`;
-                }
-            });
-            if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No pending users.</td></tr>`;
-            if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
-        }
-
-        function openAdminEdit(em) {
-            const u = (window.users || []).find(x => x.username === em); if(!u) return;
-            document.getElementById('admin-u-email').value = u.username;
-            const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
-            ROLES.forEach(r => { roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
-            roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
-            renderTerritoryCheckboxes(); document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = (u.territories || []).includes(cb.value));
-            document.getElementById('admin-edit-user-modal').classList.remove('hidden');
-        }
+        function unarchiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Restore this group to Active status?")) { g.status = 'Active'; window.cloudSaveGroup(g); logActivity(id, 'System Config', `Restored group ${id}`); } }
 
         function renderTerritoryCheckboxes() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
             const ct = document.getElementById('admin-u-terr'); if(!ct) return;
-            const terrs = currentUser?.territories || [];
-            ct.innerHTML = terrs.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
+            ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Network</label>` : '';
             getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
         }
-
+        function addGroup(e) { 
+            e.preventDefault(); const gName = document.getElementById('new-group-name').value.trim(); const gId = document.getElementById('new-group-id').value.trim();
+            if(gName && gId) {
+                if (parseInt(gId) < 100) return alert("Group ID must be 3 digits or higher.");
+                if (groups.find(g => g.id === gId)) return alert("This Group ID already exists.");
+                window.cloudSaveGroup({ id: gId, name: gName, fullName: `${gId} - ${gName}`, status: 'Active' });
+                if(currentUser && !currentUser.territories.includes('ALL')) { currentUser.territories.push(gId); window.currentUser = currentUser; window.cloudSaveUser(currentUser); }
+                document.getElementById('new-group-name').value=''; document.getElementById('new-group-id').value=''; 
+                logActivity('SYSTEM', 'Group Creation', `Created new group: ${gId} - ${gName}`);
+            }
+        }
+        function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); logActivity('SYSTEM', 'Group Archived', `Archived group ${id}`);} }
+        function renderUsersTable() {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const pendingTb = document.getElementById('pending-users-table'); const activeTb = document.getElementById('active-users-table');
+            const pendingBadge = document.getElementById('pending-count-badge'); if(!pendingTb || !activeTb) return;
+            pendingTb.innerHTML = ''; activeTb.innerHTML = ''; const agIds = getAuthorizedGroups().map(g=>g.id);
+            const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t)));
+            let pendingCount = 0;
+            visibleUsers.forEach(u => {
+                const phoneDisplay = u.phone || "No Phone Provided";
+                if (u.role === 'Pending') {
+                    pendingCount++;
+                    pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${u.territories.join(', ') || 'N/A'}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button><button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button></td></tr>`;
+                } else {
+                    activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors"><td class="p-2"><div class="font-bold text-gray-900">${u.name}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td><td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div></td><td class="p-2 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button><button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button></td></tr>`;
+                }
+            });
+            if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
+            if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
+        }
+        function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); logActivity('SYSTEM', 'User Denied/Removed', `Removed user ${em} from portal`); } }
+        function openAdminEdit(em) {
+            if (!currentUser && window.currentUser) currentUser = window.currentUser;
+            if (!currentUser) return;
+            const u = users.find(x => x.username === em); if(!u) return;
+            document.getElementById('admin-u-email').value = u.username;
+            const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
+            ROLES.forEach(r => { if(currentUser.role === 'System Admin' || r !== 'System Admin') roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
+            roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
+            renderTerritoryCheckboxes(); document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
+            document.getElementById('admin-edit-user-modal').classList.remove('hidden');
+        }
         function adminSaveUser(e) {
-            e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = (window.users || []).find(x => x.username === em);
+            e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
             if(u) { 
                 u.role = document.getElementById('admin-u-role').value; 
                 u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); 
@@ -2186,26 +2292,7 @@
             
             window.groupPermissions[groupId][tier][field] = val; 
             window.cloudSavePermissions(groupId, window.groupPermissions[groupId]); 
-            logActivity(groupId, 'System Config', `Updated Group Permissions Matrix`);
-        }
-
-        function addGroup(e) { 
-            e.preventDefault(); const gName = document.getElementById('new-group-name').value.trim(); const gId = document.getElementById('new-group-id').value.trim();
-            if(gName && gId) {
-                if (parseInt(gId) < 100) return alert("Group ID must be 3 digits or higher.");
-                if ((window.groups || []).find(g => g.id === gId)) return alert("This Group ID already exists.");
-                window.cloudSaveGroup({ id: gId, name: gName, fullName: `${gId} - ${gName}`, status: 'Active' });
-                document.getElementById('new-group-name').value=''; document.getElementById('new-group-id').value=''; 
-                logActivity('SYSTEM', 'Group Creation', `Created new group: ${gId} - ${gName}`);
-            }
-        }
-
-        function generateInviteEmail() {
-            const email = document.getElementById('invite-email-input').value.trim();
-            const subject = encodeURIComponent("Invitation: Program Director Planner Access");
-            const body = encodeURIComponent(`Hello,\n\nYou are invited to access the Program Director Planner.\n\nPlease visit the portal and register.\n\nThank you.`);
-            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; 
-            showToast("Draft Generated", "Opening email client...");
+            logActivity(groupId, 'System Config', `Updated Group System Permissions Matrix`);
         }
 
         /* --- MULTI-SELECT & BULK ACTIONS --- */
@@ -2214,19 +2301,19 @@
         
         function bulkDelete(type) {
             let cls, items;
-            if(type === 'programs') { cls = 'prog-cb'; items = window.programs; }
-            else if(type === 'templates') { cls = 'tpl-cb'; items = window.templates; }
-            else if(type === 'tasks') { cls = 'task-cb'; items = window.activeTasks; }
+            if(type === 'programs') { cls = 'prog-cb'; items = programs; }
+            else if(type === 'templates') { cls = 'tpl-cb'; items = templates; }
+            else if(type === 'tasks') { cls = 'task-cb'; items = activeTasks; }
             else return; 
             
             const ids = getSelected(cls);
             if(ids.length === 0) return alert("Select items first.");
             
-            const selectedItems = (items || []).filter(x => ids.includes(x.id));
+            const selectedItems = items.filter(x => ids.includes(x.id));
             const names = selectedItems.map(x => x.name || `${x.preHeader || ''} ${x.season || ''}`).join(', ');
             const groupId = selectedItems.length > 0 ? selectedItems[0].groupId : 'SYSTEM';
 
-            openHardDeleteModal(type.replace(/s$/, ''), ids.join(','));
+            openHardDeleteModal(type.replace(/s$/, ''), ids, groupId, names);
         }
 
         function bulkEditOpen(type) {
@@ -2270,12 +2357,13 @@
                 const doVen = document.getElementById('be-cb-venue').checked; const venVal = document.getElementById('be-venue').value;
                 
                 ids.forEach(id => {
-                    const p = (window.programs || []).find(x=>x.id===id);
+                    const p = programs.find(x=>x.id===id);
                     if(p) {
                         if(doYr) p.year = yrVal; if(doSea) p.season = seaVal; if(doVen) p.venue = venVal;
                         window.cloudSaveProgram(p);
                     }
                 });
+                logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} programs`);
             } else if (mode === 'tasks') {
                 ids = getSelected('task-cb');
                 const doAss = document.getElementById('be-cb-assignee').checked; 
@@ -2286,12 +2374,13 @@
                 const doDate = document.getElementById('be-cb-date').checked; const dateVal = document.getElementById('be-date').value;
                 
                 ids.forEach(id => {
-                    const t = (window.activeTasks || []).find(x=>x.id===id);
+                    const t = activeTasks.find(x=>x.id===id);
                     if(t) {
                         if(doAss) t.assignee = assVal; if(doStat) t.status = statVal; if(doDate && dateVal) t.targetDate = dateVal;
                         window.cloudSaveActiveTask(t);
                     }
                 });
+                logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} tasks`);
             } else if (mode === 'templates') {
                 ids = getSelected('tpl-cb');
                 const doRole = document.getElementById('be-cb-tpl-role').checked; const roleVal = document.getElementById('be-tpl-role').value;
@@ -2301,7 +2390,7 @@
                 const offsetDir = document.getElementById('be-tpl-offset-dir').value;
                 
                 ids.forEach(id => {
-                    const t = (window.templates || []).find(x=>x.id===id);
+                    const t = templates.find(x=>x.id===id);
                     if(t) {
                         if(doRole) t.role = roleVal;
                         if(doAnchor) t.anchor = anchorVal;
@@ -2309,12 +2398,16 @@
                         window.cloudSaveTemplate(t);
                     }
                 });
+                logActivity('SYSTEM', 'Bulk Edit', `Bulk edited ${ids.length} task profiles`);
             }
             
             closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
+            if(mode==='programs') document.getElementById('selectAllProgs').checked = false;
+            if(mode==='tasks') document.getElementById('selectAllTasks').checked = false;
+            if(mode==='templates') document.getElementById('selectAllTpls').checked = false;
         }
 
-        /* --- CSV IMPORT --- */
+        /* --- TWO-STEP CSV IMPORT LOGIC --- */
         function openImportModal(type) {
             document.getElementById('import-type').value = type;
             document.getElementById('import-file-input').value = ''; 
@@ -2323,470 +2416,94 @@
 
         function downloadImportTemplate() {
             const type = document.getElementById('import-type').value;
-            let csv = type === 'programs' ? "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n" : "Group Scope,Level,Marketing Category,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
-            downloadCSV(csv, `${type}_Import_Template.csv`);
+            let csv = "";
+            let filename = "";
+
+            if (type === 'programs') {
+                csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n";
+                filename = "Program_Import_Template.csv";
+            } else if (type === 'templates') {
+                csv = "Group Scope,Level,Marketing Category,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
+                filename = "Task_Profile_Import_Template.csv";
+            }
+
+            downloadCSV(csv, filename);
+            showToast("Template Downloaded", "Fill this out and upload it in Step 2.");
         }
 
         function executeImport() {
             const type = document.getElementById('import-type').value;
             const fileInput = document.getElementById('import-file-input');
             const file = fileInput.files[0];
-            if (!file) return alert("Select a CSV file first.");
+
+            if (!file) return alert("Please select a file to import in Step 2.");
+            if (file.size > 5 * 1024 * 1024) return alert("File is too large. Please upload a CSV smaller than 5MB.");
+
+            showToast("Importing", "Parsing file data...");
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const rows = e.target.result.split(/\r?\n/);
+                const text = e.target.result;
+                const rows = text.split(/\r?\n/);
                 let importCount = 0;
+                
                 for (let i = 1; i < rows.length; i++) {
                     if (!rows[i] || rows[i].trim() === '') continue; 
-                    const cleanCols = rows[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+                    
+                    const cols = rows[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    const cleanCols = cols.map(col => col.replace(/^"|"$/g, '').trim());
+                    
                     if (type === 'programs') {
-                        window.cloudSaveProgram({
-                            id: generateId('PRG'), groupId: cleanCols[0], preHeader: cleanCols[1] || '', year: cleanCols[2], season: cleanCols[3], type: cleanCols[4], dateStart: cleanCols[5] || '', dateFinal: cleanCols[6] || '', venue: cleanCols[8] || '', price: cleanCols[9] || ''
-                        });
+                        const newProg = {
+                            id: generateId('PRG'),
+                            groupId: cleanCols[0],
+                            preHeader: cleanCols[1] || '',
+                            year: cleanCols[2],
+                            season: cleanCols[3],
+                            type: cleanCols[4],
+                            dateStart: cleanCols[5] || '',
+                            dateFinal: cleanCols[6] || '',
+                            weeks: cleanCols[7] || '',
+                            venue: cleanCols[8] || '',
+                            price: cleanCols[9] || '',
+                            deadlineCount: 4,
+                            days: '',
+                            byeDates: [],
+                            secStartDates: []
+                        };
+                        window.cloudSaveProgram(newProg);
                         importCount++;
                     } else if (type === 'templates') {
-                        window.cloudSaveTemplate({
-                            id: generateId('TPL'), groupId: cleanCols[0], level: cleanCols[1] || 'Operational', type: cleanCols[3], name: cleanCols[5], offsetNum: parseInt(cleanCols[7]) || 0, offsetDir: cleanCols[8] || 'Before', anchor: cleanCols[9] || 'dateStart'
-                        });
+                        const newTpl = {
+                            id: generateId('TPL'),
+                            groupId: cleanCols[0],
+                            level: cleanCols[1] || 'Operational',
+                            marketingCategory: cleanCols[2] || '',
+                            type: cleanCols[3],
+                            preHeader: cleanCols[4] || '',
+                            name: cleanCols[5],
+                            seasons: cleanCols[6] ? cleanCols[6].split(' ') : [],
+                            offsetNum: parseInt(cleanCols[7]) || 0,
+                            offsetDir: cleanCols[8] || 'Before',
+                            anchor: cleanCols[9] || 'dateStart',
+                            role: cleanCols[10] || ''
+                        };
+                        window.cloudSaveTemplate(newTpl);
                         importCount++;
                     }
                 }
-                showToast("Import Successful", `Imported ${importCount} items.`);
+                
+                logActivity('SYSTEM', 'Data Import', `Imported ${importCount} new ${type} from CSV.`);
+                showToast("Import Complete", `Successfully imported ${importCount} items.`);
                 closeModals();
             };
+            
+            reader.onerror = function() {
+                alert("Failed to read file! Please check the file and try again.");
+            };
+            
             reader.readAsText(file);
         }
-
-        /* --- ACTIVE TASK DIRECTORY & DASHBOARD RENDERERS --- */
-        function renderActiveTasks() {
-            const tb = document.getElementById('active-task-table-body');
-            const th = document.getElementById('task-table-head');
-            if (!tb || !th) return;
-
-            const groupFilter = document.getElementById('filter-task-group').value;
-            const levelFilter = document.getElementById('filter-task-level').value;
-            const statusFilter = document.getElementById('filter-task-status').value;
-            const agIds = getAuthorizedGroups().map(g=>g.id);
-
-            th.innerHTML = `<tr>
-                <th class="px-3 py-3 w-8 text-center"><input type="checkbox" id="selectAllTasks" onchange="toggleSelectAll('task-cb', this.checked)"></th>
-                <th class="px-3 py-3 font-bold">Group / Program</th>
-                <th class="px-3 py-3 font-bold">Level</th>
-                <th class="px-3 py-3 font-bold">Task Details</th>
-                <th class="px-3 py-3 font-bold">Target Date</th>
-                <th class="px-3 py-3 font-bold">Assignee</th>
-                <th class="px-3 py-3 font-bold">Status</th>
-                <th class="px-3 py-3 font-bold text-center">Actions</th>
-            </tr>`;
-
-            const terrs = currentUser?.territories || [];
-            let filtered = (window.activeTasks || []).filter(t => {
-                if (currentTaskView === 'active' && t.status === 'Archived') return false;
-                if (currentTaskView === 'archived' && t.status !== 'Archived') return false;
-
-                if (!terrs.includes('ALL') && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return false;
-                if (groupFilter !== 'ALL' && t.groupId !== groupFilter) return false;
-                if (levelFilter !== 'ALL' && t.level !== levelFilter) return false;
-                if (statusFilter !== 'ALL' && t.status !== statusFilter) return false;
-
-                return true;
-            });
-
-            tb.innerHTML = '';
-            if (filtered.length === 0) {
-                tb.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-400 italic">No matching tasks found.</td></tr>`;
-                return;
-            }
-
-            const todayStr = new Date().toISOString().split('T')[0];
-            filtered.forEach(t => {
-                const isOverdue = t.targetDate && t.targetDate < todayStr && t.status !== 'Complete' && t.status !== 'Archived';
-                const statusBg = t.status === 'Complete' ? 'bg-emerald-100 text-emerald-800' : (t.status === 'In Progress' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800');
-
-                tb.innerHTML += `<tr class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-3 text-center"><input type="checkbox" value="${t.id}" class="task-cb"></td>
-                    <td class="px-3 py-3 font-bold text-i9blue">${t.groupId}<div class="text-[10px] text-gray-400 font-normal">${t.type || 'One-Off'}</div></td>
-                    <td class="px-3 py-3 font-bold">${t.level || 'Ops'}<div class="text-[10px] text-emerald-600 font-normal">${t.marketingCategory || ''}</div></td>
-                    <td class="px-3 py-3">
-                        <div class="font-bold text-gray-800">${t.name} ${t.isNote ? '<span class="bg-gray-200 text-gray-700 text-[9px] px-1.5 py-0.5 rounded ml-1">Note</span>' : ''}</div>
-                        <div class="text-[10px] text-gray-500">${t.desc || ''}</div>
-                    </td>
-                    <td class="px-3 py-3 font-mono font-bold ${isOverdue ? 'text-rose-600' : 'text-gray-700'}">
-                        ${formatTargetDate(t.targetDate)} ${isOverdue ? '<i class="fa-solid fa-triangle-exclamation text-rose-500 ml-1" title="Overdue"></i>' : ''}
-                    </td>
-                    <td class="px-3 py-3 font-semibold ${t.assignee ? 'text-gray-800' : 'text-amber-600 font-bold'}">
-                        ${t.assignee || '🚨 Unassigned'}
-                    </td>
-                    <td class="px-3 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${statusBg}">${t.status}</span></td>
-                    <td class="px-3 py-3 text-center space-x-1 whitespace-nowrap">
-                        <button onclick="openEditTaskModal('${t.id}')" class="text-blue-600 hover:text-blue-800 font-bold"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="openArchiveModal('${t.id}')" class="text-rose-600 hover:text-rose-800 font-bold ml-1" title="Archive"><i class="fa-solid fa-box-archive"></i></button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        function renderDashboard() {
-            const agIds = getAuthorizedGroups().map(g => g.id);
-            const visibleTasks = (window.activeTasks || []).filter(t => (t.groupId === 'ALL' || agIds.includes(t.groupId)) && t.status !== 'Archived');
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            document.getElementById('kpi-total').textContent = visibleTasks.length;
-            document.getElementById('kpi-completed').textContent = visibleTasks.filter(t => t.status === 'Complete').length;
-            document.getElementById('kpi-unassigned').textContent = visibleTasks.filter(t => !t.assignee && t.status !== 'Complete').length;
-            document.getElementById('kpi-overdue').textContent = visibleTasks.filter(t => t.targetDate < todayStr && t.status !== 'Complete').length;
-
-            const todayList = document.getElementById('dashboard-today-list');
-            if (todayList) {
-                const todayTasks = visibleTasks.filter(t => t.targetDate === todayStr);
-                todayList.innerHTML = todayTasks.length === 0 ? '<p class="text-xs text-gray-400 italic">No tasks scheduled for today.</p>' : '';
-                todayTasks.forEach(t => {
-                    todayList.innerHTML += `<div class="p-2 bg-blue-50 border-l-4 border-i9blue rounded text-xs flex justify-between items-center">
-                        <div><p class="font-bold text-gray-800">${t.name}</p><p class="text-[10px] text-gray-500">${t.groupId} &bull; ${t.assignee || 'Unassigned'}</p></div>
-                        <button onclick="openEditTaskModal('${t.id}')" class="text-xs text-i9blue"><i class="fa-solid fa-pen"></i></button>
-                    </div>`;
-                });
-            }
-
-            const focusList = document.getElementById('dashboard-focused-list');
-            if (focusList) {
-                let listData = visibleTasks;
-                if (currentDashFilter === 'completed') listData = visibleTasks.filter(t => t.status === 'Complete');
-                if (currentDashFilter === 'unassigned') listData = visibleTasks.filter(t => !t.assignee && t.status !== 'Complete');
-                if (currentDashFilter === 'overdue') listData = visibleTasks.filter(t => t.targetDate < todayStr && t.status !== 'Complete');
-
-                focusList.innerHTML = listData.length === 0 ? '<p class="text-xs text-gray-400 italic">No matching tasks.</p>' : '';
-                listData.slice(0, 15).forEach(t => {
-                    focusList.innerHTML += `<div class="p-2 bg-gray-50 border rounded text-xs flex justify-between items-center hover:bg-white transition">
-                        <div><p class="font-bold text-gray-800">${t.name}</p><p class="text-[10px] text-gray-500">${t.groupId} &bull; Due: ${formatTargetDate(t.targetDate)} &bull; ${t.assignee || 'Unassigned'}</p></div>
-                        <button onclick="openEditTaskModal('${t.id}')" class="text-xs text-i9blue font-bold">Edit</button>
-                    </div>`;
-                });
-            }
-        }
-
-        function setDashboardFilter(f) {
-            currentDashFilter = f;
-            document.getElementById('dash-focused-title').innerHTML = `<i class="fa-solid fa-list text-i9blue"></i> Focused Task Viewer: ${f.toUpperCase()}`;
-            renderDashboard();
-        }
-
-        function setTaskView(view) {
-            currentTaskView = view;
-            if (view === 'active') {
-                document.getElementById('btn-tasks-active').className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
-                document.getElementById('btn-tasks-archived').className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
-            } else {
-                document.getElementById('btn-tasks-archived').className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
-                document.getElementById('btn-tasks-active').className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
-            }
-            renderActiveTasks();
-        }
-
-        function openAddOneOffTaskModal() {
-            document.getElementById('at-edit-id').value = '';
-            document.getElementById('at-is-oneoff').value = 'true';
-            document.getElementById('at-program-select-container').classList.remove('hidden');
-            document.getElementById('at-name').value = '';
-            document.getElementById('at-desc').value = '';
-            document.getElementById('at-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('at-status').value = 'Pending';
-            document.getElementById('active-task-modal').classList.remove('hidden');
-        }
-
-        function openEditTaskModal(id) {
-            const t = (window.activeTasks || []).find(x => x.id === id);
-            if (!t) return;
-            document.getElementById('at-edit-id').value = t.id;
-            document.getElementById('at-is-oneoff').value = t.isOneOff ? 'true' : 'false';
-            document.getElementById('at-name').value = t.name || '';
-            document.getElementById('at-desc').value = t.desc || '';
-            document.getElementById('at-date').value = t.targetDate || '';
-            document.getElementById('at-level').value = t.level || 'Operational';
-            document.getElementById('at-status').value = t.status || 'Pending';
-            document.getElementById('at-assignee').value = t.assignee || '';
-            document.getElementById('active-task-modal').classList.remove('hidden');
-        }
-
-        function saveActiveTask(e) {
-            e.preventDefault();
-            const editId = document.getElementById('at-edit-id').value;
-            let dateVal = document.getElementById('at-date').value;
-
-            dateVal = checkAndShiftHoliday(dateVal);
-            document.getElementById('at-date').value = dateVal;
-
-            let assigneeVal = document.getElementById('at-assignee').value;
-            if (assigneeVal === 'CUSTOM') assigneeVal = document.getElementById('at-assignee-custom').value.trim();
-
-            const terrs = currentUser?.territories || [];
-            const taskData = {
-                id: editId || generateId('ATK'),
-                groupId: terrs[0] || '100',
-                name: document.getElementById('at-name').value.trim(),
-                desc: document.getElementById('at-desc').value.trim(),
-                targetDate: dateVal,
-                level: document.getElementById('at-level').value,
-                status: document.getElementById('at-status').value,
-                assignee: assigneeVal,
-                isOneOff: document.getElementById('at-is-oneoff').value === 'true',
-                isNote: document.getElementById('at-is-note').checked
-            };
-
-            window.cloudSaveActiveTask(taskData);
-            closeModals();
-            showToast("Task Saved", "Task updated successfully.");
-        }
-
-        function openAddProgramModal() {
-            document.getElementById('prog-edit-id').value = '';
-            document.getElementById('program-modal').classList.remove('hidden');
-        }
-
-        function openAddTemplateModal() {
-            document.getElementById('tpl-edit-id').value = '';
-            document.getElementById('template-modal').classList.remove('hidden');
-        }
-
-        function saveProgram(e) {
-            e.preventDefault();
-            let startDate = document.getElementById('prog-date-start').value;
-            startDate = checkAndShiftHoliday(startDate);
-
-            const pData = {
-                id: document.getElementById('prog-edit-id').value || generateId('PRG'),
-                groupId: document.getElementById('prog-group').value,
-                year: document.getElementById('prog-year').value,
-                season: document.getElementById('prog-season').value,
-                type: document.querySelector('input[name="prog-type-radio"]:checked').value,
-                preHeader: document.getElementById('prog-pre').value || '',
-                dateStart: startDate,
-                dateFinal: document.getElementById('prog-date-final').value || '',
-                dateEarly: document.getElementById('prog-date-early').value || '',
-                dateOffseason: document.getElementById('prog-date-offseason').value || '',
-                weeks: document.getElementById('prog-weeks').value || '',
-                venue: document.getElementById('prog-venue').value || '',
-                price: document.getElementById('prog-price').value || ''
-            };
-
-            window.cloudSaveProgram(pData);
-            closeModals();
-            showToast("Program Saved", "Program record saved.");
-        }
-
-        function saveTemplate(e) {
-            e.preventDefault();
-            const tData = {
-                id: document.getElementById('tpl-edit-id').value || generateId('TPL'),
-                groupId: document.getElementById('tpl-group').value,
-                type: document.getElementById('tpl-type').value,
-                level: document.getElementById('tpl-level').value,
-                name: document.getElementById('tpl-name').value.trim(),
-                desc: document.getElementById('tpl-desc').value.trim(),
-                offsetNum: parseInt(document.getElementById('tpl-offset-num').value || '0'),
-                offsetDir: document.getElementById('tpl-offset-dir').value,
-                anchor: document.getElementById('tpl-anchor').value,
-                role: document.getElementById('tpl-role').value || ''
-            };
-
-            window.cloudSaveTemplate(tData);
-            closeModals();
-            showToast("Profile Saved", "Task template saved.");
-        }
-
-        function renderControlCenter() {
-            const tb = document.getElementById('control-center-table-body');
-            if(!tb) return;
-            tb.innerHTML = '';
-            const agIds = getAuthorizedGroups().map(g=>g.id);
-            const terrs = currentUser?.territories || [];
-
-            const visible = (window.programs || []).filter(p => terrs.includes('ALL') || agIds.includes(p.groupId));
-            if(visible.length === 0) {
-                tb.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">No programs found.</td></tr>`;
-                return;
-            }
-
-            visible.forEach(p => {
-                tb.innerHTML += `<tr class="hover:bg-gray-50">
-                    <td class="p-3 text-center"><input type="checkbox" value="${p.id}" class="prog-cb"></td>
-                    <td class="p-3 font-bold text-i9blue">${p.groupId}<div class="text-[10px] text-gray-500">${p.season} ${p.year}</div></td>
-                    <td class="p-3 font-bold">${p.type}</td>
-                    <td class="p-3 text-[11px]">Start: ${formatTargetDate(p.dateStart)}</td>
-                    <td class="p-3 text-[11px]">${p.venue || 'No Venue'} ($${p.price || '0.00'})</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="openPricingPane('${p.id}')" class="text-emerald-600 font-bold" title="Pricing Schedule"><i class="fa-solid fa-tags"></i></button>
-                        <button onclick="generateTaskPlan('${p.id}', 'Operational')" class="bg-i9blue text-white px-2 py-1 rounded text-[10px]">Gen Ops</button>
-                        <button onclick="generateTaskPlan('${p.id}', 'Marketing')" class="bg-emerald-600 text-white px-2 py-1 rounded text-[10px]">Gen Mktg</button>
-                        <button onclick="openHardDeleteModal('program', '${p.id}')" class="text-rose-600 font-bold"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        function renderTemplates() {
-            const tb = document.getElementById('template-table-body');
-            if(!tb) return;
-            tb.innerHTML = '';
-            (window.templates || []).forEach(tpl => {
-                tb.innerHTML += `<tr class="hover:bg-gray-50">
-                    <td class="p-3 text-center"><input type="checkbox" value="${tpl.id}" class="tpl-cb"></td>
-                    <td class="p-3 font-bold">${tpl.groupId}</td>
-                    <td class="p-3">${tpl.level || 'Operational'}</td>
-                    <td class="p-3 font-bold">${tpl.type}</td>
-                    <td class="p-3 font-bold text-i9blue">${tpl.name}</td>
-                    <td class="p-3">${tpl.seasons ? tpl.seasons.join(', ') : 'All'}</td>
-                    <td class="p-3">${tpl.offsetNum} Days ${tpl.offsetDir}</td>
-                    <td class="p-3">${tpl.role || 'Any'}</td>
-                    <td class="p-3 text-center"><button onclick="openHardDeleteModal('template', '${tpl.id}')" class="text-rose-600 font-bold"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-            });
-        }
-
-        function renderCalendar() {
-            const grid = document.getElementById('calendar-grid');
-            const headGrid = document.getElementById('calendar-header-grid');
-            const dateDisplay = document.getElementById('calendar-date-display');
-            if (!grid || !headGrid) return;
-
-            headGrid.innerHTML = ''; grid.innerHTML = '';
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            days.forEach(d => headGrid.innerHTML += `<div class="font-bold text-center text-xs text-i9blue uppercase py-1 bg-gray-100 rounded">${d}</div>`);
-
-            dateDisplay.textContent = calendarDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-            const year = calendarDate.getFullYear();
-            const month = calendarDate.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="bg-gray-50/50 border border-gray-100 min-h-[90px] rounded p-1"></div>`;
-            }
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayTasks = (window.activeTasks || []).filter(t => t.targetDate === dayStr && t.status !== 'Archived');
-
-                let tasksHtml = '';
-                dayTasks.forEach(t => {
-                    tasksHtml += `<div onclick="openEditTaskModal('${t.id}')" class="bg-blue-100 text-blue-900 border border-blue-200 text-[9px] font-bold p-1 rounded mb-1 truncate cursor-pointer hover:bg-blue-200">
-                        ${t.name}
-                    </div>`;
-                });
-
-                grid.innerHTML += `<div class="bg-white border border-gray-200 min-h-[90px] rounded p-1 hover:border-i9blue transition">
-                    <div class="font-bold text-xs text-gray-700 mb-1">${day}</div>
-                    ${tasksHtml}
-                </div>`;
-            }
-        }
-
-        function populateYearDropdowns() {
-            const currentYear = new Date().getFullYear();
-            const yearEls = ['prog-year', 'filter-prog-year', 'be-year'];
-            yearEls.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    let html = id === 'filter-prog-year' ? '<option value="ALL">All Years</option>' : '';
-                    for (let y = 2026; y <= currentYear + 3; y++) html += `<option value="${y}">${y}</option>`;
-                    el.innerHTML = html;
-                }
-            });
-        }
-
-        function goToToday() { calendarDate = new Date(); renderCalendar(); }
-        function changeCalendarDate(delta) { calendarDate.setMonth(calendarDate.getMonth() + delta); renderCalendar(); }
-        function jumpToDate(val) { if(val) { calendarDate = new Date(val + "T00:00:00"); renderCalendar(); } }
-        function toggleCalFilter(k) { calFilters[k] = !calFilters[k]; renderCalendar(); }
-
-        function openArchiveModal(id) {
-            document.getElementById('archive-task-ids').value = id;
-            document.getElementById('archive-task-modal').classList.remove('hidden');
-        }
-
-        function submitArchiveTasks(e) {
-            e.preventDefault();
-            const id = document.getElementById('archive-task-ids').value;
-            const task = (window.activeTasks || []).find(t => t.id === id);
-            if(task) {
-                task.status = 'Archived';
-                window.cloudSaveActiveTask(task);
-            }
-            closeModals();
-            showToast("Archived", "Task archived.");
-        }
-
-        function bulkArchiveTasks() {
-            const ids = getSelected('task-cb');
-            if(ids.length === 0) return alert("Select tasks first.");
-            ids.forEach(id => {
-                const t = (window.activeTasks || []).find(x => x.id === id);
-                if(t) { t.status = 'Archived'; window.cloudSaveActiveTask(t); }
-            });
-            showToast("Bulk Archived", `${ids.length} tasks archived.`);
-        }
-
-        function openHardDeleteModal(type, id) {
-            document.getElementById('hd-item-ids').value = id;
-            document.getElementById('hd-item-type').value = type;
-            document.getElementById('hard-delete-modal').classList.remove('hidden');
-        }
-
-        function executeHardDelete(e) {
-            e.preventDefault();
-            const ids = document.getElementById('hd-item-ids').value.split(',');
-            const type = document.getElementById('hd-item-type').value;
-
-            ids.forEach(id => {
-                if(type === 'task') window.cloudDeleteActiveTask(id);
-                if(type === 'program') window.cloudDeleteProgram(id);
-                if(type === 'template') window.cloudDeleteTemplate(id);
-                if(type === 'group') window.cloudDeleteGroup(id);
-            });
-
-            closeModals();
-            showToast("Permanently Deleted", `Removed ${ids.length} ${type}(s).`);
-        }
-
-        function openReportModal() { document.getElementById('reporting-modal').classList.remove('hidden'); }
-        function generateCustomReport(e) {
-            e.preventDefault();
-            const type = document.getElementById('report-type').value;
-            const start = document.getElementById('report-start').value;
-            const end = document.getElementById('report-end').value;
-
-            let csv = "ID,Group,Name,Date,Status\n";
-            if(type === 'tasks') {
-                (window.activeTasks || []).filter(t => t.targetDate >= start && t.targetDate <= end).forEach(t => {
-                    csv += `"${t.id}","${t.groupId}","${t.name}","${t.targetDate}","${t.status}"\n`;
-                });
-            }
-            downloadCSV(csv, `Custom_${type}_Report.csv`);
-            closeModals();
-        }
-
-        function exportCurrentViewToCSV() {
-            let csv = "ID,Group,Level,Name,Target Date,Assignee,Status\n";
-            (window.activeTasks || []).forEach(t => {
-                csv += `"${t.id}","${t.groupId}","${t.level || ''}","${t.name}","${t.targetDate}","${t.assignee || ''}","${t.status}"\n`;
-            });
-            downloadCSV(csv, "Task_Directory_Export.csv");
-        }
-
-        function downloadCSV(csv, filename) {
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = filename; a.click();
-        }
-
-        function updateProgPreHeaderOptions() {}
-        function updateTplPreHeaderOptions() {}
-        function updateDeadlineCount() {}
-        function updateSecStartsCount() {}
-        function updateByeCount() {}
     </script>
 </body>
 </html>
