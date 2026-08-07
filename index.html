@@ -1859,10 +1859,9 @@
                 uObj.role = 'Group Owner'; uObj.territories = [newId];
             } else {
                 const joinId = document.getElementById('signup-join-id').value.trim();
-                if(!groups.find(g => g.id === joinId)) return showError(`Group ${joinId} not found.`);
+                if(!joinId) return showError("Please enter a Group ID to join.");
                 uObj.territories = [joinId];
             }
-
             try {
                 showToast("Registering", "Creating secure account...");
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
