@@ -1515,7 +1515,6 @@ function updateProgPreHeaderOptions() {
     if (type === 'School') { container.classList.add('hidden'); } else { container.classList.remove('hidden'); ['Early', 'Late', 'Pre-Season', 'In-Season'].forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`); }
 }
 
-javascript
 function openAddProgramModal() { 
     document.getElementById('prog-edit-id').value = ''; 
     updateProgPreHeaderOptions();
