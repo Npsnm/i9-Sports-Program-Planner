@@ -885,10 +885,19 @@ function populateFilterOptions() {
     const asSel = document.getElementById('at-assignee');
     const bulkAsSel = document.getElementById('be-assignee');
     if(asSel) {
-        asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
-        users.forEach(u => { asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; });
+        asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; 
+        if (bulkAsSel) bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
+        
+        users.forEach(u => { 
+            // Hide System Admin from dropdown lists for non-System Admin users
+            if (u.role === 'System Admin' && currentUser.role !== 'System Admin') return;
+            
+            asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; 
+            if (bulkAsSel) bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; 
+        });
+        
         asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
-        bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
+        if (bulkAsSel) bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
     }
     
     const auditFilter = document.getElementById('audit-log-group-filter');
@@ -1980,6 +1989,26 @@ function updateTaskAssignee(id, val) {
     } 
 }
 
+window.handleTaskModalAssigneeChange = function(sel) {
+    const customInp = document.getElementById('at-assignee-custom');
+    if (sel.value === 'CUSTOM') {
+        const customName = prompt("Enter the name of the external or non-member assignee:");
+        if (customName && customName.trim() !== '') {
+            let opt = document.createElement('option');
+            opt.value = customName.trim();
+            opt.text = `${customName.trim()} (External)`;
+            sel.add(opt, sel.options[1]);
+            sel.value = customName.trim();
+            if (customInp) customInp.classList.add('hidden');
+        } else {
+            sel.value = '';
+            if (customInp) customInp.classList.add('hidden');
+        }
+    } else {
+        if (customInp) customInp.classList.add('hidden');
+    }
+};
+
 function openArchiveTaskModal(id) {
     document.getElementById('archive-task-ids').value = id;
     document.getElementById('archive-reason').value = '';
@@ -2077,18 +2106,23 @@ function openEditActiveTask(id) {
     
     const assigneeSel = document.getElementById('at-assignee');
     const customInp = document.getElementById('at-assignee-custom');
-    if(t.assignee && !users.find(u => u.name === t.assignee)) {
+    
+    // Repopulate options to respect role filtering
+    populateFilterOptions();
+    
+    if (t.assignee && !users.find(u => u.name === t.assignee)) {
         let optExists = Array.from(assigneeSel.options).some(o => o.value === t.assignee);
-        if(!optExists) {
+        if (!optExists) {
             let opt = document.createElement('option');
-            opt.value = t.assignee; opt.text = `${t.assignee} (External)`;
+            opt.value = t.assignee; 
+            opt.text = `${t.assignee} (External)`;
             assigneeSel.add(opt, assigneeSel.options[1]);
         }
         assigneeSel.value = t.assignee;
-        customInp.classList.add('hidden');
+        if (customInp) customInp.classList.add('hidden');
     } else {
         assigneeSel.value = t.assignee || '';
-        customInp.classList.add('hidden');
+        if (customInp) customInp.classList.add('hidden');
     }
 
     document.getElementById('at-notes').value = t.notes || '';
@@ -2301,6 +2335,9 @@ window.renderUsersTable = function() {
     }
 
     visibleUsers.forEach(u => {
+        // Hide System Admin users from non-System Admin accounts
+        if (u.role === 'System Admin' && currentUser.role !== 'System Admin') return;
+
         const phoneDisplay = u.phone || "No Phone Provided";
         const searchString = `${u.name || ''} ${u.username || ''} ${u.role || ''}`.toLowerCase();
         const userTerrs = (u.territories || []).map(t => String(t));
@@ -2606,8 +2643,15 @@ function openAdminEdit(em) {
     const u = users.find(x => x.username === em); if(!u) return;
     document.getElementById('admin-u-email').value = u.username;
     const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
-    ROLES.forEach(r => { if(currentUser.role === 'System Admin' || r !== 'System Admin') roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
-    roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
+    
+    // Hide System Admin role tier from selection if current user is not a System Admin
+    ROLES.forEach(r => { 
+        if (r === 'System Admin' && currentUser.role !== 'System Admin') return;
+        roleSel.innerHTML += `<option value="${r}">${r}</option>`; 
+    });
+    roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; 
+    roleSel.value = u.role;
+    
     renderTerritoryCheckboxes(); 
     
     const userTerrs = u.territories || [];
