@@ -425,9 +425,22 @@
 
         <!-- TAB 6: ADMIN DASHBOARD (USERS & GROUPS) -->
         <section id="view-admin" class="tab-view hidden space-y-6">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
-                <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and send invitations.</p>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-start flex-wrap gap-3">
+                <div>
+                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
+                    <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and send invitations.</p>
+                </div>
+                <div class="relative">
+                    <button onclick="document.getElementById('invite-popup').classList.toggle('hidden')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow-sm flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-envelope-open-text"></i> Quick Invite
+                    </button>
+                    <!-- Invite Popup Container -->
+                    <div id="invite-popup" class="hidden absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-3">
+                        <p class="text-[10px] text-gray-500 mb-2 font-bold">Draft an email directing new staff to register.</p>
+                        <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border border-gray-300 rounded bg-gray-50 text-xs mb-2">
+                        <button onclick="generateInviteEmail(); document.getElementById('invite-popup').classList.add('hidden');" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded transition shadow-sm text-xs">Generate Email</button>
+                    </div>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -477,11 +490,16 @@
                         </div>
                     </div>
 
-                    <!-- ASSIGNEE WORKLOAD SUMMARY -->
+                   <!-- ASSIGNEE WORKLOAD SUMMARY -->
                     <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-indigo-200 overflow-hidden mt-4">
-                        <div class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-indigo-900"><i class="fa-solid fa-list-ol text-indigo-600"></i> Assignee Workload Summary</h4>
-                            <span class="text-[10px] text-indigo-700 font-medium">Active & Pending Tasks Across Authorized Groups</span>
+                        <div class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex justify-between items-center flex-wrap gap-2">
+                            <div>
+                                <h4 class="text-xs font-bold text-indigo-900"><i class="fa-solid fa-list-ol text-indigo-600"></i> Assignee Workload Summary</h4>
+                                <span class="text-[10px] text-indigo-700 font-medium">Active & Pending Tasks</span>
+                            </div>
+                            <select id="workload-group-filter" onchange="renderWorkloadSummary()" class="bg-white border border-indigo-200 text-indigo-900 text-[10px] rounded p-1 font-bold outline-none cursor-pointer">
+                                <!-- Populated by JS -->
+                            </select>
                         </div>
                         <div class="overflow-y-auto max-h-64">
                             <table class="w-full text-xs text-left">
@@ -496,17 +514,6 @@
                                     <!-- Dynamically populated by JS -->
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl shadow-sm border border-emerald-200">
-                        <div class="bg-emerald-50/50 p-3 border-b border-emerald-100">
-                            <h4 class="text-xs font-bold text-emerald-800"><i class="fa-solid fa-envelope-open-text"></i> Quick Invite Generator</h4>
-                        </div>
-                        <div class="p-4 space-y-2 text-xs">
-                            <p class="text-[10px] text-gray-500 mb-2">Draft an email directing new staff to register.</p>
-                            <input type="email" id="invite-email-input" placeholder="Staff Email Address" class="w-full p-2 border border-gray-300 rounded bg-gray-50">
-                            <button onclick="generateInviteEmail()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm">Generate Email</button>
                         </div>
                     </div>
                 </div>
@@ -1179,6 +1186,38 @@
     </div>
     
     <!-- IMPORT MODAL -->
+    <!-- ASSIGNEE TASK BREAKDOWN MODAL -->
+        <div id="assignee-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 flex flex-col h-[80vh]">
+                <div class="flex justify-between items-center border-b pb-2 mb-4">
+                    <div>
+                        <h3 class="text-sm font-bold text-indigo-800"><i class="fa-solid fa-list-check"></i> Assignee Task Breakdown</h3>
+                        <p id="assignee-modal-subtitle" class="text-[10px] text-gray-500 font-bold"></p>
+                    </div>
+                    <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div class="flex-grow overflow-y-auto border border-gray-200 rounded">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
+                            <tr>
+                                <th class="p-3">Program / Group</th>
+                                <th class="p-3">Task Name</th>
+                                <th class="p-3">Due Date</th>
+                                <th class="p-3 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignee-modal-table-body" class="divide-y divide-gray-100">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex justify-end pt-4 mt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 rounded font-bold text-xs hover:bg-gray-300">Close Window</button>
+                </div>
+            </div>
+        </div>
     <div id="import-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
@@ -3149,62 +3188,122 @@
             if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
             if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
         }
-        window.renderWorkloadSummary = function() {
+       window.renderWorkloadSummary = function() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
     
     const tb = document.getElementById('workload-summary-table');
-    if (!tb) return;
-    tb.innerHTML = '';
-
+    const filterEl = document.getElementById('workload-group-filter');
+    if (!tb || !filterEl) return;
+    
+    // 1. Populate filter dropdown if it's currently empty
     const agIds = getAuthorizedGroups().map(g => g.id);
+    if (filterEl.options.length === 0) {
+        filterEl.innerHTML = '<option value="ALL">All Authorized Groups</option>';
+        getAuthorizedGroups().forEach(g => {
+            filterEl.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+        });
+    }
+
+    const selectedGroup = filterEl.value;
+    tb.innerHTML = '';
     const workload = {};
 
-    // Calculate open and overdue tasks per assignee
+    // 2. Calculate open and overdue tasks per assignee (respecting the filter)
     activeTasks.forEach(t => {
-        // Skip archived, completed, note events, or out-of-scope groups
         if (!agIds.includes(t.groupId)) return;
+        if (selectedGroup !== 'ALL' && t.groupId !== selectedGroup) return;
         if (t.status === 'Archived' || t.status === 'Complete' || t.isNote) return;
 
         const assignee = t.assignee && t.assignee.trim() !== '' ? t.assignee : '🚨 Unassigned';
         
-        if (!workload[assignee]) {
-            workload[assignee] = { total: 0, overdue: 0 };
-        }
-        
+        if (!workload[assignee]) workload[assignee] = { total: 0, overdue: 0 };
         workload[assignee].total++;
 
-        // Check if overdue
         const today = new Date(); 
         today.setHours(0,0,0,0);
         const tgt = new Date(t.targetDate + "T00:00:00");
-        if (today > tgt) {
-            workload[assignee].overdue++;
-        }
+        if (today > tgt) workload[assignee].overdue++;
     });
 
-    // Sort assignees by total workload (descending)
     const sortedAssignees = Object.keys(workload).sort((a, b) => workload[b].total - workload[a].total);
 
     if (sortedAssignees.length === 0) {
-        tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-indigo-400 italic">No open tasks found across your groups.</td></tr>`;
+        tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-indigo-400 italic">No open tasks found for the selected group(s).</td></tr>`;
         return;
     }
 
-    // Render the table rows
+    // 3. Render the table rows and make them clickable
     sortedAssignees.forEach(user => {
         const data = workload[user];
         const isUnassigned = user === '🚨 Unassigned';
         const userClass = isUnassigned ? 'text-rose-600 font-black' : 'text-gray-800 font-bold';
         const overdueClass = data.overdue > 0 ? 'text-rose-600 bg-rose-50 font-black' : 'text-emerald-600 font-bold';
+        const safeUserStr = user.replace(/'/g, "\\'");
         
         tb.innerHTML += `
-            <tr class="hover:bg-white transition-colors">
-                <td class="p-3 ${userClass}">${user}</td>
+            <tr class="hover:bg-indigo-50 transition-colors cursor-pointer group" onclick="openAssigneeTaskModal('${safeUserStr}', '${selectedGroup}')" title="Click to view full task breakdown">
+                <td class="p-3 ${userClass} flex items-center justify-between">
+                    ${user} 
+                    <i class="fa-solid fa-arrow-up-right-from-square text-indigo-300 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </td>
                 <td class="p-3 text-center font-bold text-i9blue">${data.total}</td>
                 <td class="p-3 text-center rounded ${overdueClass}">${data.overdue}</td>
             </tr>`;
     });
+}
+
+// 4. Function to open and populate the Assignee Task Modal
+window.openAssigneeTaskModal = function(assignee, selectedGroup) {
+    const subtitle = document.getElementById('assignee-modal-subtitle');
+    const tb = document.getElementById('assignee-modal-table-body');
+    subtitle.textContent = `Open tasks for: ${assignee}`;
+    tb.innerHTML = '';
+    
+    const agIds = getAuthorizedGroups().map(g => g.id);
+    const today = new Date(); 
+    today.setHours(0,0,0,0);
+    
+    // Filter tasks for this assignee
+    let userTasks = activeTasks.filter(t => {
+        if (!agIds.includes(t.groupId)) return false;
+        if (selectedGroup !== 'ALL' && t.groupId !== selectedGroup) return false;
+        if (t.status === 'Archived' || t.status === 'Complete' || t.isNote) return false;
+        
+        const taskAssignee = t.assignee && t.assignee.trim() !== '' ? t.assignee : '🚨 Unassigned';
+        return taskAssignee === assignee;
+    });
+    
+    // Sort chronologically by due date
+    userTasks.sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate));
+    
+    userTasks.forEach(t => {
+        const tgt = new Date(t.targetDate + "T00:00:00");
+        const isOverdue = today > tgt;
+        
+        let dateDisplay = `<span class="font-mono text-[10px] ${isOverdue ? 'text-rose-600 font-bold' : 'text-gray-700'}">${formatTargetDate(t.targetDate)}</span>`;
+        if(isOverdue) dateDisplay += ` <br><span class="bg-rose-100 text-rose-700 px-1 py-0.5 rounded text-[8px] font-black uppercase">Overdue</span>`;
+        
+        let pName = 'Unknown Program';
+        const p = programs.find(x => x.id === t.programId);
+        if (p) pName = `[${p.groupId}]<br>${p.season}`;
+        else if (t.isOneOff) pName = `[${t.groupId}]<br>One-Off`;
+        
+        let statusBadge = t.status === 'In Progress' ? 
+            `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold">In Progress</span>` : 
+            `<span class="bg-gray-100 text-gray-700 border border-gray-200 px-2 py-0.5 rounded text-[9px]">Pending</span>`;
+        
+        tb.innerHTML += `
+            <tr class="hover:bg-indigo-50 cursor-pointer" onclick="openEditActiveTask('${t.id}')">
+                <td class="p-3 font-bold text-gray-500 text-[10px] leading-tight">${pName}</td>
+                <td class="p-3 font-bold text-i9blue">${t.name}</td>
+                <td class="p-3 whitespace-nowrap">${dateDisplay}</td>
+                <td class="p-3 text-center">${statusBadge}</td>
+            </tr>
+        `;
+    });
+    
+    document.getElementById('assignee-task-modal').classList.remove('hidden');
 }
         function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); logActivity('SYSTEM', 'User Denied/Removed', `Removed user ${em} from portal`); } }
         function openAdminEdit(em) {
