@@ -1459,70 +1459,95 @@
             });
         } catch (e) { console.error("Firebase Init Error:", e); }
 
+        let activeListeners = [];
+
+        function detachRealtimeListeners() {
+            activeListeners.forEach(unsub => { if (typeof unsub === 'function') unsub(); });
+            activeListeners = [];
+        }
+        window.detachRealtimeListeners = detachRealtimeListeners;
+
         function initRealtimeSync() {
             if (!auth.currentUser || !db) return;
+            detachRealtimeListeners(); // Clear any existing listeners first
             document.getElementById('sync-status-text').textContent = "Cloud Active";
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
-                window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions(); window.applyPermissions();
-            });
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), (snap) => {
+                    window.groups = snap.docs.map(d => d.data()); window.renderGroupPills(); window.populateFilterOptions(); window.applyPermissions();
+                })
+            );
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
-                let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
-                window.groupPermissions = p;
-                window.renderPermissions(); window.applyPermissions();
-            });
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'permissions'), (snap) => {
+                    let p = {}; snap.docs.forEach(d => p[d.id] = d.data());
+                    window.groupPermissions = p;
+                    window.renderPermissions(); window.applyPermissions();
+                })
+            );
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
-                window.users = snap.docs.map(d => d.data()); 
-                window.renderUsersTable();
-                window.checkPendingAlerts();
-                
-                if (auth.currentUser) {
-                    const em = auth.currentUser.email.toLowerCase();
-                    let matched = window.users.find(u => u.username.toLowerCase() === em);
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'portal_users'), (snap) => {
+                    window.users = snap.docs.map(d => d.data()); 
+                    window.renderUsersTable();
+                    window.checkPendingAlerts();
                     
-                    if (em === 'nick@npsnm.com') {
-                        matched = { username: 'nick@npsnm.com', name: 'Nick Padilla', firstName: 'Nick', lastName: 'Padilla', phone: 'N/A', role: 'System Admin', territories: ['ALL'] };
+                    if (auth.currentUser) {
+                        const em = auth.currentUser.email.toLowerCase();
+                        let matched = window.users.find(u => u.username.toLowerCase() === em);
+                        
+                        if (em === 'nick@npsnm.com') {
+                            matched = { username: 'nick@npsnm.com', name: 'Nick Padilla', firstName: 'Nick', lastName: 'Padilla', phone: 'N/A', role: 'System Admin', territories: ['ALL'] };
+                        }
+
+                        if (matched) {
+                            window.currentUser = matched;
+                            if (typeof currentUser !== 'undefined') currentUser = matched;
+                            window.unlockPortal();
+                        }
                     }
+                })
+            );
 
-                    if (matched) {
-                        window.currentUser = matched;
-                        if (typeof currentUser !== 'undefined') currentUser = matched;
-                        window.unlockPortal();
-                    }
-                }
-            });
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
+                    window.activityLogs = snap.docs.map(d => d.data());
+                    window.renderActivityLog();
+                    if(document.getElementById('view-control').classList.contains('hidden') === false) window.renderControlCenter();
+                    if(document.getElementById('view-tasks').classList.contains('hidden') === false) window.renderActiveTasks();
+                    if(document.getElementById('view-templates').classList.contains('hidden') === false) window.renderTemplates();
+                })
+            );
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'activity_logs'), (snap) => {
-                window.activityLogs = snap.docs.map(d => d.data());
-                window.renderActivityLog();
-                if(document.getElementById('view-control').classList.contains('hidden') === false) window.renderControlCenter();
-                if(document.getElementById('view-tasks').classList.contains('hidden') === false) window.renderActiveTasks();
-                if(document.getElementById('view-templates').classList.contains('hidden') === false) window.renderTemplates();
-            });
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
+                    window.programs = snap.docs.map(d => d.data());
+                    window.populateYearDropdowns(); window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
+                })
+            );
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'programs'), (snap) => {
-                window.programs = snap.docs.map(d => d.data());
-                window.populateYearDropdowns(); window.populateFilterOptions(); window.renderControlCenter(); window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
-            });
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'task_templates'), (snap) => {
+                    window.templates = snap.docs.map(d => d.data());
+                    window.renderTemplates();
+                })
+            );
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'task_templates'), (snap) => {
-                window.templates = snap.docs.map(d => d.data());
-                window.renderTemplates();
-            });
+            activeListeners.push(
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
+                    window.activeTasks = snap.docs.map(d => d.data());
+                    window.renderActiveTasks(); 
+                    window.renderDashboard(); 
+                    window.renderCalendar();
+                    if (typeof window.renderWorkloadSummary === 'function') window.renderWorkloadSummary();
+                })
+            );
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
-                window.activeTasks = snap.docs.map(d => d.data());
-                window.renderActiveTasks(); 
-                window.renderDashboard(); 
-                window.renderCalendar();
-                if (typeof window.renderWorkloadSummary === 'function') window.renderWorkloadSummary(); // Add this line!
-            });
-
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
-                if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI(); }
-            });
+            activeListeners.push(
+                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
+                    if (docSnap.exists()) { window.currentBranding = docSnap.data(); window.applyBrandingUI(); }
+                })
+            );
         }
 
         window.cloudSave = async (col, id, data) => setDoc(doc(db, 'artifacts', appId, 'public', 'data', col, id), data);
@@ -2019,7 +2044,12 @@
         async function loginWithGoogle() { try { await window.signInWithGoogle(); showToast("Success", "Verifying Google Account..."); } catch (error) { showError(error.message); } }
         
         async function logout() {
-            try { if (window.signOut) await window.signOut(); } catch (e) { console.error("Sign out error:", e); }
+            try { 
+                if (typeof window.detachRealtimeListeners === 'function') {
+                    window.detachRealtimeListeners();
+                }
+                if (window.signOut) await window.signOut(); 
+            } catch (e) { console.error("Sign out error:", e); }
             currentUser = null; window.currentUser = null;
 
             // Restore header buttons when logging out
