@@ -3301,7 +3301,9 @@
             if(!pendingTb || !activeTb) return;
             pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
             const agIds = getAuthorizedGroups().map(g=>g.id);
-            const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t)));
+            
+            // Added safe fallback (u.territories || []) to prevent crashing on older user profiles
+            const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || (u.territories || []).some(t => agIds.includes(t)));
             let pendingCount = 0;
             const isSysAdmin = currentUser.role === 'System Admin';
 
