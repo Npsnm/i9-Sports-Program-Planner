@@ -3273,14 +3273,6 @@
             document.getElementById('btn-view-active-users').className = view === 'active' ? "px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
             document.getElementById('btn-view-inactive-users').className = view === 'inactive' ? "px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
             
-            if (currentUser && currentUser.role === 'System Admin') {
-                const bulkActions = document.getElementById('user-bulk-actions');
-                if (bulkActions) {
-                    bulkActions.classList.remove('hidden');
-                    document.getElementById('btn-bulk-freeze').classList.toggle('hidden', view !== 'active');
-                    document.getElementById('btn-bulk-unfreeze').classList.toggle('hidden', view !== 'inactive');
-                }
-            }
             renderUsersTable();
         }
 
@@ -3296,6 +3288,18 @@
             const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t)));
             let pendingCount = 0;
             const isSysAdmin = currentUser.role === 'System Admin';
+
+            // Check permissions and show/hide bulk actions on every render so it triggers on page load
+            const bulkActions = document.getElementById('user-bulk-actions');
+            if (bulkActions) {
+                if (isSysAdmin) {
+                    bulkActions.classList.remove('hidden');
+                    document.getElementById('btn-bulk-freeze').classList.toggle('hidden', currentUserView !== 'active');
+                    document.getElementById('btn-bulk-unfreeze').classList.toggle('hidden', currentUserView !== 'inactive');
+                } else {
+                    bulkActions.classList.add('hidden');
+                }
+            }
 
             visibleUsers.forEach(u => {
                 const phoneDisplay = u.phone || "No Phone Provided";
