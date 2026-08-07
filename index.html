@@ -643,6 +643,29 @@
                 </div>
             </div>
         </section>
+
+        <!-- TAB 9: DENIED USER RE-ROUTING SCREEN -->
+        <section id="view-denied" class="tab-view hidden space-y-6 max-w-2xl mx-auto mt-10">
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-rose-200 text-center space-y-5">
+                <div class="inline-flex bg-rose-50 p-5 rounded-full text-rose-500 mb-2 border border-rose-100">
+                    <i class="fa-solid fa-circle-xmark text-5xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">Access Request Not Approved</h2>
+                <p class="text-sm text-gray-600">Your request to join Group <span id="denied-group-display" class="font-bold text-rose-600"></span> was not approved by the Group Owner.</p>
+                
+                <div class="p-4 bg-gray-50 border rounded-lg text-xs space-y-3 max-w-md mx-auto">
+                    <p class="font-bold text-gray-700">What would you like to do next?</p>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="openReRouteModal('create')" class="w-full bg-i9blue hover:bg-blue-900 text-white font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus text-i9gold"></i> Create a New Franchise Group
+                        </button>
+                        <button onclick="openReRouteModal('join')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-sitemap"></i> Request a Different Group
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- FOOTER (Version Info) -->
@@ -1314,9 +1337,123 @@
             </div>
         </div>
     </div>
+<!-- RE-ROUTE DENIED USER MODAL -->
+    <div id="reroute-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue" id="reroute-modal-title">Update Group Request</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="submitReRoute(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="reroute-action-type">
+                
+                <div id="reroute-create-fields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-bold mb-1">Group Number</label>
+                        <input type="number" id="reroute-create-id" placeholder="Group Number (Leave blank to auto-generate)" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Group Name</label>
+                        <input type="text" id="reroute-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <p class="text-[10px] text-gray-500">Creating a new group makes you the Group Owner with immediate access.</p>
+                </div>
 
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+                <div id="reroute-join-fields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-bold mb-1">Franchise / Group Number</label>
+                        <input type="number" id="reroute-join-id" placeholder="Enter Group Number (e.g. 8765)" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <p class="text-[10px] text-gray-500">Sends a new request to the Group Owner for approval.</p>
+                </div>
 
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    function deleteUserRow(em) { 
+            if(confirm(`Are you sure you want to deny access for ${em}?`)) { 
+                const u = users.find(x => x.username === em);
+                if (u) {
+                    u.role = 'Denied';
+                    u.status = 'Denied';
+                    window.cloudSaveUser(u);
+                    logActivity('SYSTEM', 'User Denied', `Denied group access request for ${em}`);
+                    showToast("Access Denied", `Denied request for ${u.name}`);
+                }
+            } 
+        }
+window.openReRouteModal = function(type) {
+            document.getElementById('reroute-action-type').value = type;
+            const createFields = document.getElementById('reroute-create-fields');
+            const joinFields = document.getElementById('reroute-join-fields');
+            const title = document.getElementById('reroute-modal-title');
+            
+            if (type === 'create') {
+                title.textContent = "Create New Franchise Group";
+                createFields.classList.remove('hidden');
+                joinFields.classList.add('hidden');
+            } else {
+                title.textContent = "Request Access to Group";
+                joinFields.classList.remove('hidden');
+                createFields.classList.add('hidden');
+            }
+            
+            document.getElementById('reroute-modal').classList.remove('hidden');
+        }
+
+        window.submitReRoute = async function(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            
+            const type = document.getElementById('reroute-action-type').value;
+            
+            if (type === 'create') {
+                let requestedId = document.getElementById('reroute-create-id').value.trim();
+                const gName = document.getElementById('reroute-create-name').value.trim();
+                
+                if (!gName) return alert("Please enter a Group Name.");
+                
+                if (requestedId) {
+                    if (groups.find(g => String(g.id) === requestedId)) {
+                        return alert(`Group Number ${requestedId} is already in use.`);
+                    }
+                } else {
+                    const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                    requestedId = ((validIds.length > 0 ? Math.max(...validIds) : 8764) + 1).toString();
+                }
+
+                const newGroupData = { id: requestedId, name: gName, fullName: `${requestedId} - ${gName}`, status: 'Active' };
+                
+                currentUser.role = 'Group Owner';
+                currentUser.status = 'Active';
+                currentUser.territories = [requestedId];
+                
+                await window.cloudSaveGroup(newGroupData);
+                await window.cloudSaveUser(currentUser);
+                
+                closeModals();
+                showToast("Group Created", `You are now Owner of Group ${requestedId}`);
+                unlockPortal();
+
+            } else {
+                const joinId = document.getElementById('reroute-join-id').value.trim();
+                if (!joinId) return alert("Please enter a Group Number.");
+                
+                currentUser.role = 'Pending';
+                currentUser.status = 'Pending';
+                currentUser.territories = [joinId];
+                
+                await window.cloudSaveUser(currentUser);
+                
+                closeModals();
+                showToast("Request Sent", `Requested access to Group ${joinId}`);
+                unlockPortal();
+            }
+        }
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1943,14 +2080,19 @@
             
             populateFilterOptions(); populateProfileForm(); applyPermissions(); 
             
-            // Check if Pending
+            // Check if Pending or Denied
             if (currentUser.role === "Pending") {
-                // Lock them into the pending view
                 document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
                 document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.add('hidden'); // Hide navigation tabs completely
                 
                 document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
                 document.getElementById('view-pending').classList.remove('hidden');
+            } else if (currentUser.role === "Denied") {
+                document.getElementById('denied-group-display').textContent = (currentUser.territories || []).join(', ');
+                document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.add('hidden'); // Hide navigation tabs completely
+                
+                document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+                document.getElementById('view-denied').classList.remove('hidden');
             } else {
                 // Fully Approved - Render normal portal
                 document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.remove('hidden'); // Show navigation tabs
@@ -3592,8 +3734,18 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
     
     document.getElementById('assignee-task-modal').classList.remove('hidden');
 }
-        function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); logActivity('SYSTEM', 'User Denied/Removed', `Removed user ${em} from portal`); } }
-        function openAdminEdit(em) {
+function deleteUserRow(em) { 
+            if(confirm(`Are you sure you want to deny access for ${em}?`)) { 
+                const u = users.find(x => x.username === em);
+                if (u) {
+                    u.role = 'Denied';
+                    u.status = 'Denied';
+                    window.cloudSaveUser(u);
+                    logActivity('SYSTEM', 'User Denied', `Denied group access request for ${em}`);
+                    showToast("Access Denied", `Denied request for ${u.name}`);
+                }
+            } 
+        }        function openAdminEdit(em) {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const u = users.find(x => x.username === em); if(!u) return;
