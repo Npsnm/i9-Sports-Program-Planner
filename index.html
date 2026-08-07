@@ -459,14 +459,30 @@
                         </table>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-user-check text-emerald-600"></i> Active User Directory</h4>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                        <div class="bg-gray-50 p-3 border-b flex flex-wrap justify-between items-center gap-2">
+                            <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-user-check text-emerald-600"></i> User Directory</h4>
+                            <div class="flex gap-2">
+                                <button onclick="setUserView('active')" id="btn-view-active-users" class="px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition">Active</button>
+                                <button onclick="setUserView('inactive')" id="btn-view-inactive-users" class="px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition">Frozen / Inactive</button>
+                            </div>
+                        </div>
+                        <div class="p-2 border-b bg-white flex justify-between gap-2 items-center">
+                            <input type="text" id="user-search-input" onkeyup="renderUsersTable()" placeholder="Search names or emails..." class="w-full max-w-xs p-1.5 text-xs border border-gray-300 rounded bg-gray-50 outline-none">
+                            <div id="user-bulk-actions" class="hidden flex gap-2">
+                                <button onclick="bulkFreezeUsers(true)" id="btn-bulk-freeze" class="bg-amber-100 border border-amber-300 text-amber-800 hover:bg-amber-200 px-2 py-1.5 rounded shadow-sm text-[10px] font-bold transition whitespace-nowrap admin-only hidden"><i class="fa-solid fa-snowflake"></i> Freeze</button>
+                                <button onclick="bulkFreezeUsers(false)" id="btn-bulk-unfreeze" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 px-2 py-1.5 rounded shadow-sm text-[10px] font-bold transition whitespace-nowrap admin-only hidden"><i class="fa-solid fa-sun"></i> Unfreeze</button>
+                            </div>
                         </div>
                         <div class="overflow-y-auto max-h-80">
                             <table class="w-full text-xs text-left">
                                 <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
-                                    <tr><th class="p-3">User Profile</th><th class="p-3">Role & Access</th><th class="p-3 text-center">Manage</th></tr>
+                                    <tr>
+                                        <th class="p-3 w-8 text-center admin-only hidden"><input type="checkbox" onchange="toggleSelectAll('user-cb', this.checked)"></th>
+                                        <th class="p-3">User Profile</th>
+                                        <th class="p-3">Role & Access</th>
+                                        <th class="p-3 text-center">Manage</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="active-users-table" class="divide-y divide-gray-100"></tbody>
                             </table>
@@ -477,8 +493,12 @@
                 <!-- RIGHT COLUMN: GROUPS & INVITES -->
                 <div class="space-y-6">
                     <div class="bg-white rounded-xl shadow-sm border border-blue-200">
-                        <div class="bg-blue-50/50 p-3 border-b border-blue-100">
+                        <div class="bg-blue-50/50 p-3 border-b border-blue-100 flex justify-between items-center">
                             <h4 class="text-xs font-bold text-i9blue"><i class="fa-solid fa-sitemap"></i> Franchise Groups</h4>
+                            <div class="flex gap-1">
+                                <button onclick="setGroupView('active')" id="btn-view-active-groups" class="px-2 py-1 text-[9px] font-bold rounded bg-i9blue text-white transition">Active</button>
+                                <button onclick="setGroupView('archived')" id="btn-view-archived-groups" class="px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition">Archived</button>
+                            </div>
                         </div>
                         <div class="p-4 space-y-3">
                             <form onsubmit="addGroup(event)" class="flex gap-2 text-xs">
@@ -519,8 +539,11 @@
                 </div>
 
                 <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-2">
-                    <div class="bg-gray-50 p-3 border-b flex justify-between items-center">
+                    <div class="bg-gray-50 p-3 border-b flex flex-wrap justify-between items-center gap-3">
                         <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-i9blue"></i> System Activity & Audit Log</h4>
+                        <select id="audit-log-group-filter" onchange="renderActivityLog()" class="bg-white border border-gray-300 text-gray-700 text-[10px] rounded p-1 outline-none">
+                            <!-- Populated by JS -->
+                        </select>
                     </div>
                     <div class="overflow-y-auto max-h-64">
                         <table class="w-full text-xs text-left">
@@ -1185,6 +1208,31 @@
         </div>
     </div>
     
+    <!-- EDIT GROUP MODAL -->
+    <div id="edit-group-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-pen"></i> Edit Group Details</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveGroupEdit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="edit-group-original-id">
+                <div>
+                    <label class="block font-bold mb-1">Group ID (Read Only)</label>
+                    <input type="text" id="edit-group-id" disabled class="w-full p-2 border rounded bg-gray-100 font-bold text-gray-500 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Group Name</label>
+                    <input type="text" id="edit-group-name" required class="w-full p-2 border rounded bg-gray-50">
+                </div>
+                <div class="flex justify-end pt-2 border-t gap-2">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- IMPORT MODAL -->
     <!-- ASSIGNEE TASK BREAKDOWN MODAL -->
         <div id="assignee-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
@@ -1504,13 +1552,19 @@
 
         window.renderActivityLog = function() {
             const tb = document.getElementById('activity-log-table');
+            const filterEl = document.getElementById('audit-log-group-filter');
             if(!tb) return; tb.innerHTML = '';
             if(!currentUser) return;
             const agIds = getAuthorizedGroups().map(g=>g.id);
+            const selectedGroup = filterEl ? filterEl.value : 'ALL';
             
-            const visibleLogs = window.activityLogs.filter(l => currentUser.territories.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            let visibleLogs = window.activityLogs.filter(l => currentUser.territories.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username);
             
-            visibleLogs.forEach(l => {
+            if (selectedGroup !== 'ALL') {
+                visibleLogs = visibleLogs.filter(l => l.groupId === selectedGroup);
+            }
+            
+            visibleLogs.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => {
                 tb.innerHTML += `<tr class="hover:bg-gray-50">
                     <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
                     <td class="p-3 font-bold text-gray-800">${l.userName}</td>
@@ -1833,6 +1887,7 @@
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
+            if (currentUser.status === "Frozen") { showError("Your account has been temporarily frozen by an administrator."); logout(); return; }
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
             populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
@@ -1989,6 +2044,14 @@
                 bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
             }
             
+            const auditFilter = document.getElementById('audit-log-group-filter');
+            if (auditFilter) {
+                auditFilter.innerHTML = '<option value="ALL">All Network / All Groups</option><option value="SYSTEM">System Events</option>';
+                ag.forEach(g => {
+                    auditFilter.innerHTML += `<option value="${g.id}">${g.fullName}</option>`;
+                });
+            }
+
             renderPermissions(); 
         }
 
@@ -3123,7 +3186,15 @@
 
         /* --- USER MANAGEMENT ADMIN FUNCTIONS --- */
         function openUserManagementModal() { switchTab('admin'); } 
-        function renderGroupPills() {
+        let currentGroupView = 'active';
+        function setGroupView(view) {
+            currentGroupView = view;
+            document.getElementById('btn-view-active-groups').className = view === 'active' ? "px-2 py-1 text-[9px] font-bold rounded bg-i9blue text-white transition" : "px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition";
+            document.getElementById('btn-view-archived-groups').className = view === 'archived' ? "px-2 py-1 text-[9px] font-bold rounded bg-i9blue text-white transition" : "px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition";
+            renderGroupPills();
+        }
+
+        window.renderGroupPills = function() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const ct = document.getElementById('group-pill-list'); if(!ct) return; ct.innerHTML = ''; 
@@ -3133,19 +3204,47 @@
                 visibleGroups = groups.filter(g => currentUser.territories.includes(g.id));
             }
 
-            visibleGroups.forEach(g => { 
+            visibleGroups.filter(g => {
+                const isArchived = g.status === 'Archived';
+                return currentGroupView === 'active' ? !isArchived : isArchived;
+            }).forEach(g => { 
                 const isArchived = g.status === 'Archived';
                 ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm ${isArchived ? 'opacity-60' : ''}">
-                    <span class="font-bold text-i9blue">${g.fullName} ${isArchived ? '(Archived)' : ''}</span> 
+                    <span class="font-bold text-i9blue">${g.fullName}</span> 
                     <div>
                         ${isArchived ? 
                             `<button onclick="unarchiveGroup('${g.id}')" class="text-emerald-500 hover:text-emerald-700 mr-2 text-[10px]" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>` : 
-                            `<button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button>`
+                            `<button onclick="openEditGroupModal('${g.id}')" class="text-blue-500 hover:text-blue-700 mr-2 text-[10px]" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                             <button onclick="archiveGroup('${g.id}')" class="text-amber-500 hover:text-amber-700 mr-2 text-[10px]" title="Archive"><i class="fa-solid fa-box-archive"></i></button>`
                         } 
                         <button onclick="openHardDeleteModal('group', '${g.id}', 'SYSTEM', '${g.fullName}')" class="text-red-800 hover:text-red-900 text-[10px]" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>`; 
             });
+        }
+
+        function openEditGroupModal(id) {
+            const g = groups.find(x => x.id === id);
+            if (!g) return;
+            document.getElementById('edit-group-original-id').value = g.id;
+            document.getElementById('edit-group-id').value = g.id;
+            document.getElementById('edit-group-name').value = g.name;
+            document.getElementById('edit-group-modal').classList.remove('hidden');
+        }
+
+        function saveGroupEdit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-group-original-id').value;
+            const newName = document.getElementById('edit-group-name').value.trim();
+            const g = groups.find(x => x.id === id);
+            if (g && newName) {
+                g.name = newName;
+                g.fullName = `${g.id} - ${newName}`;
+                window.cloudSaveGroup(g);
+                logActivity('SYSTEM', 'Group Edited', `Updated group name to ${g.fullName}`);
+                showToast("Group Updated", "The group details were saved.");
+                closeModals();
+            }
         }
         function unarchiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Restore this group to Active status?")) { g.status = 'Active'; window.cloudSaveGroup(g); logActivity(id, 'System Config', `Restored group ${id}`); } }
 
@@ -3168,25 +3267,81 @@
             }
         }
         function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm("Archive this group?")) { g.status = 'Archived'; window.cloudSaveGroup(g); logActivity('SYSTEM', 'Group Archived', `Archived group ${id}`);} }
-        function renderUsersTable() {
+        let currentUserView = 'active';
+        function setUserView(view) {
+            currentUserView = view;
+            document.getElementById('btn-view-active-users').className = view === 'active' ? "px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
+            document.getElementById('btn-view-inactive-users').className = view === 'inactive' ? "px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
+            
+            if (currentUser && currentUser.role === 'System Admin') {
+                const bulkActions = document.getElementById('user-bulk-actions');
+                if (bulkActions) {
+                    bulkActions.classList.remove('hidden');
+                    document.getElementById('btn-bulk-freeze').classList.toggle('hidden', view !== 'active');
+                    document.getElementById('btn-bulk-unfreeze').classList.toggle('hidden', view !== 'inactive');
+                }
+            }
+            renderUsersTable();
+        }
+
+        window.renderUsersTable = function() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const pendingTb = document.getElementById('pending-users-table'); const activeTb = document.getElementById('active-users-table');
-            const pendingBadge = document.getElementById('pending-count-badge'); if(!pendingTb || !activeTb) return;
-            pendingTb.innerHTML = ''; activeTb.innerHTML = ''; const agIds = getAuthorizedGroups().map(g=>g.id);
+            const pendingBadge = document.getElementById('pending-count-badge'); 
+            const searchVal = document.getElementById('user-search-input') ? document.getElementById('user-search-input').value.toLowerCase() : '';
+            if(!pendingTb || !activeTb) return;
+            pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
+            const agIds = getAuthorizedGroups().map(g=>g.id);
             const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || u.territories.some(t => agIds.includes(t)));
             let pendingCount = 0;
+            const isSysAdmin = currentUser.role === 'System Admin';
+
             visibleUsers.forEach(u => {
                 const phoneDisplay = u.phone || "No Phone Provided";
+                const searchString = `${u.name} ${u.username} ${u.role}`.toLowerCase();
+
                 if (u.role === 'Pending') {
                     pendingCount++;
                     pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${u.territories.join(', ') || 'N/A'}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button><button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button></td></tr>`;
                 } else {
-                    activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors"><td class="p-2"><div class="font-bold text-gray-900">${u.name}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td><td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div></td><td class="p-2 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button><button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button></td></tr>`;
+                    if (searchVal && !searchString.includes(searchVal)) return;
+                    const isFrozen = u.status === 'Frozen';
+                    if (currentUserView === 'active' && isFrozen) return;
+                    if (currentUserView === 'inactive' && !isFrozen) return;
+
+                    const checkboxHtml = isSysAdmin ? `<td class="p-2 text-center"><input type="checkbox" class="user-cb" value="${u.username}"></td>` : '<td class="hidden"></td>';
+                    const freezeBadge = isFrozen ? `<span class="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-black ml-2 uppercase">Frozen</span>` : '';
+
+                    activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors">
+                        ${checkboxHtml}
+                        <td class="p-2"><div class="font-bold text-gray-900">${u.name} ${freezeBadge}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td>
+                        <td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div></td>
+                        <td class="p-2 text-center space-x-1">
+                            <button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm">Manage</button>
+                            <button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button>
+                        </td>
+                    </tr>`;
                 }
             });
             if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
             if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
+        }
+
+        window.bulkFreezeUsers = function(freeze) {
+            const emails = getSelected('user-cb');
+            if(emails.length === 0) return alert("Select users first.");
+            if(!confirm(`Are you sure you want to ${freeze ? 'freeze' : 'unfreeze'} access for ${emails.length} user(s)?`)) return;
+            emails.forEach(email => {
+                const u = users.find(x => x.username === email);
+                if (u) {
+                    u.status = freeze ? 'Frozen' : 'Active';
+                    window.cloudSaveUser(u);
+                    logActivity('SYSTEM', freeze ? 'Account Frozen' : 'Account Unfrozen', `Updated access status for ${u.username}`);
+                }
+            });
+            showToast("Status Updated", `${emails.length} user(s) have been ${freeze ? 'frozen' : 'unfrozen'}.`);
+            document.querySelectorAll('.user-cb').forEach(cb => cb.checked = false);
         }
        window.renderWorkloadSummary = function() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
