@@ -2988,7 +2988,7 @@ function exportCurrentViewToCSV() {
     } 
     else if (!document.getElementById('view-control').classList.contains('hidden')) {
         filename = `Programs_Export_${new Date().toISOString().split('T')[0]}.csv`;
-        csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n";
+        csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Early Deadline,Offseason Deadline,Secondary Start Dates,Bye Dates,Weeks,Venue,Full Price,Offseason Price,Early Price,Late Fee\n";
         
         const fGrp = document.getElementById('filter-prog-group').value; 
         const fYr = document.getElementById('filter-prog-year').value;
@@ -3002,7 +3002,10 @@ function exportCurrentViewToCSV() {
             if(fSea !== 'ALL' && p.season !== fSea) return; 
             if(fTyp !== 'ALL' && p.type !== fTyp) return;
 
-            csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart}","${p.dateFinal || ''}","${p.weeks}","${p.venue || ''}","${p.price || ''}"\n`;
+            const secStartsStr = Array.isArray(p.secStartDates) ? p.secStartDates.join(';') : '';
+            const byeDatesStr = Array.isArray(p.byeDates) ? p.byeDates.join(';') : '';
+
+            csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart || ''}","${p.dateFinal || ''}","${p.dateEarly || ''}","${p.dateOffseason || ''}","${secStartsStr}","${byeDatesStr}","${p.weeks || ''}","${(p.venue || '').replace(/"/g, '""')}","${p.price || ''}","${p.priceOffseason || ''}","${p.priceEarly || ''}","${p.priceLateFee || ''}"\n`;
         });
     }
     else if (!document.getElementById('view-templates').classList.contains('hidden')) {
@@ -3056,12 +3059,15 @@ function generateCustomReport(e) {
             }
         });
     } else if (type === 'programs') {
-        csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue\n";
+        csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Early Deadline,Offseason Deadline,Secondary Start Dates,Bye Dates,Weeks,Venue,Full Price,Offseason Price,Early Price,Late Fee\n";
         programs.forEach(p => {
             if (!agIds.includes(p.groupId) || !p.dateStart) return;
             const startDate = new Date(p.dateStart + "T00:00:00");
             if (startDate >= startObj && startDate <= endObj) {
-                csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart}","${p.dateFinal || ''}","${p.weeks}","${p.venue || ''}"\n`;
+                const secStartsStr = Array.isArray(p.secStartDates) ? p.secStartDates.join(';') : '';
+                const byeDatesStr = Array.isArray(p.byeDates) ? p.byeDates.join(';') : '';
+
+                csv += `"${p.groupId}","${p.preHeader || ''}","${p.year}","${p.season}","${p.type}","${p.dateStart || ''}","${p.dateFinal || ''}","${p.dateEarly || ''}","${p.dateOffseason || ''}","${secStartsStr}","${byeDatesStr}","${p.weeks || ''}","${(p.venue || '').replace(/"/g, '""')}","${p.price || ''}","${p.priceOffseason || ''}","${p.priceEarly || ''}","${p.priceLateFee || ''}"\n`;
             }
         });
     }
@@ -3091,7 +3097,7 @@ function downloadImportTemplate() {
     let filename = "";
 
     if (type === 'programs') {
-        csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Weeks,Venue,Price\n";
+        csv = "Group ID,Pre-Header,Year,Season,Type,Start Date,Final Deadline,Early Deadline,Offseason Deadline,Secondary Start Dates,Bye Dates,Weeks,Venue,Full Price,Offseason Price,Early Price,Late Fee\n";
         filename = "Program_Import_Template.csv";
     } else if (type === 'templates') {
         csv = "Group Scope,Level,Marketing Category,Type,Pre-Header,Task Name,Seasons,Offset Days,Offset Direction,Anchor,Default Role\n";
@@ -3125,6 +3131,9 @@ function executeImport() {
             const cleanCols = cols.map(col => col.replace(/^"|"$/g, '').trim());
             
             if (type === 'programs') {
+                const secStartsRaw = cleanCols[9] || '';
+                const byeDatesRaw = cleanCols[10] || '';
+
                 const newProg = {
                     id: generateId('PRG'),
                     groupId: cleanCols[0],
@@ -3134,17 +3143,23 @@ function executeImport() {
                     type: cleanCols[4],
                     dateStart: cleanCols[5] || '',
                     dateFinal: cleanCols[6] || '',
-                    weeks: cleanCols[7] || '',
-                    venue: cleanCols[8] || '',
-                    price: cleanCols[9] || '',
+                    dateEarly: cleanCols[7] || '',
+                    dateOffseason: cleanCols[8] || '',
+                    secStartDates: secStartsRaw ? secStartsRaw.split(';') : [],
+                    byeDates: byeDatesRaw ? byeDatesRaw.split(';') : [],
+                    weeks: cleanCols[11] || '',
+                    venue: cleanCols[12] || '',
+                    price: cleanCols[13] || '',
+                    priceOffseason: cleanCols[14] || '',
+                    priceEarly: cleanCols[15] || '',
+                    priceLateFee: cleanCols[16] || '',
                     deadlineCount: 4,
-                    days: '',
-                    byeDates: [],
-                    secStartDates: []
+                    days: ''
                 };
                 window.cloudSaveProgram(newProg);
                 importCount++;
-            } else if (type === 'templates') {
+            }
+            else if (type === 'templates') {
                 const newTpl = {
                     id: generateId('TPL'),
                     groupId: cleanCols[0],
