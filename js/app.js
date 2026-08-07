@@ -1,16 +1,5 @@
 const APP_VERSION = "3.0.0 (Marketing Cats, Notes, History & Date Resync)";
 
-// EXPLICIT GLOBAL WINDOW BINDINGS
-window.renderGroupPills = function() { if (typeof renderGroupPills === 'function') renderGroupPills(); };
-window.renderPermissions = function() { if (typeof renderPermissions === 'function') renderPermissions(); };
-window.renderUsersTable = function() { if (typeof renderUsersTable === 'function') renderUsersTable(); };
-window.renderActivityLog = function() { if (typeof renderActivityLog === 'function') renderActivityLog(); };
-window.populateYearDropdowns = function() { if (typeof populateYearDropdowns === 'function') populateYearDropdowns(); };
-window.renderTemplates = function() { if (typeof renderTemplates === 'function') renderTemplates(); };
-window.renderActiveTasks = function() { if (typeof renderActiveTasks === 'function') renderActiveTasks(); };
-window.applyBrandingUI = function() { if (typeof applyBrandingUI === 'function') applyBrandingUI(); };
-window.renderWorkloadSummary = function() { if (typeof renderWorkloadSummary === 'function') renderWorkloadSummary(); };
-window.renderCalendar = function() { if (typeof renderCalendar === 'function') renderCalendar(); };
 
 let calendarDate = new Date();
 calendarDate.setHours(0,0,0,0);
@@ -60,25 +49,6 @@ window.groupPermissions = {};
 var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
 var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
-// Make core UI & filter functions available globally
-window.populateFilterOptions = populateFilterOptions;
-window.renderGroupPills = renderGroupPills;
-window.renderPermissions = renderPermissions;
-window.renderUsersTable = renderUsersTable;
-window.renderActivityLog = renderActivityLog;
-window.populateYearDropdowns = populateYearDropdowns;
-window.renderTemplates = renderTemplates;
-window.renderActiveTasks = renderActiveTasks;
-window.applyBrandingUI = applyBrandingUI;
-window.renderWorkloadSummary = renderWorkloadSummary;
-window.renderCalendar = renderCalendar;
-window.unlockPortal = unlockPortal;
-window.addEventListener('DOMContentLoaded', () => {
-    const versionEl = document.getElementById('app-version-display');
-    if(versionEl) versionEl.textContent = APP_VERSION;
-    applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
-    populateMarketingCats();
-});
 
 function populateMarketingCats() {
     const sels = ['at-mktg-cat', 'tpl-mktg-cat'];
