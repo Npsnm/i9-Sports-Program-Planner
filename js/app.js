@@ -187,7 +187,6 @@ window.clearAuditLogFilters = function() {
 
     window.renderActivityLog();
 };
-}
 
 function openHistoryModal(itemId, itemName) {
     document.getElementById('history-modal-title').textContent = `Change log for: ${itemName}`;
