@@ -476,6 +476,28 @@
                             <div id="group-pill-list" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
                         </div>
                     </div>
+
+                    <!-- ASSIGNEE WORKLOAD SUMMARY -->
+                    <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-indigo-200 overflow-hidden mt-4">
+                        <div class="bg-indigo-50/50 p-3 border-b border-indigo-100 flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-indigo-900"><i class="fa-solid fa-list-ol text-indigo-600"></i> Assignee Workload Summary</h4>
+                            <span class="text-[10px] text-indigo-700 font-medium">Active & Pending Tasks Across Authorized Groups</span>
+                        </div>
+                        <div class="overflow-y-auto max-h-64">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-indigo-50 text-indigo-800 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
+                                    <tr>
+                                        <th class="p-3">Team Member / Assignee</th>
+                                        <th class="p-3 text-center">Total Open Tasks</th>
+                                        <th class="p-3 text-center">Overdue Tasks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workload-summary-table" class="divide-y divide-indigo-50">
+                                    <!-- Dynamically populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     
                     <div class="bg-white rounded-xl shadow-sm border border-emerald-200">
                         <div class="bg-emerald-50/50 p-3 border-b border-emerald-100">
@@ -1292,7 +1314,10 @@
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'active_tasks'), (snap) => {
                 window.activeTasks = snap.docs.map(d => d.data());
-                window.renderActiveTasks(); window.renderDashboard(); window.renderCalendar();
+                window.renderActiveTasks(); 
+                window.renderDashboard(); 
+                window.renderCalendar();
+                if (typeof window.renderWorkloadSummary === 'function') window.renderWorkloadSummary(); // Add this line!
             });
 
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'branding', 'current'), (docSnap) => {
@@ -1771,7 +1796,7 @@
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
-            populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderCalendar();
+            populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
         }
 
         function checkPendingAlerts() {
@@ -3124,6 +3149,63 @@
             if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
             if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
         }
+        window.renderWorkloadSummary = function() {
+    if (!currentUser && window.currentUser) currentUser = window.currentUser;
+    if (!currentUser) return;
+    
+    const tb = document.getElementById('workload-summary-table');
+    if (!tb) return;
+    tb.innerHTML = '';
+
+    const agIds = getAuthorizedGroups().map(g => g.id);
+    const workload = {};
+
+    // Calculate open and overdue tasks per assignee
+    activeTasks.forEach(t => {
+        // Skip archived, completed, note events, or out-of-scope groups
+        if (!agIds.includes(t.groupId)) return;
+        if (t.status === 'Archived' || t.status === 'Complete' || t.isNote) return;
+
+        const assignee = t.assignee && t.assignee.trim() !== '' ? t.assignee : '🚨 Unassigned';
+        
+        if (!workload[assignee]) {
+            workload[assignee] = { total: 0, overdue: 0 };
+        }
+        
+        workload[assignee].total++;
+
+        // Check if overdue
+        const today = new Date(); 
+        today.setHours(0,0,0,0);
+        const tgt = new Date(t.targetDate + "T00:00:00");
+        if (today > tgt) {
+            workload[assignee].overdue++;
+        }
+    });
+
+    // Sort assignees by total workload (descending)
+    const sortedAssignees = Object.keys(workload).sort((a, b) => workload[b].total - workload[a].total);
+
+    if (sortedAssignees.length === 0) {
+        tb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-indigo-400 italic">No open tasks found across your groups.</td></tr>`;
+        return;
+    }
+
+    // Render the table rows
+    sortedAssignees.forEach(user => {
+        const data = workload[user];
+        const isUnassigned = user === '🚨 Unassigned';
+        const userClass = isUnassigned ? 'text-rose-600 font-black' : 'text-gray-800 font-bold';
+        const overdueClass = data.overdue > 0 ? 'text-rose-600 bg-rose-50 font-black' : 'text-emerald-600 font-bold';
+        
+        tb.innerHTML += `
+            <tr class="hover:bg-white transition-colors">
+                <td class="p-3 ${userClass}">${user}</td>
+                <td class="p-3 text-center font-bold text-i9blue">${data.total}</td>
+                <td class="p-3 text-center rounded ${overdueClass}">${data.overdue}</td>
+            </tr>`;
+    });
+}
         function deleteUserRow(em) { if(confirm(`Are you sure you want to completely remove ${em} from the system?`)) { window.cloudDeleteUser(em); logActivity('SYSTEM', 'User Denied/Removed', `Removed user ${em} from portal`); } }
         function openAdminEdit(em) {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
