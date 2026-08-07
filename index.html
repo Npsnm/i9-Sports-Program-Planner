@@ -1283,7 +1283,7 @@
                     <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
                     <div>
                         <label class="block font-bold mb-1">Assign To</label>
-                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50" onchange="if(this.value==='CUSTOM') document.getElementById('at-assignee-custom').classList.remove('hidden'); else document.getElementById('at-assignee-custom').classList.add('hidden');"></select>
+                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50 outline-none cursor-pointer" onchange="handleTaskModalAssigneeChange(this)"></select>
                         <input type="text" id="at-assignee-custom" class="w-full p-2 border rounded bg-gray-50 mt-1 hidden" placeholder="Enter custom / external name...">
                     </div>
                 </div>
