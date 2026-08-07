@@ -1250,7 +1250,14 @@ function renderControlCenter() {
             byeDisplay = `<br><span class="text-amber-600 font-bold">Skips: ${formattedDates}</span>`;
         }
 
-        const priceDisplay = p.price ? `<span class="text-emerald-700 font-bold">$${p.price}</span>` : '<span class="text-gray-400 italic">No Price</span>';
+        let priceDisplay = p.price ? `<span class="text-emerald-700 font-bold">$${p.price}</span>` : '<span class="text-gray-400 italic">No Base Price</span>';
+        if (p.priceEarly || p.priceOffseason || p.priceLateFee) {
+            priceDisplay += `<div class="text-[9px] text-gray-500 mt-0.5 space-y-0.5 font-mono">`;
+            if (p.priceOffseason) priceDisplay += `<div>Offseason: <strong class="text-indigo-600">$${p.priceOffseason}</strong></div>`;
+            if (p.priceEarly) priceDisplay += `<div>Early: <strong class="text-emerald-600">$${p.priceEarly}</strong></div>`;
+            if (p.priceLateFee) priceDisplay += `<div>Late Fee: <strong class="text-rose-600">+$${p.priceLateFee}</strong></div>`;
+            priceDisplay += `</div>`;
+        }
 
         tb.innerHTML += `
         <tr class="hover:bg-gray-50">
