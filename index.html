@@ -1864,10 +1864,22 @@
             }
             try {
                 showToast("Registering", "Creating secure account...");
+                window.isRegistering = true; // Pause the automatic lockout
+                
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
-                if (newGroupData) window.cloudSaveGroup(newGroupData);
-                window.cloudSaveUser(uObj);
-            } catch (error) { showError(error.message); }
+                
+                // Await the cloud saves to ensure they finish before logout
+                if (newGroupData) await window.cloudSaveGroup(newGroupData);
+                await window.cloudSaveUser(uObj);
+                
+                window.isRegistering = false; // Resume normal security
+                
+                showError("Registration complete. Your account is pending admin approval.");
+                logout();
+            } catch (error) { 
+                window.isRegistering = false;
+                showError(error.message); 
+            }
         }
 
         async function loginWithGoogle() { try { await window.signInWithGoogle(); showToast("Success", "Verifying Google Account..."); } catch (error) { showError(error.message); } }
@@ -1885,8 +1897,13 @@
         function unlockPortal() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
+            
+            // Wait for registration to safely save to database before kicking them out
+            if (window.isRegistering) return;
+
             if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
-            if (currentUser.status === "Frozen") { showError("Your account has been temporarily frozen by an administrator."); logout(); return; }
+            if (currentUser.status === "Archived" || currentUser.status === "Frozen") { showError("Your account has been archived or temporarily disabled."); logout(); return; }
+            
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
             populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
