@@ -2567,8 +2567,16 @@ function applyBrandingUI() {
     document.documentElement.style.setProperty('--i9blue', currentBranding.primaryColor);
     document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
     document.documentElement.style.setProperty('--i9red', currentBranding.secondaryColor);
-    const titleEl = document.getElementById('brand-title-display'); if(titleEl) titleEl.textContent = currentBranding.title;
-    const logoImg = document.getElementById('brand-logo-img'); if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
+    
+    const titleEl = document.getElementById('brand-title-display'); 
+    if(titleEl) titleEl.textContent = currentBranding.title;
+    
+    const logoImg = document.getElementById('brand-logo-img'); 
+    if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
+
+    // Add this line to update the login overlay logo:
+    const authLogoImg = document.getElementById('auth-logo-img');
+    if(authLogoImg) authLogoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
 }
 
 // --- CSV DOWNLOAD UTILITY ---
