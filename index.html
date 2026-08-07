@@ -1896,6 +1896,27 @@
             }, 3000);
         }
 
+        function setFormLoading(formEl, isLoading, loadingText = "Saving...") {
+            if (!formEl) return;
+            const submitBtn = formEl.querySelector('button[type="submit"]');
+            const inputs = formEl.querySelectorAll('input, select, textarea, button');
+
+            if (isLoading) {
+                inputs.forEach(i => i.disabled = true);
+                if (submitBtn) {
+                    submitBtn.dataset.originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> ${loadingText}`;
+                    submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+            } else {
+                inputs.forEach(i => i.disabled = false);
+                if (submitBtn && submitBtn.dataset.originalText) {
+                    submitBtn.innerHTML = submitBtn.dataset.originalText;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            }
+        }
+
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
             const icon = btn.querySelector('i');
@@ -2873,52 +2894,61 @@
             document.getElementById('program-modal').classList.remove('hidden');
         }
 
-        function saveProgram(e) {
+        async function saveProgram(e) {
             e.preventDefault();
-            const id = document.getElementById('prog-edit-id').value || generateId('PRG');
-            const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
-            const dCount = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
-            const days = Array.from(document.querySelectorAll('.prog-day-cb:checked')).map(cb => cb.value).join(', ');
-            
-            const secCount = parseInt(document.getElementById('prog-sec-start-count').value);
-            let secDatesArray = [];
-            for(let i=1; i<=secCount; i++) {
-                const val = document.getElementById('prog-start-sec-' + i).value;
-                if (val) secDatesArray.push(val);
-            }
+            const form = e.target;
+            setFormLoading(form, true, "Saving Program...");
 
-            const byeCount = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
-            let byeDatesArray = [];
-            for(let i=1; i<=byeCount; i++) {
-                const val = document.getElementById('prog-bye-' + i).value;
-                if (val) byeDatesArray.push(val);
-            }
+            try {
+                const id = document.getElementById('prog-edit-id').value || generateId('PRG');
+                const type = document.querySelector('input[name="prog-type-radio"]:checked').value;
+                const dCount = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
+                const days = Array.from(document.querySelectorAll('.prog-day-cb:checked')).map(cb => cb.value).join(', ');
+                
+                const secCount = parseInt(document.getElementById('prog-sec-start-count').value);
+                let secDatesArray = [];
+                for(let i=1; i<=secCount; i++) {
+                    const val = document.getElementById('prog-start-sec-' + i).value;
+                    if (val) secDatesArray.push(val);
+                }
 
-            const p = {
-                id: id, groupId: document.getElementById('prog-group').value, year: document.getElementById('prog-year').value,
-                type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
-                season: document.getElementById('prog-season').value, 
-                deadlineCount: dCount, days: days,
-                dateStart: document.getElementById('prog-date-start').value,
-                secStartDates: secDatesArray,
-                dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
-                dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
-                dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
-                weeks: document.getElementById('prog-weeks').value,
-                byeDates: byeDatesArray,
-                venue: document.getElementById('prog-venue').value,
-                price: document.getElementById('prog-price').value
-            };
-            window.cloudSaveProgram(p);
-            
-            if (document.getElementById('prog-edit-id').value) {
-                const linked = activeTasks.filter(t => t.programId === p.id && !t.isOneOff);
-                linked.forEach(t => { const tpl = templates.find(x => x.id === t.templateId); if(tpl) { t.targetDate = calculateNewTargetDate(p, tpl); window.cloudSaveActiveTask(t); } });
-                logActivity(p.groupId, 'Program Update', `Updated logistics/dates for Program ${p.id}`, p.id);
-            } else {
-                logActivity(p.groupId, 'Program Create', `Created new Program ${p.season} ${p.type}`, p.id);
+                const byeCount = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
+                let byeDatesArray = [];
+                for(let i=1; i<=byeCount; i++) {
+                    const val = document.getElementById('prog-bye-' + i).value;
+                    if (val) byeDatesArray.push(val);
+                }
+
+                const p = {
+                    id: id, groupId: document.getElementById('prog-group').value, year: document.getElementById('prog-year').value,
+                    type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
+                    season: document.getElementById('prog-season').value, 
+                    deadlineCount: dCount, days: days,
+                    dateStart: document.getElementById('prog-date-start').value,
+                    secStartDates: secDatesArray,
+                    dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
+                    dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
+                    dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
+                    weeks: document.getElementById('prog-weeks').value,
+                    byeDates: byeDatesArray,
+                    venue: document.getElementById('prog-venue').value,
+                    price: document.getElementById('prog-price').value
+                };
+                await window.cloudSaveProgram(p);
+                
+                if (document.getElementById('prog-edit-id').value) {
+                    const linked = activeTasks.filter(t => t.programId === p.id && !t.isOneOff);
+                    linked.forEach(t => { const tpl = templates.find(x => x.id === t.templateId); if(tpl) { t.targetDate = calculateNewTargetDate(p, tpl); window.cloudSaveActiveTask(t); } });
+                    logActivity(p.groupId, 'Program Update', `Updated logistics/dates for Program ${p.id}`, p.id);
+                } else {
+                    logActivity(p.groupId, 'Program Create', `Created new Program ${p.season} ${p.type}`, p.id);
+                }
+                closeModals(); showToast("Program Saved", "Successfully updated.");
+            } catch (err) {
+                alert("Error saving program: " + err.message);
+            } finally {
+                setFormLoading(form, false);
             }
-            closeModals(); showToast("Program Saved", "Successfully updated.");
         }
 
         function cloneProgram(id) { 
@@ -3375,54 +3405,66 @@
             document.getElementById('active-task-title').textContent = "Edit Assigned Task"; document.getElementById('active-task-modal').classList.remove('hidden');
         }
         
-        function saveActiveTask(e) {
-            e.preventDefault(); const id = document.getElementById('at-edit-id').value; const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
-            
-            let assigneeVal = document.getElementById('at-assignee').value;
-            if (assigneeVal === 'CUSTOM') assigneeVal = document.getElementById('at-assignee-custom').value.trim();
+        async function saveActiveTask(e) {
+            e.preventDefault(); 
+            const form = e.target;
+            setFormLoading(form, true, "Saving Task...");
 
-            let mktgCat = '';
-            if (document.getElementById('at-level').value === 'Marketing') {
-                mktgCat = document.getElementById('at-mktg-cat').value;
-                if (mktgCat === 'CUSTOM') mktgCat = document.getElementById('at-mktg-custom').value.trim();
-            }
+            try {
+                const id = document.getElementById('at-edit-id').value; 
+                const isOneOff = document.getElementById('at-is-oneoff').value === 'true';
+                
+                let assigneeVal = document.getElementById('at-assignee').value;
+                if (assigneeVal === 'CUSTOM') assigneeVal = document.getElementById('at-assignee-custom').value.trim();
 
-            const isNote = document.getElementById('at-is-note').checked;
-
-            if(id) {
-                const t = activeTasks.find(x => x.id === id);
-                if(t) { 
-                    t.status = document.getElementById('at-status').value;
-                    t.level = document.getElementById('at-level').value;
-                    t.marketingCategory = mktgCat;
-                    t.isNote = isNote;
-                    t.name = document.getElementById('at-name').value.trim(); 
-                    t.desc = document.getElementById('at-desc').value.trim(); 
-                    t.targetDate = document.getElementById('at-date').value; 
-                    t.assignee = isNote ? '' : assigneeVal; 
-                    t.notes = document.getElementById('at-notes').value.trim();
-                    t.completionNotes = document.getElementById('at-completion-notes').value.trim();
-                    window.cloudSaveActiveTask(t); 
-                    logActivity(t.groupId, 'Task Update', `Updated task details: ${t.name}`, t.id);
+                let mktgCat = '';
+                if (document.getElementById('at-level').value === 'Marketing') {
+                    mktgCat = document.getElementById('at-mktg-cat').value;
+                    if (mktgCat === 'CUSTOM') mktgCat = document.getElementById('at-mktg-custom').value.trim();
                 }
-            } else if (isOneOff) {
-                const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
-                if(p) {
-                    const newTask = { 
-                        id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", 
-                        level: document.getElementById('at-level').value, marketingCategory: mktgCat,
-                        name: document.getElementById('at-name').value.trim(), 
-                        desc: document.getElementById('at-desc').value.trim(), assignee: isNote ? '' : assigneeVal, 
-                        defaultRole: "Custom", targetDate: document.getElementById('at-date').value, 
-                        status: document.getElementById('at-status').value, 
-                        isOneOff: true, isNote: isNote,
-                        notes: document.getElementById('at-notes').value.trim(), completionNotes: document.getElementById('at-completion-notes').value.trim() 
-                    };
-                    window.cloudSaveActiveTask(newTask);
-                    logActivity(p.groupId, 'Task Create', `Created One-Off Task: ${newTask.name}`, newTask.id);
+
+                const isNote = document.getElementById('at-is-note').checked;
+
+                if(id) {
+                    const t = activeTasks.find(x => x.id === id);
+                    if(t) { 
+                        t.status = document.getElementById('at-status').value;
+                        t.level = document.getElementById('at-level').value;
+                        t.marketingCategory = mktgCat;
+                        t.isNote = isNote;
+                        t.name = document.getElementById('at-name').value.trim(); 
+                        t.desc = document.getElementById('at-desc').value.trim(); 
+                        t.targetDate = document.getElementById('at-date').value; 
+                        t.assignee = isNote ? '' : assigneeVal; 
+                        t.notes = document.getElementById('at-notes').value.trim();
+                        t.completionNotes = document.getElementById('at-completion-notes').value.trim();
+                        await window.cloudSaveActiveTask(t); 
+                        logActivity(t.groupId, 'Task Update', `Updated task details: ${t.name}`, t.id);
+                    }
+                } else if (isOneOff) {
+                    const progId = document.getElementById('at-program').value; const p = programs.find(x => x.id === progId);
+                    if(p) {
+                        const newTask = { 
+                            id: generateId('ATK'), programId: p.id, groupId: p.groupId, type: p.type, preHeader: "One-Off", 
+                            level: document.getElementById('at-level').value, marketingCategory: mktgCat,
+                            name: document.getElementById('at-name').value.trim(), 
+                            desc: document.getElementById('at-desc').value.trim(), assignee: isNote ? '' : assigneeVal, 
+                            defaultRole: "Custom", targetDate: document.getElementById('at-date').value, 
+                            status: document.getElementById('at-status').value, 
+                            isOneOff: true, isNote: isNote,
+                            notes: document.getElementById('at-notes').value.trim(), completionNotes: document.getElementById('at-completion-notes').value.trim() 
+                        };
+                        await window.cloudSaveActiveTask(newTask);
+                        logActivity(p.groupId, 'Task Create', `Created One-Off Task: ${newTask.name}`, newTask.id);
+                    }
                 }
+                closeModals();
+                showToast("Task Saved", "Successfully updated task.");
+            } catch (err) {
+                alert("Error saving task: " + err.message);
+            } finally {
+                setFormLoading(form, false);
             }
-            closeModals();
         }
         
         function cloneTask(id) { 
