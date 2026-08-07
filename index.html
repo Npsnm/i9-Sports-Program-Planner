@@ -1417,7 +1417,7 @@
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, updateEmail, signOut, GoogleAuthProvider, signInWithPopup, linkWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, updateEmail, signOut, GoogleAuthProvider, signInWithPopup, linkWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'i9-sports-portal';
@@ -1435,6 +1435,7 @@
             window.signOut = () => signOut(auth); 
             window.linkWithPopup = linkWithPopup; 
             window.sendPasswordResetEmail = sendPasswordResetEmail;
+            window.deleteAuthUser = () => deleteUser(auth.currentUser);
             
             const googleProvider = new GoogleAuthProvider(); 
             googleProvider.addScope('https://www.googleapis.com/auth/calendar.events');
@@ -3722,18 +3723,28 @@ function deleteUserRow(em) {
             }
 
             try {
-                showToast("Processing", "Deleting profile data...");
+                showToast("Processing", "Deleting profile and authentication credentials...");
                 const username = currentUser.username;
                 
+                // 1. Erase user record from Firestore database
                 await window.cloudDeleteUser(username);
                 logActivity('SYSTEM', 'Self Account Deletion', `User ${username} deleted their own account.`);
                 
+                // 2. Erase user credentials from Firebase Authentication vault
+                if (window.auth && window.auth.currentUser && typeof window.deleteAuthUser === 'function') {
+                    await window.deleteAuthUser();
+                }
+
                 closeModals();
-                showToast("Account Deleted", "Your user profile has been removed.");
+                showToast("Account Deleted", "Your profile and login credentials have been permanently removed.");
                 logout();
 
             } catch (err) {
-                alert("Error deleting account: " + err.message);
+                if (err.code === 'auth/requires-recent-login') {
+                    alert("Security Notice: Deleting your login credentials requires a fresh sign-in. Please sign out, sign back in, and try deleting your account again.");
+                } else {
+                    alert("Error deleting account credentials: " + err.message);
+                }
             }
         }
 
