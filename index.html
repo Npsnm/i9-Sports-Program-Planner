@@ -1913,10 +1913,26 @@
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             const badge = document.getElementById('admin-alert-badge');
             if (!badge || !currentUser) return;
+            
             if(hasPermission('manageGroups')) {
-                const pendingCount = users.filter(u => u.role === 'Pending').length;
-                if(pendingCount > 0) { badge.textContent = pendingCount; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
-            } else badge.classList.add('hidden');
+                const agIds = getAuthorizedGroups().map(g => g.id);
+                // Safely filter the badge count to only show users relevant to this Admin
+                const pendingCount = users.filter(u => {
+                    if (u.role !== 'Pending') return false;
+                    const userTerrs = u.territories || [];
+                    const currTerrs = currentUser.territories || [];
+                    return currTerrs.includes('ALL') || userTerrs.some(t => agIds.includes(t));
+                }).length;
+                
+                if(pendingCount > 0) { 
+                    badge.textContent = pendingCount; 
+                    badge.classList.remove('hidden'); 
+                } else { 
+                    badge.classList.add('hidden'); 
+                }
+            } else { 
+                badge.classList.add('hidden'); 
+            }
         }
 
         function hasPermission(permKey) {
