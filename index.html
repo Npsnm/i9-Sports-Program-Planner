@@ -3302,12 +3302,16 @@
             pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
             const agIds = getAuthorizedGroups().map(g=>g.id);
             
-            // Added safe fallback (u.territories || []) to prevent crashing on older user profiles
-            const visibleUsers = users.filter(u => currentUser.territories.includes('ALL') || (u.territories || []).some(t => agIds.includes(t)));
+            // BULLETPROOF: Safely handle users who might have corrupted or missing territories
+            const visibleUsers = users.filter(u => {
+                const userTerrs = u.territories || [];
+                const currTerrs = currentUser.territories || [];
+                return currTerrs.includes('ALL') || userTerrs.some(t => agIds.includes(t));
+            });
+            
             let pendingCount = 0;
             const isSysAdmin = currentUser.role === 'System Admin';
 
-            // Check permissions and show/hide bulk actions using the correct HTML IDs
             const bulkActions = document.getElementById('user-bulk-actions');
             const btnArchive = document.getElementById('btn-bulk-archive-user');
             const btnRestore = document.getElementById('btn-bulk-unarchive-user');
@@ -3327,15 +3331,15 @@
 
             visibleUsers.forEach(u => {
                 const phoneDisplay = u.phone || "No Phone Provided";
-                const searchString = `${u.name} ${u.username} ${u.role}`.toLowerCase();
+                const searchString = `${u.name || ''} ${u.username || ''} ${u.role || ''}`.toLowerCase();
+                const userTerrs = u.territories || []; // Safely map territories array for display
 
                 if (u.role === 'Pending') {
                     pendingCount++;
-                    pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${u.territories.join(', ') || 'N/A'}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button><button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button></td></tr>`;
+                    pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${userTerrs.join(', ') || 'N/A'}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button><button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button></td></tr>`;
                 } else {
                     if (searchVal && !searchString.includes(searchVal)) return;
                     
-                    // Catch 'Frozen' or 'Archived' status
                     const isArchived = u.status === 'Archived' || u.status === 'Frozen'; 
                     if (currentUserView === 'active' && isArchived) return;
                     if (currentUserView === 'inactive' && !isArchived) return;
@@ -3350,7 +3354,7 @@
                     activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors">
                         ${checkboxHtml}
                         <td class="p-2"><div class="font-bold text-gray-900">${u.name} ${archiveBadge}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td>
-                        <td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div></td>
+                        <td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${userTerrs.includes('ALL')?'All Network':userTerrs.join(', ')}</div></td>
                         <td class="p-2 text-center space-x-1 whitespace-nowrap">
                             ${quickArchiveBtn}
                             <button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm" title="Manage Options"><i class="fa-solid fa-gear"></i></button>
@@ -3515,7 +3519,11 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
             const roleSel = document.getElementById('admin-u-role'); roleSel.innerHTML = '';
             ROLES.forEach(r => { if(currentUser.role === 'System Admin' || r !== 'System Admin') roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
             roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
-            renderTerritoryCheckboxes(); document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = u.territories.includes(cb.value));
+            renderTerritoryCheckboxes(); 
+            
+            // Bulletproof: Safely read the territories array for the checkboxes
+            const userTerrs = u.territories || [];
+            document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = userTerrs.includes(cb.value));
             document.getElementById('admin-edit-user-modal').classList.remove('hidden');
         }
         function adminSaveUser(e) {
