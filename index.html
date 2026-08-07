@@ -1219,8 +1219,10 @@
                     <div><label class="block font-bold mb-1">Anchor Deadline</label><select id="tpl-anchor" class="w-full p-2 border rounded bg-gray-50"><option value="dateStart">1. Start Date</option><option value="dateFinal">2. Final Deadline</option><option value="dateEarly">3. Early Deadline</option><option value="dateOffseason">4. Offseason</option></select></div>
                 </div>
                 
-                <div><label class="block font-bold mb-1">Default Assigned Role (Text)</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Program Director, Site Coord"></div>
-
+                <div>
+                    <label class="block font-bold mb-1">Default Assignee / Role</label>
+                    <select id="tpl-role" class="w-full p-2 border rounded bg-gray-50 outline-none cursor-pointer" onchange="handleTplRoleChange(this)"></select>
+                </div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Profile Rule</button>
