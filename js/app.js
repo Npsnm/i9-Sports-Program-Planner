@@ -48,6 +48,12 @@ window.groupPermissions = {};
 var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
 var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
+window.addEventListener('DOMContentLoaded', () => {
+    const versionEl = document.getElementById('app-version-display');
+    if(versionEl) versionEl.textContent = APP_VERSION;
+    applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
+    populateMarketingCats();
+});
 
 function populateMarketingCats() {
     const sels = ['at-mktg-cat', 'tpl-mktg-cat'];
@@ -420,20 +426,6 @@ function togglePasswordVisibility(inputId, btn) {
     if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
     else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
 }
-
-// Make core handlers available globally to inline onclick events
-window.toggleAuthMode = toggleAuthMode;
-window.login = login;
-window.signup = signup;
-window.logout = logout;
-window.triggerPasswordReset = triggerPasswordReset;
-window.loginWithGoogle = loginWithGoogle;
-window.togglePasswordVisibility = togglePasswordVisibility;
-window.toggleSignupAction = toggleSignupAction;
-window.switchTab = switchTab;
-window.openReportModal = openReportModal;
-window.exportCurrentViewToCSV = exportCurrentViewToCSV;
-window.closeModals = closeModals;
 
 /* --- AUTHENTICATION & USER MANAGEMENT --- */
 function toggleAuthMode(mode) {
@@ -2670,7 +2662,7 @@ function exportCurrentViewToCSV() {
         const fGrp = document.getElementById('filter-template-group').value; 
         const fTyp = document.getElementById('filter-template-type').value;
 
-        templates.forEach(t => {
+templates.forEach(t => {
             if (fGrp !== 'ALL' && t.groupId !== fGrp) return;
             if (fGrp === 'ALL' && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return;
             if (fTyp !== 'ALL' && t.type !== fTyp) return;
@@ -2821,19 +2813,6 @@ function executeImport() {
                 importCount++;
             }
         }
-        // EXPLICIT GLOBAL WINDOW ASSIGNMENTS
-        window.populateFilterOptions = populateFilterOptions;
-        window.renderGroupPills = renderGroupPills;
-        window.renderPermissions = renderPermissions;
-        window.renderUsersTable = renderUsersTable;
-        window.renderActivityLog = renderActivityLog;
-        window.populateYearDropdowns = populateYearDropdowns;
-        window.renderTemplates = renderTemplates;
-        window.renderActiveTasks = renderActiveTasks;
-        window.applyBrandingUI = applyBrandingUI;
-        window.renderWorkloadSummary = renderWorkloadSummary;
-        window.renderCalendar = renderCalendar;
-        window.unlockPortal = unlockPortal;
         
         logActivity('SYSTEM', 'Data Import', `Imported ${importCount} new ${type} from CSV.`);
         showToast("Import Complete", `Successfully imported ${importCount} items.`);
@@ -2846,3 +2825,17 @@ function executeImport() {
     
     reader.readAsText(file);
 }
+
+// EXPLICIT GLOBAL WINDOW ASSIGNMENTS (At bottom of file)
+window.populateFilterOptions = populateFilterOptions;
+window.renderGroupPills = renderGroupPills;
+window.renderPermissions = renderPermissions;
+window.renderUsersTable = renderUsersTable;
+window.renderActivityLog = renderActivityLog;
+window.populateYearDropdowns = populateYearDropdowns;
+window.renderTemplates = renderTemplates;
+window.renderActiveTasks = renderActiveTasks;
+window.applyBrandingUI = applyBrandingUI;
+window.renderWorkloadSummary = renderWorkloadSummary;
+window.renderCalendar = renderCalendar;
+window.unlockPortal = unlockPortal;
