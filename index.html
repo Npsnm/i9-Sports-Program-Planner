@@ -562,9 +562,29 @@
                 <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-4">
                     <div class="bg-gray-50 p-3 border-b flex flex-wrap justify-between items-center gap-3">
                         <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-i9blue"></i> System Activity & Audit Log</h4>
-                        <select id="audit-log-group-filter" onchange="renderActivityLog()" class="bg-white border border-gray-300 text-gray-700 text-[10px] rounded p-1 outline-none">
-                            <!-- Populated by JS -->
-                        </select>
+                        
+                        <!-- Date, Time, and Group Filter Controls -->
+                        <div class="flex flex-wrap items-center gap-2 text-[10px]">
+                            <div class="flex items-center gap-1 bg-white border border-gray-300 rounded px-2 py-1">
+                                <span class="text-gray-500 font-bold">From:</span>
+                                <input type="date" id="audit-log-start-date" onchange="renderActivityLog()" class="outline-none bg-transparent cursor-pointer">
+                                <input type="time" id="audit-log-start-time" onchange="renderActivityLog()" class="outline-none bg-transparent cursor-pointer border-l pl-1">
+                            </div>
+                
+                            <div class="flex items-center gap-1 bg-white border border-gray-300 rounded px-2 py-1">
+                                <span class="text-gray-500 font-bold">To:</span>
+                                <input type="date" id="audit-log-end-date" onchange="renderActivityLog()" class="outline-none bg-transparent cursor-pointer">
+                                <input type="time" id="audit-log-end-time" onchange="renderActivityLog()" class="outline-none bg-transparent cursor-pointer border-l pl-1">
+                            </div>
+                
+                            <select id="audit-log-group-filter" onchange="renderActivityLog()" class="bg-white border border-gray-300 text-gray-700 rounded p-1 outline-none font-bold">
+                                <!-- Populated by JS -->
+                            </select>
+                
+                            <button onclick="clearAuditLogFilters()" class="text-xs text-gray-400 hover:text-rose-600 transition px-1" title="Clear Date & Time Filters">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="overflow-y-auto max-h-64">
                         <table class="w-full text-xs text-left">
