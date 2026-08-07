@@ -9,8 +9,8 @@ let calFilters = { pendingOps: true, pendingMktg: true, inProgress: true, overdu
 const ROLES = ["System Admin", "Group Owner", "Group Admin", "Program Director", "Staff"];
 const DEFAULT_PERMISSIONS = {
     "System Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
-    "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
-    "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: false, editTasks: true },
+    "Group Owner": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
+    "Group Admin": { manageGroups: true, createPrograms: true, editTemplates: true, editTasks: true },
     "Program Director": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: true },
     "Staff": { manageGroups: false, createPrograms: false, editTemplates: false, editTasks: false }
 };
@@ -127,7 +127,6 @@ window.renderActivityLog = function() {
     const agIds = getAuthorizedGroups().map(g => g.id);
     const selectedGroup = filterEl ? filterEl.value : 'ALL';
 
-    // Parse Date & Time Filter Values
     const startDateVal = document.getElementById('audit-log-start-date')?.value;
     const startTimeVal = document.getElementById('audit-log-start-time')?.value || '00:00';
     const endDateVal = document.getElementById('audit-log-end-date')?.value;
@@ -142,12 +141,10 @@ window.renderActivityLog = function() {
         l.userEmail === currentUser.username
     );
 
-    // Filter by Group Context
     if (selectedGroup !== 'ALL') {
         visibleLogs = visibleLogs.filter(l => l.groupId === selectedGroup);
     }
 
-    // Filter by Date and Time Bounds
     if (startTimestamp || endTimestamp) {
         visibleLogs = visibleLogs.filter(l => {
             const logTime = new Date(l.timestamp).getTime();
@@ -173,7 +170,6 @@ window.renderActivityLog = function() {
     });
 };
 
-// Clear Date/Time Filters Helper
 window.clearAuditLogFilters = function() {
     const sDate = document.getElementById('audit-log-start-date');
     const sTime = document.getElementById('audit-log-start-time');
@@ -426,6 +422,19 @@ function togglePasswordVisibility(inputId, btn) {
     if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
     else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
 }
+
+window.toggleAuthMode = toggleAuthMode;
+window.login = login;
+window.signup = signup;
+window.logout = logout;
+window.triggerPasswordReset = triggerPasswordReset;
+window.loginWithGoogle = loginWithGoogle;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.toggleSignupAction = toggleSignupAction;
+window.switchTab = switchTab;
+window.openReportModal = openReportModal;
+window.exportCurrentViewToCSV = exportCurrentViewToCSV;
+window.closeModals = closeModals;
 
 /* --- AUTHENTICATION & USER MANAGEMENT --- */
 function toggleAuthMode(mode) {
@@ -2751,7 +2760,7 @@ function exportCurrentViewToCSV() {
         const fGrp = document.getElementById('filter-template-group').value; 
         const fTyp = document.getElementById('filter-template-type').value;
 
-templates.forEach(t => {
+        templates.forEach(t => {
             if (fGrp !== 'ALL' && t.groupId !== fGrp) return;
             if (fGrp === 'ALL' && t.groupId !== 'ALL' && !agIds.includes(t.groupId)) return;
             if (fTyp !== 'ALL' && t.type !== fTyp) return;
@@ -2928,3 +2937,8 @@ window.applyBrandingUI = applyBrandingUI;
 window.renderWorkloadSummary = renderWorkloadSummary;
 window.renderCalendar = renderCalendar;
 window.unlockPortal = unlockPortal;
+
+// Pricing Side Panel Assignments
+window.openPricingPane = openPricingPane;
+window.closePricingPane = closePricingPane;
+window.saveProgramPricing = saveProgramPricing;
