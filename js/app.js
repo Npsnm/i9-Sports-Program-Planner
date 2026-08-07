@@ -54,6 +54,83 @@ window.addEventListener('DOMContentLoaded', () => {
     applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
     populateMarketingCats();
 });
+// --- FLEXIBLE DATE PASTING & PARSING UTILITIES ---
+function parseFlexibleDate(str) {
+    if (!str) return '';
+    str = str.trim();
+    
+    // YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+        const [y, m, d] = str.split('-');
+        return `${y}-${m}-${d}`;
+    }
+    
+    // MM/DD/YYYY or M/D/YY
+    const parts = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+    if (parts) {
+        let m = parts[1].padStart(2, '0');
+        let d = parts[2].padStart(2, '0');
+        let y = parts[3];
+        if (y.length === 2) y = '20' + y;
+        return `${y}-${m}-${d}`;
+    }
+
+    // Standard JS date parse (e.g. "Sep 12, 2026")
+    const dObj = new Date(str);
+    if (!isNaN(dObj.getTime())) {
+        const y = dObj.getFullYear();
+        const m = String(dObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    return '';
+}
+
+function handleDatePaste(e) {
+    e.preventDefault();
+    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    const parsedYYYYMMDD = parseFlexibleDate(pastedText);
+    const targetInput = e.target;
+    
+    if (parsedYYYYMMDD) {
+        targetInput.value = formatTargetDate(parsedYYYYMMDD);
+        targetInput.dataset.rawDate = parsedYYYYMMDD;
+    } else {
+        targetInput.value = pastedText;
+    }
+}
+
+function formatInputDateBlur(inputEl) {
+    if (!inputEl.value) {
+        inputEl.dataset.rawDate = '';
+        return;
+    }
+    const parsedYYYYMMDD = parseFlexibleDate(inputEl.value);
+    if (parsedYYYYMMDD) {
+        inputEl.value = formatTargetDate(parsedYYYYMMDD);
+        inputEl.dataset.rawDate = parsedYYYYMMDD;
+    }
+}
+
+function getInputRawDate(id) {
+    const el = document.getElementById(id);
+    if (!el) return '';
+    if (el.dataset.rawDate) return el.dataset.rawDate;
+    return parseFlexibleDate(el.value);
+}
+
+function setInputRawDate(id, yyyyMmDd) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (yyyyMmDd) {
+        el.value = formatTargetDate(yyyyMmDd);
+        el.dataset.rawDate = yyyyMmDd;
+    } else {
+        el.value = '';
+        el.dataset.rawDate = '';
+    }
+}
 
 function populateMarketingCats() {
     const sels = ['at-mktg-cat', 'tpl-mktg-cat'];
@@ -1415,6 +1492,7 @@ function updateProgPreHeaderOptions() {
     if (type === 'School') { container.classList.add('hidden'); } else { container.classList.remove('hidden'); ['Early', 'Late', 'Pre-Season', 'In-Season'].forEach(opt => select.innerHTML += `<option value="${opt}">${opt}</option>`); }
 }
 
+javascript
 function openAddProgramModal() { 
     document.getElementById('prog-edit-id').value = ''; 
     updateProgPreHeaderOptions();
@@ -1430,12 +1508,17 @@ function openAddProgramModal() {
     
     document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = false);
     
-    document.getElementById('prog-date-start').value = '';
-    document.getElementById('prog-date-final').value = '';
-    document.getElementById('prog-date-early').value = '';
-    document.getElementById('prog-date-offseason').value = '';
+    setInputRawDate('prog-date-start', '');
+    setInputRawDate('prog-date-final', '');
+    setInputRawDate('prog-date-early', '');
+    setInputRawDate('prog-date-offseason', '');
+
+    for(let i=1; i<=6; i++) setInputRawDate(`prog-start-sec-${i}`, '');
+    for(let i=1; i<=4; i++) setInputRawDate(`prog-bye-${i}`, '');
+
     document.getElementById('prog-weeks').value = '';
     document.getElementById('prog-venue').value = '';
+    
     document.getElementById('prog-price-offseason').value = '';
     document.getElementById('prog-price-early').value = '';
     document.getElementById('prog-price').value = '';
@@ -1462,13 +1545,14 @@ function openEditProgramModal(id) {
     const dArr = p.days ? p.days.split(', ') : [];
     document.querySelectorAll('.prog-day-cb').forEach(cb => cb.checked = dArr.includes(cb.value));
     
-    document.getElementById('prog-date-start').value = p.dateStart || '';
-    document.getElementById('prog-date-final').value = p.dateFinal || '';
-    document.getElementById('prog-date-early').value = p.dateEarly || '';
-    document.getElementById('prog-date-offseason').value = p.dateOffseason || '';
+    setInputRawDate('prog-date-start', p.dateStart || '');
+    setInputRawDate('prog-date-final', p.dateFinal || '');
+    setInputRawDate('prog-date-early', p.dateEarly || '');
+    setInputRawDate('prog-date-offseason', p.dateOffseason || '');
+
     document.getElementById('prog-weeks').value = p.weeks || '';
     document.getElementById('prog-venue').value = p.venue || '';
-    document.getElementById('price-prog-id').value = p.id;
+
     document.getElementById('prog-price-offseason').value = p.priceOffseason || '';
     document.getElementById('prog-price-early').value = p.priceEarly || '';
     document.getElementById('prog-price').value = p.price || '';
@@ -1478,9 +1562,9 @@ function openEditProgramModal(id) {
     document.getElementById('prog-sec-start-count').value = secCount <= 6 ? secCount.toString() : "6";
     updateSecStartsCount();
     if(p.secStartDates) {
-        for(let i=0; i<p.secStartDates.length; i++) {
+        for(let i=0; i<6; i++) {
             const idx = i + 1;
-            if(idx <= 6) document.getElementById('prog-start-sec-' + idx).value = p.secStartDates[i];
+            setInputRawDate(`prog-start-sec-${idx}`, p.secStartDates[i] || '');
         }
     }
 
@@ -1490,9 +1574,9 @@ function openEditProgramModal(id) {
     updateByeCount();
     
     if(p.byeDates) {
-        for(let i=0; i<p.byeDates.length; i++) {
+        for(let i=0; i<4; i++) {
             const idx = i + 1;
-            if(idx <= 4) document.getElementById('prog-bye-' + idx).value = p.byeDates[i];
+            setInputRawDate(`prog-bye-${idx}`, p.byeDates[i] || '');
         }
     }
 
@@ -1513,14 +1597,14 @@ async function saveProgram(e) {
         const secCount = parseInt(document.getElementById('prog-sec-start-count').value);
         let secDatesArray = [];
         for(let i=1; i<=secCount; i++) {
-            const val = document.getElementById('prog-start-sec-' + i).value;
+            const val = getInputRawDate('prog-start-sec-' + i);
             if (val) secDatesArray.push(val);
         }
 
         const byeCount = parseInt(document.querySelector('input[name="prog-bye-count"]:checked').value);
         let byeDatesArray = [];
         for(let i=1; i<=byeCount; i++) {
-            const val = document.getElementById('prog-bye-' + i).value;
+            const val = getInputRawDate('prog-bye-' + i);
             if (val) byeDatesArray.push(val);
         }
 
@@ -1529,16 +1613,14 @@ async function saveProgram(e) {
             type: type, preHeader: type === 'School' ? '' : document.getElementById('prog-pre').value,
             season: document.getElementById('prog-season').value, 
             deadlineCount: dCount, days: days,
-            dateStart: document.getElementById('prog-date-start').value,
+            dateStart: getInputRawDate('prog-date-start'),
             secStartDates: secDatesArray,
-            dateFinal: dCount >= 2 ? document.getElementById('prog-date-final').value : '', 
-            dateEarly: dCount >= 3 ? document.getElementById('prog-date-early').value : '',
-            dateOffseason: dCount >= 4 ? document.getElementById('prog-date-offseason').value : '', 
+            dateFinal: dCount >= 2 ? getInputRawDate('prog-date-final') : '', 
+            dateEarly: dCount >= 3 ? getInputRawDate('prog-date-early') : '',
+            dateOffseason: dCount >= 4 ? getInputRawDate('prog-date-offseason') : '', 
             weeks: document.getElementById('prog-weeks').value,
             byeDates: byeDatesArray,
             venue: document.getElementById('prog-venue').value,
-            
-            // Save all four pricing tiers
             priceOffseason: document.getElementById('prog-price-offseason').value,
             priceEarly: document.getElementById('prog-price-early').value,
             price: document.getElementById('prog-price').value,
@@ -2966,3 +3048,5 @@ window.unlockPortal = unlockPortal;
 window.openPricingPane = openPricingPane;
 window.closePricingPane = closePricingPane;
 window.saveProgramPricing = saveProgramPricing;
+window.handleDatePaste = handleDatePaste;
+window.formatInputDateBlur = formatInputDateBlur;
