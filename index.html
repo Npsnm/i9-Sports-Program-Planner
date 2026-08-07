@@ -1439,12 +1439,12 @@
 
 <!-- PROGRAM PRICING & TIERED DEADLINES SIDE PANEL -->
 <div id="pricing-pane-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300" onclick="closePricingPane()"></div>
-<div id="pricing-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col hidden">
+<div id="pricing-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col">
     <div class="bg-i9blue text-white p-4 flex justify-between items-center">
         <h3 class="font-bold text-sm flex items-center gap-2">
             <i class="fa-solid fa-tags text-i9gold"></i> Manage Program Tiered Pricing
         </h3>
-        <button onclick="closePricingPane()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <button onclick="closePricingPane()" type="button" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
     </div>
 
     <form id="pricing-tier-form" onsubmit="saveProgramPricing(event)" class="p-6 overflow-y-auto flex-grow text-xs space-y-5">
