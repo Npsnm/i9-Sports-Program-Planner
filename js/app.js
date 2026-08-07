@@ -3092,5 +3092,6 @@ window.unlockPortal = unlockPortal;
 window.openPricingPane = openPricingPane;
 window.closePricingPane = closePricingPane;
 window.saveProgramPricing = saveProgramPricing;
+window.handleTaskModalAssigneeChange = handleTaskModalAssigneeChange;
 window.handleDatePaste = handleDatePaste;
 window.formatInputDateBlur = formatInputDateBlur;
