@@ -954,136 +954,207 @@
 
     <!-- PROGRAM MODAL -->
     <div id="program-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-calendar-days text-i9gold"></i> Add / Edit Program</h3>
-                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 space-y-5 max-h-[92vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-i9blue flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-i9gold"></i> Add / Edit Program
+                </h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
-            <form onsubmit="saveProgram(event)" class="space-y-4 text-xs">
+
+            <form onsubmit="saveProgram(event)" class="space-y-5 text-xs overflow-y-auto pr-1 flex-grow">
                 <input type="hidden" id="prog-edit-id">
                 
-                <div class="grid grid-cols-3 gap-4">
-                    <div><label class="block font-bold mb-1">Group</label><select id="prog-group" class="w-full p-2 border rounded bg-gray-50"></select></div>
-                    <div><label class="block font-bold mb-1">Year</label><select id="prog-year" class="w-full p-2 border rounded bg-gray-50"></select></div>
-                    <div><label class="block font-bold mb-1">Season</label><select id="prog-season" class="w-full p-2 border rounded bg-gray-50"><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option></select></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-blue-50 p-3 rounded border border-blue-100">
-                        <label class="block font-bold mb-2">Program Type</label>
-                        <div class="flex flex-col gap-2">
-                            <label><input type="radio" name="prog-type-radio" value="League" checked onchange="updateProgPreHeaderOptions()"> League</label>
-                            <label><input type="radio" name="prog-type-radio" value="Camp" onchange="updateProgPreHeaderOptions()"> Camp</label>
-                            <label><input type="radio" name="prog-type-radio" value="Training/Clinic" onchange="updateProgPreHeaderOptions()"> Training/Clinic</label>
-                            <label><input type="radio" name="prog-type-radio" value="School" onchange="updateProgPreHeaderOptions()"> School</label>
-                        </div>
+                <!-- Primary Identity Bar -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Group Context</label>
+                        <select id="prog-group" class="w-full p-2 border border-gray-300 rounded-lg bg-white font-semibold text-i9blue outline-none"></select>
                     </div>
-                    <div id="prog-pre-container" class="bg-gray-50 p-3 rounded border">
-                        <label class="block font-bold mb-1">Timing / Pre-Header</label>
-                        <select id="prog-pre" class="w-full p-2 border rounded bg-white"></select>
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Program Year</label>
+                        <select id="prog-year" class="w-full p-2 border border-gray-300 rounded-lg bg-white outline-none"></select>
                     </div>
-                </div>
-
-                <div class="border-t pt-4">
-                    <label class="block font-bold mb-2">Milestone Tracking Level</label>
-                    <div class="flex gap-4 mb-4">
-                        <label><input type="radio" name="prog-deadline-count" value="1" onchange="updateDeadlineCount()"> 1 (Start Only)</label>
-                        <label><input type="radio" name="prog-deadline-count" value="2" onchange="updateDeadlineCount()"> 2 (Start, Final)</label>
-                        <label><input type="radio" name="prog-deadline-count" value="3" onchange="updateDeadlineCount()"> 3 (Start, Final, Early)</label>
-                        <label><input type="radio" name="prog-deadline-count" value="4" onchange="updateDeadlineCount()" checked> 4 (All Anchors)</label>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div id="prog-dl-1-container">
-                            <label class="block font-bold mb-1 text-[10px]">Start Date</label>
-                            <input type="date" id="prog-date-start" required class="w-full p-2 border rounded bg-gray-50">
-                        </div>
-                        <div id="prog-dl-2-container"><label class="block font-bold mb-1 text-[10px]">Final Deadline</label><input type="date" id="prog-date-final" class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div id="prog-dl-3-container"><label class="block font-bold mb-1 text-[10px]">Early Deadline</label><input type="date" id="prog-date-early" class="w-full p-2 border rounded bg-gray-50"></div>
-                        <div id="prog-dl-4-container"><label class="block font-bold mb-1 text-[10px]">Offseason Deadline</label><input type="date" id="prog-date-offseason" class="w-full p-2 border rounded bg-gray-50"></div>
-                    </div>
-                </div>
-
-                <div class="col-span-2 md:col-span-4 border-t pt-3 mt-2">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block font-bold text-[10px] text-i9blue">Additional / Secondary Start Dates</label>
-                        <select id="prog-sec-start-count" onchange="updateSecStartsCount()" class="p-1 border border-gray-300 rounded bg-white text-[10px] outline-none">
-                            <option value="0">None</option>
-                            <option value="1">1 Additional</option>
-                            <option value="2">2 Additional</option>
-                            <option value="3">3 Additional</option>
-                            <option value="4">4 Additional</option>
-                            <option value="5">5 Additional</option>
-                            <option value="6">6 Additional</option>
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Season</label>
+                        <select id="prog-season" class="w-full p-2 border border-gray-300 rounded-lg bg-white outline-none">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-6 gap-2 hidden" id="sec-starts-container">
-                        <input type="date" id="prog-start-sec-1" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
-                        <input type="date" id="prog-start-sec-2" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
-                        <input type="date" id="prog-start-sec-3" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
-                        <input type="date" id="prog-start-sec-4" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
-                        <input type="date" id="prog-start-sec-5" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
-                        <input type="date" id="prog-start-sec-6" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                </div>
+
+                <!-- Program Type & Timing Pre-Header Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-100 flex flex-col justify-between">
+                        <label class="block font-bold text-i9blue mb-2">Program Type</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-medium">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="prog-type-radio" value="League" checked onchange="updateProgPreHeaderOptions()"> League</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="prog-type-radio" value="Camp" onchange="updateProgPreHeaderOptions()"> Camp</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="prog-type-radio" value="Training/Clinic" onchange="updateProgPreHeaderOptions()"> Training/Clinic</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="prog-type-radio" value="School" onchange="updateProgPreHeaderOptions()"> School</label>
+                        </div>
+                    </div>
+
+                    <div id="prog-pre-container" class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 flex flex-col justify-between">
+                        <label class="block font-bold text-gray-700 mb-1">Timing / Pre-Header</label>
+                        <select id="prog-pre" class="w-full p-2 border border-gray-300 rounded-lg bg-white outline-none"></select>
+                        <p class="text-[10px] text-gray-400 mt-1">Optional descriptor (e.g. Early, Late, In-Season).</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4 mt-2">
-                    <div class="col-span-1">
-                        <label class="block font-bold mb-1">Days of Week</label>
-                        <div class="grid grid-cols-4 gap-1 text-[10px]">
-                            <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label><label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
-                            <label><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label><label><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
-                            <label><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label><label><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
-                            <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                <!-- Milestone Tracking Card -->
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center flex-wrap gap-2 border-b pb-2">
+                        <label class="font-bold text-i9blue flex items-center gap-1.5">
+                            <i class="fa-solid fa-flag text-i9gold"></i> Milestone Deadlines
+                        </label>
+                        <div class="flex gap-3 text-[11px]">
+                            <label class="cursor-pointer"><input type="radio" name="prog-deadline-count" value="1" onchange="updateDeadlineCount()"> 1 (Start Only)</label>
+                            <label class="cursor-pointer"><input type="radio" name="prog-deadline-count" value="2" onchange="updateDeadlineCount()"> 2 (Start, Final)</label>
+                            <label class="cursor-pointer"><input type="radio" name="prog-deadline-count" value="3" onchange="updateDeadlineCount()"> 3 (+ Early)</label>
+                            <label class="cursor-pointer"><input type="radio" name="prog-deadline-count" value="4" onchange="updateDeadlineCount()" checked> 4 (All Anchors)</label>
                         </div>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block font-bold mb-1">Duration (Weeks)</label>
-                        <input type="number" id="prog-weeks" class="w-full p-2 border rounded bg-gray-50" min="1" max="52" placeholder="e.g. 7">
-                        <label class="block font-bold mb-1 mt-2">Venue / Location</label>
-                        <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
+
+                    <!-- Date Pasting Input Fields -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        <div id="prog-dl-1-container">
+                            <label class="block font-bold text-gray-700 mb-1">Start Date *</label>
+                            <div class="relative">
+                                <input type="text" id="prog-date-start" required placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-2 pr-7 border border-gray-300 rounded-lg bg-gray-50 outline-none focus:bg-white font-mono text-xs">
+                                <i class="fa-regular fa-calendar absolute right-2.5 top-2.5 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div id="prog-dl-2-container">
+                            <label class="block font-bold text-gray-700 mb-1">Final Deadline</label>
+                            <div class="relative">
+                                <input type="text" id="prog-date-final" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-2 pr-7 border border-gray-300 rounded-lg bg-gray-50 outline-none focus:bg-white font-mono text-xs">
+                                <i class="fa-regular fa-calendar absolute right-2.5 top-2.5 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div id="prog-dl-3-container">
+                            <label class="block font-bold text-gray-700 mb-1">Early Deadline</label>
+                            <div class="relative">
+                                <input type="text" id="prog-date-early" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-2 pr-7 border border-gray-300 rounded-lg bg-gray-50 outline-none focus:bg-white font-mono text-xs">
+                                <i class="fa-regular fa-calendar absolute right-2.5 top-2.5 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div id="prog-dl-4-container">
+                            <label class="block font-bold text-gray-700 mb-1">Offseason Deadline</label>
+                            <div class="relative">
+                                <input type="text" id="prog-date-offseason" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-2 pr-7 border border-gray-300 rounded-lg bg-gray-50 outline-none focus:bg-white font-mono text-xs">
+                                <i class="fa-regular fa-calendar absolute right-2.5 top-2.5 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-span-1 md:col-span-2 space-y-2">
-                    <label class="block font-bold text-emerald-700 border-b pb-1">Tiered Program Pricing ($)</label>
-                    
-                    <div class="grid grid-cols-2 gap-2 text-[10px]">
-                        <div>
-                            <label class="block font-bold text-indigo-900">1. Offseason Price ($)</label>
-                            <input type="number" id="prog-price-offseason" step="0.01" class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 119.00">
+
+                    <!-- Secondary Start Dates -->
+                    <div class="border-t pt-3 mt-1">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-bold text-[11px] text-i9blue">Additional / Secondary Start Dates</label>
+                            <select id="prog-sec-start-count" onchange="updateSecStartsCount()" class="p-1 border border-gray-300 rounded bg-gray-50 text-[10px] outline-none">
+                                <option value="0">None</option>
+                                <option value="1">1 Additional</option>
+                                <option value="2">2 Additional</option>
+                                <option value="3">3 Additional</option>
+                                <option value="4">4 Additional</option>
+                                <option value="5">5 Additional</option>
+                                <option value="6">6 Additional</option>
+                            </select>
                         </div>
-                        <div>
-                            <label class="block font-bold text-emerald-900">2. Early Price ($)</label>
-                            <input type="number" id="prog-price-early" step="0.01" class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 139.00">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-i9blue">3. Full Price ($)</label>
-                            <input type="number" id="prog-price" step="0.01" required class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 159.00">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-rose-900">4. Late Fee ($)</label>
-                            <input type="number" id="prog-price-late" step="0.01" class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 25.00">
-                        </div>
-                    </div>
-                    
-                    <label class="block font-bold mb-1 mt-2 text-i9blue">Bye Weeks / Skipped Dates</label>
-                        <div class="flex gap-4 mb-2 text-[10px]">
-                            <label><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
-                            <label><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
-                            <label><input type="radio" name="prog-bye-count" value="2" onchange="updateByeCount()"> 2</label>
-                            <label><input type="radio" name="prog-bye-count" value="3" onchange="updateByeCount()"> 3</label>
-                            <label><input type="radio" name="prog-bye-count" value="4" onchange="updateByeCount()"> 4</label>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 hidden" id="bye-weeks-container">
-                            <input type="date" id="prog-bye-1" class="w-full p-2 border rounded bg-gray-50 hidden">
-                            <input type="date" id="prog-bye-2" class="w-full p-2 border rounded bg-gray-50 hidden">
-                            <input type="date" id="prog-bye-3" class="w-full p-2 border rounded bg-gray-50 hidden">
-                            <input type="date" id="prog-bye-4" class="w-full p-2 border rounded bg-gray-50 hidden">
+                        <div class="grid grid-cols-2 md:grid-cols-6 gap-2 hidden" id="sec-starts-container">
+                            <input type="text" id="prog-start-sec-1" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-gray-50 font-mono hidden text-[11px]">
+                            <input type="text" id="prog-start-sec-2" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-gray-50 font-mono hidden text-[11px]">
+                            <input type="text" id="prog-start-sec-3" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-gray-50 font-mono hidden text-[11px]">
+                            <input type="text" id="prog-start-sec-4" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-gray-50 font-mono hidden text-[11px]">
+                            <input type="text" id="prog-start-sec-5" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-gray-50 font-mono hidden text-[11px]">
+                            <input type="text" id="prog-start-sec-6" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-gray-50 font-mono hidden text-[11px]">
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Program</button>
+                <!-- Logistics & Tiered Pricing Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Logistics Card -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                        <label class="block font-bold text-gray-800 border-b pb-1">Program Logistics</label>
+                        <div>
+                            <label class="block font-bold text-gray-600 mb-1">Days of Week</label>
+                            <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-gray-700">
+                                <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label>
+                                <label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
+                                <label><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label>
+                                <label><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
+                                <label><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label>
+                                <label><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
+                                <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold text-gray-600 mb-1">Duration (Weeks)</label>
+                                <input type="number" id="prog-weeks" min="1" max="52" placeholder="e.g. 7" class="w-full p-2 border rounded-lg bg-white">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-600 mb-1">Venue / Location</label>
+                                <input type="text" id="prog-venue" placeholder="e.g. Central High School" class="w-full p-2 border rounded-lg bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing & Skipped Dates Card -->
+                    <div class="bg-emerald-50/40 p-4 rounded-xl border border-emerald-100 space-y-3">
+                        <label class="block font-bold text-emerald-800 border-b border-emerald-200 pb-1">Tiered Program Pricing ($)</label>
+                        <div class="grid grid-cols-2 gap-2 text-[10px]">
+                            <div>
+                                <label class="block font-bold text-indigo-900 mb-0.5">1. Offseason Price</label>
+                                <input type="number" id="prog-price-offseason" step="0.01" placeholder="e.g. 119.00" class="w-full p-1.5 border rounded-lg bg-white">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-emerald-900 mb-0.5">2. Early Price</label>
+                                <input type="number" id="prog-price-early" step="0.01" placeholder="e.g. 139.00" class="w-full p-1.5 border rounded-lg bg-white">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-i9blue mb-0.5">3. Full Price *</label>
+                                <input type="number" id="prog-price" step="0.01" required placeholder="e.g. 159.00" class="w-full p-1.5 border border-emerald-300 rounded-lg bg-white font-bold text-emerald-800">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-rose-900 mb-0.5">4. Late Fee</label>
+                                <input type="number" id="prog-price-late" step="0.01" placeholder="e.g. 25.00" class="w-full p-1.5 border rounded-lg bg-white">
+                            </div>
+                        </div>
+
+                        <div class="border-t border-emerald-100 pt-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="font-bold text-i9blue text-[11px]">Bye Weeks / Skipped Dates</label>
+                                <div class="flex gap-2 text-[10px]">
+                                    <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
+                                    <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
+                                    <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="2" onchange="updateByeCount()"> 2</label>
+                                    <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="3" onchange="updateByeCount()"> 3</label>
+                                    <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="4" onchange="updateByeCount()"> 4</label>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 hidden" id="bye-weeks-container">
+                                <input type="text" id="prog-bye-1" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-white font-mono hidden text-[10px]">
+                                <input type="text" id="prog-bye-2" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-white font-mono hidden text-[10px]">
+                                <input type="text" id="prog-bye-3" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-white font-mono hidden text-[10px]">
+                                <input type="text" id="prog-bye-4" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-white font-mono hidden text-[10px]">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Footer -->
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-700 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-i9blue hover:bg-blue-900 text-white rounded-lg font-bold shadow-md transition">Save Program</button>
                 </div>
             </form>
         </div>
