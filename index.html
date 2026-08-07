@@ -1374,86 +1374,7 @@
             </form>
         </div>
     </div>
-    function deleteUserRow(em) { 
-            if(confirm(`Are you sure you want to deny access for ${em}?`)) { 
-                const u = users.find(x => x.username === em);
-                if (u) {
-                    u.role = 'Denied';
-                    u.status = 'Denied';
-                    window.cloudSaveUser(u);
-                    logActivity('SYSTEM', 'User Denied', `Denied group access request for ${em}`);
-                    showToast("Access Denied", `Denied request for ${u.name}`);
-                }
-            } 
-        }
-window.openReRouteModal = function(type) {
-            document.getElementById('reroute-action-type').value = type;
-            const createFields = document.getElementById('reroute-create-fields');
-            const joinFields = document.getElementById('reroute-join-fields');
-            const title = document.getElementById('reroute-modal-title');
-            
-            if (type === 'create') {
-                title.textContent = "Create New Franchise Group";
-                createFields.classList.remove('hidden');
-                joinFields.classList.add('hidden');
-            } else {
-                title.textContent = "Request Access to Group";
-                joinFields.classList.remove('hidden');
-                createFields.classList.add('hidden');
-            }
-            
-            document.getElementById('reroute-modal').classList.remove('hidden');
-        }
-
-        window.submitReRoute = async function(e) {
-            e.preventDefault();
-            if (!currentUser) return;
-            
-            const type = document.getElementById('reroute-action-type').value;
-            
-            if (type === 'create') {
-                let requestedId = document.getElementById('reroute-create-id').value.trim();
-                const gName = document.getElementById('reroute-create-name').value.trim();
-                
-                if (!gName) return alert("Please enter a Group Name.");
-                
-                if (requestedId) {
-                    if (groups.find(g => String(g.id) === requestedId)) {
-                        return alert(`Group Number ${requestedId} is already in use.`);
-                    }
-                } else {
-                    const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
-                    requestedId = ((validIds.length > 0 ? Math.max(...validIds) : 8764) + 1).toString();
-                }
-
-                const newGroupData = { id: requestedId, name: gName, fullName: `${requestedId} - ${gName}`, status: 'Active' };
-                
-                currentUser.role = 'Group Owner';
-                currentUser.status = 'Active';
-                currentUser.territories = [requestedId];
-                
-                await window.cloudSaveGroup(newGroupData);
-                await window.cloudSaveUser(currentUser);
-                
-                closeModals();
-                showToast("Group Created", `You are now Owner of Group ${requestedId}`);
-                unlockPortal();
-
-            } else {
-                const joinId = document.getElementById('reroute-join-id').value.trim();
-                if (!joinId) return alert("Please enter a Group Number.");
-                
-                currentUser.role = 'Pending';
-                currentUser.status = 'Pending';
-                currentUser.territories = [joinId];
-                
-                await window.cloudSaveUser(currentUser);
-                
-                closeModals();
-                showToast("Request Sent", `Requested access to Group ${joinId}`);
-                unlockPortal();
-            }
-        }
+    
     <!-- FIREBASE CLOUD DATABASE SDK MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -3745,7 +3666,88 @@ function deleteUserRow(em) {
                     showToast("Access Denied", `Denied request for ${u.name}`);
                 }
             } 
-        }        function openAdminEdit(em) {
+        }        
+        function deleteUserRow(em) { 
+            if(confirm(`Are you sure you want to deny access for ${em}?`)) { 
+                const u = users.find(x => x.username === em);
+                if (u) {
+                    u.role = 'Denied';
+                    u.status = 'Denied';
+                    window.cloudSaveUser(u);
+                    logActivity('SYSTEM', 'User Denied', `Denied group access request for ${em}`);
+                    showToast("Access Denied", `Denied request for ${u.name}`);
+                }
+            } 
+        }
+window.openReRouteModal = function(type) {
+            document.getElementById('reroute-action-type').value = type;
+            const createFields = document.getElementById('reroute-create-fields');
+            const joinFields = document.getElementById('reroute-join-fields');
+            const title = document.getElementById('reroute-modal-title');
+            
+            if (type === 'create') {
+                title.textContent = "Create New Franchise Group";
+                createFields.classList.remove('hidden');
+                joinFields.classList.add('hidden');
+            } else {
+                title.textContent = "Request Access to Group";
+                joinFields.classList.remove('hidden');
+                createFields.classList.add('hidden');
+            }
+            
+            document.getElementById('reroute-modal').classList.remove('hidden');
+        }
+
+        window.submitReRoute = async function(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+            
+            const type = document.getElementById('reroute-action-type').value;
+            
+            if (type === 'create') {
+                let requestedId = document.getElementById('reroute-create-id').value.trim();
+                const gName = document.getElementById('reroute-create-name').value.trim();
+                
+                if (!gName) return alert("Please enter a Group Name.");
+                
+                if (requestedId) {
+                    if (groups.find(g => String(g.id) === requestedId)) {
+                        return alert(`Group Number ${requestedId} is already in use.`);
+                    }
+                } else {
+                    const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                    requestedId = ((validIds.length > 0 ? Math.max(...validIds) : 8764) + 1).toString();
+                }
+
+                const newGroupData = { id: requestedId, name: gName, fullName: `${requestedId} - ${gName}`, status: 'Active' };
+                
+                currentUser.role = 'Group Owner';
+                currentUser.status = 'Active';
+                currentUser.territories = [requestedId];
+                
+                await window.cloudSaveGroup(newGroupData);
+                await window.cloudSaveUser(currentUser);
+                
+                closeModals();
+                showToast("Group Created", `You are now Owner of Group ${requestedId}`);
+                unlockPortal();
+
+            } else {
+                const joinId = document.getElementById('reroute-join-id').value.trim();
+                if (!joinId) return alert("Please enter a Group Number.");
+                
+                currentUser.role = 'Pending';
+                currentUser.status = 'Pending';
+                currentUser.territories = [joinId];
+                
+                await window.cloudSaveUser(currentUser);
+                
+                closeModals();
+                showToast("Request Sent", `Requested access to Group ${joinId}`);
+                unlockPortal();
+            }
+        }
+        function openAdminEdit(em) {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             const u = users.find(x => x.username === em); if(!u) return;
