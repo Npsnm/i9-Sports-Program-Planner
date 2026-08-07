@@ -3289,15 +3289,21 @@
             let pendingCount = 0;
             const isSysAdmin = currentUser.role === 'System Admin';
 
-            // Check permissions and show/hide bulk actions on every render so it triggers on page load
+            // Check permissions and show/hide bulk actions using the correct HTML IDs
             const bulkActions = document.getElementById('user-bulk-actions');
+            const btnArchive = document.getElementById('btn-bulk-archive-user');
+            const btnRestore = document.getElementById('btn-bulk-unarchive-user');
+            const headerCheckbox = document.getElementById('user-bulk-checkbox-header');
+            
             if (bulkActions) {
                 if (isSysAdmin) {
                     bulkActions.classList.remove('hidden');
-                    document.getElementById('btn-bulk-freeze').classList.toggle('hidden', currentUserView !== 'active');
-                    document.getElementById('btn-bulk-unfreeze').classList.toggle('hidden', currentUserView !== 'inactive');
+                    if (headerCheckbox) headerCheckbox.style.display = 'table-cell';
+                    if (btnArchive) btnArchive.style.display = currentUserView === 'active' ? 'block' : 'none';
+                    if (btnRestore) btnRestore.style.display = currentUserView === 'inactive' ? 'block' : 'none';
                 } else {
                     bulkActions.classList.add('hidden');
+                    if (headerCheckbox) headerCheckbox.style.display = 'none';
                 }
             }
 
@@ -3310,23 +3316,25 @@
                     pendingTb.innerHTML += `<tr class="hover:bg-rose-100 transition-colors"><td class="p-2 border-b border-rose-100"><div class="font-bold text-rose-900">${u.name}</div><div class="text-[9px] text-rose-700">${u.username} • ${phoneDisplay}</div></td><td class="p-2 border-b border-rose-100 text-[10px] font-mono text-rose-800">${u.territories.join(', ') || 'N/A'}</td><td class="p-2 border-b border-rose-100 text-center space-x-1"><button onclick="openAdminEdit('${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold">Approve</button><button onclick="deleteUserRow('${u.username}')" class="bg-white border border-rose-300 text-rose-600 hover:bg-rose-200 px-2 py-1 rounded shadow-sm text-[10px] font-bold">Deny</button></td></tr>`;
                 } else {
                     if (searchVal && !searchString.includes(searchVal)) return;
-                    const isFrozen = u.status === 'Frozen';
-                    if (currentUserView === 'active' && isFrozen) return;
-                    if (currentUserView === 'inactive' && !isFrozen) return;
+                    
+                    // Catch 'Frozen' or 'Archived' status
+                    const isArchived = u.status === 'Archived' || u.status === 'Frozen'; 
+                    if (currentUserView === 'active' && isArchived) return;
+                    if (currentUserView === 'inactive' && !isArchived) return;
 
-                    const checkboxHtml = isSysAdmin ? `<td class="p-2 text-center"><input type="checkbox" class="user-cb" value="${u.username}"></td>` : '<td class="hidden"></td>';
-                    const freezeBadge = isFrozen ? `<span class="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-black ml-2 uppercase">Frozen</span>` : '';
+                    const checkboxHtml = isSysAdmin ? `<td class="p-2 text-center"><input type="checkbox" class="user-cb" value="${u.username}"></td>` : '';
+                    const archiveBadge = isArchived ? `<span class="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-black ml-2 uppercase">Archived</span>` : '';
 
-                    const quickFreezeBtn = isSysAdmin ? (isFrozen 
-                        ? `<button onclick="toggleUserFreezeStatus('${u.username}', false)" class="text-emerald-600 border border-emerald-200 hover:bg-emerald-50 px-2 py-1 rounded shadow-sm" title="Unfreeze User"><i class="fa-solid fa-sun"></i></button>`
-                        : `<button onclick="toggleUserFreezeStatus('${u.username}', true)" class="text-amber-600 border border-amber-200 hover:bg-amber-50 px-2 py-1 rounded shadow-sm" title="Freeze User"><i class="fa-solid fa-snowflake"></i></button>`) : '';
+                    const quickArchiveBtn = isSysAdmin ? (isArchived 
+                        ? `<button onclick="toggleUserArchiveStatus('${u.username}', false)" class="text-emerald-600 border border-emerald-200 hover:bg-emerald-50 px-2 py-1 rounded shadow-sm" title="Restore User"><i class="fa-solid fa-rotate-left"></i></button>`
+                        : `<button onclick="toggleUserArchiveStatus('${u.username}', true)" class="text-amber-600 border border-amber-200 hover:bg-amber-50 px-2 py-1 rounded shadow-sm" title="Archive User"><i class="fa-solid fa-box-archive"></i></button>`) : '';
 
                     activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors">
                         ${checkboxHtml}
-                        <td class="p-2"><div class="font-bold text-gray-900">${u.name} ${freezeBadge}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td>
+                        <td class="p-2"><div class="font-bold text-gray-900">${u.name} ${archiveBadge}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td>
                         <td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${u.territories.includes('ALL')?'All Network':u.territories.join(', ')}</div></td>
                         <td class="p-2 text-center space-x-1 whitespace-nowrap">
-                            ${quickFreezeBtn}
+                            ${quickArchiveBtn}
                             <button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm" title="Manage Options"><i class="fa-solid fa-gear"></i></button>
                             <button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button>
                         </td>
@@ -3337,30 +3345,30 @@
             if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
         }
 
-        window.toggleUserFreezeStatus = function(email, freeze) {
-            if(!confirm(`Are you sure you want to ${freeze ? 'freeze' : 'unfreeze'} access for ${email}?`)) return;
+        window.toggleUserArchiveStatus = function(email, archive) {
+            if(!confirm(`Are you sure you want to ${archive ? 'archive' : 'restore'} access for ${email}?`)) return;
             const u = users.find(x => x.username === email);
             if (u) {
-                u.status = freeze ? 'Frozen' : 'Active';
+                u.status = archive ? 'Archived' : 'Active';
                 window.cloudSaveUser(u);
-                logActivity('SYSTEM', freeze ? 'Account Frozen' : 'Account Unfrozen', `Updated access status for ${u.username}`);
-                showToast("Status Updated", `User has been ${freeze ? 'frozen' : 'unfrozen'}.`);
+                logActivity('SYSTEM', archive ? 'User Archived' : 'User Restored', `Updated access status for ${u.username}`);
+                showToast("Status Updated", `User has been ${archive ? 'archived' : 'restored'}.`);
             }
         }
 
-        window.bulkFreezeUsers = function(freeze) {
+        window.bulkArchiveUsers = function(archive) {
             const emails = getSelected('user-cb');
             if(emails.length === 0) return alert("Select users first.");
-            if(!confirm(`Are you sure you want to ${freeze ? 'freeze' : 'unfreeze'} access for ${emails.length} user(s)?`)) return;
+            if(!confirm(`Are you sure you want to ${archive ? 'archive' : 'restore'} access for ${emails.length} user(s)?`)) return;
             emails.forEach(email => {
                 const u = users.find(x => x.username === email);
                 if (u) {
-                    u.status = freeze ? 'Frozen' : 'Active';
+                    u.status = archive ? 'Archived' : 'Active';
                     window.cloudSaveUser(u);
-                    logActivity('SYSTEM', freeze ? 'Account Frozen' : 'Account Unfrozen', `Updated access status for ${u.username}`);
+                    logActivity('SYSTEM', archive ? 'Account Archived' : 'Account Restored', `Updated access status for ${u.username}`);
                 }
             });
-            showToast("Status Updated", `${emails.length} user(s) have been ${freeze ? 'frozen' : 'unfrozen'}.`);
+            showToast("Status Updated", `${emails.length} user(s) have been ${archive ? 'archived' : 'restored'}.`);
             document.querySelectorAll('.user-cb').forEach(cb => cb.checked = false);
         }
        window.renderWorkloadSummary = function() {
