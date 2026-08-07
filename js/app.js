@@ -380,7 +380,19 @@ function togglePasswordVisibility(inputId, btn) {
     if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
     else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
 }
-
+// Make core handlers available globally to inline onclick events
+window.toggleAuthMode = toggleAuthMode;
+window.login = login;
+window.signup = signup;
+window.logout = logout;
+window.triggerPasswordReset = triggerPasswordReset;
+window.loginWithGoogle = loginWithGoogle;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.toggleSignupAction = toggleSignupAction;
+window.switchTab = switchTab;
+window.openReportModal = openReportModal;
+window.exportCurrentViewToCSV = exportCurrentViewToCSV;
+window.closeModals = closeModals;
 /* --- AUTHENTICATION & USER MANAGEMENT --- */
 function toggleAuthMode(mode) {
     const err = document.getElementById('auth-error'); err.classList.add('hidden');
