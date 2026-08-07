@@ -2065,9 +2065,14 @@ function openAddOneOffTaskModal(prefillDate = '') {
     document.getElementById('at-desc').value = ''; 
     document.getElementById('at-date').value = typeof prefillDate === 'string' && prefillDate ? prefillDate : ''; 
     
-    document.getElementById('at-assignee').value = ''; 
-    document.getElementById('at-assignee-custom').value = '';
-    document.getElementById('at-assignee-custom').classList.add('hidden');
+    // Repopulate assignee options dynamically
+    populateFilterOptions();
+
+    const assigneeSel = document.getElementById('at-assignee');
+    if (assigneeSel) assigneeSel.value = ''; 
+    
+    const customInp = document.getElementById('at-assignee-custom');
+    if (customInp) customInp.classList.add('hidden');
 
     document.getElementById('at-notes').value = ''; 
     document.getElementById('at-completion-notes').value = '';
@@ -2077,7 +2082,6 @@ function openAddOneOffTaskModal(prefillDate = '') {
     document.getElementById('active-task-title').textContent = "Add One-Off Task"; 
     document.getElementById('active-task-modal').classList.remove('hidden'); 
 }
-
 function openEditActiveTask(id) {
     const t = activeTasks.find(x => x.id === id); if(!t) return;
     document.getElementById('at-edit-id').value = t.id; document.getElementById('at-is-oneoff').value = t.isOneOff.toString();
@@ -2107,23 +2111,42 @@ function openEditActiveTask(id) {
     const assigneeSel = document.getElementById('at-assignee');
     const customInp = document.getElementById('at-assignee-custom');
     
-    // Repopulate options to respect role filtering
+    // Refresh dropdown options respecting permissions
     populateFilterOptions();
     
-    if (t.assignee && !users.find(u => u.name === t.assignee)) {
-        let optExists = Array.from(assigneeSel.options).some(o => o.value === t.assignee);
-        if (!optExists) {
-            let opt = document.createElement('option');
-            opt.value = t.assignee; 
-            opt.text = `${t.assignee} (External)`;
-            assigneeSel.add(opt, assigneeSel.options[1]);
+    if (t.assignee) {
+        const foundUser = users.find(u => u.name === t.assignee);
+        const isArchived = foundUser && (foundUser.status === 'Archived' || foundUser.status === 'Frozen');
+
+        if (isArchived) {
+            // User was archived: Flag as Archived / Custom in the dropdown
+            let optExists = Array.from(assigneeSel.options).some(o => o.value === t.assignee);
+            if (!optExists) {
+                let opt = document.createElement('option');
+                opt.value = t.assignee;
+                opt.text = `${t.assignee} (Archived User)`;
+                opt.className = "text-rose-600 font-bold";
+                assigneeSel.add(opt, assigneeSel.options[1]);
+            }
+            assigneeSel.value = t.assignee;
+        } else if (!foundUser) {
+            // Custom / External assignee
+            let optExists = Array.from(assigneeSel.options).some(o => o.value === t.assignee);
+            if (!optExists) {
+                let opt = document.createElement('option');
+                opt.value = t.assignee;
+                opt.text = `${t.assignee} (External)`;
+                assigneeSel.add(opt, assigneeSel.options[1]);
+            }
+            assigneeSel.value = t.assignee;
+        } else {
+            assigneeSel.value = t.assignee;
         }
-        assigneeSel.value = t.assignee;
-        if (customInp) customInp.classList.add('hidden');
     } else {
-        assigneeSel.value = t.assignee || '';
-        if (customInp) customInp.classList.add('hidden');
+        assigneeSel.value = '';
     }
+
+    if (customInp) customInp.classList.add('hidden');
 
     document.getElementById('at-notes').value = t.notes || '';
     document.getElementById('at-completion-notes').value = t.completionNotes || '';
@@ -2384,8 +2407,26 @@ window.toggleUserArchiveStatus = function(email, archive) {
     if (u) {
         u.status = archive ? 'Archived' : 'Active';
         window.cloudSaveUser(u);
+        
+        // If archiving, handle open assigned tasks
+        if (archive) {
+            const userOpenTasks = activeTasks.filter(t => t.assignee === u.name && t.status !== 'Complete' && t.status !== 'Archived');
+            if (userOpenTasks.length > 0) {
+                const resetOpen = confirm(`User ${u.name} has ${userOpenTasks.length} open task(s) assigned.\n\nClick OK to reset their open tasks to 'Unassigned', or Cancel to keep their name on the tasks as (Archived User).`);
+                if (resetOpen) {
+                    userOpenTasks.forEach(t => {
+                        t.assignee = '';
+                        window.cloudSaveActiveTask(t);
+                    });
+                    showToast("Tasks Reset", `${userOpenTasks.length} task(s) set to Unassigned.`);
+                }
+            }
+        }
+
         logActivity('SYSTEM', archive ? 'User Archived' : 'User Restored', `Updated access status for ${u.username}`);
         showToast("Status Updated", `User has been ${archive ? 'archived' : 'restored'}.`);
+        renderUsersTable();
+        renderActiveTasks();
     }
 }
 
