@@ -2821,6 +2821,19 @@ function executeImport() {
                 importCount++;
             }
         }
+        // EXPLICIT GLOBAL WINDOW ASSIGNMENTS
+        window.populateFilterOptions = populateFilterOptions;
+        window.renderGroupPills = renderGroupPills;
+        window.renderPermissions = renderPermissions;
+        window.renderUsersTable = renderUsersTable;
+        window.renderActivityLog = renderActivityLog;
+        window.populateYearDropdowns = populateYearDropdowns;
+        window.renderTemplates = renderTemplates;
+        window.renderActiveTasks = renderActiveTasks;
+        window.applyBrandingUI = applyBrandingUI;
+        window.renderWorkloadSummary = renderWorkloadSummary;
+        window.renderCalendar = renderCalendar;
+        window.unlockPortal = unlockPortal;
         
         logActivity('SYSTEM', 'Data Import', `Imported ${importCount} new ${type} from CSV.`);
         showToast("Import Complete", `Successfully imported ${importCount} items.`);
