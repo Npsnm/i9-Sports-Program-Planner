@@ -1,6 +1,5 @@
 const APP_VERSION = "3.0.0 (Marketing Cats, Notes, History & Date Resync)";
 
-
 let calendarDate = new Date();
 calendarDate.setHours(0,0,0,0);
 let currentDashFilter = 'active';
