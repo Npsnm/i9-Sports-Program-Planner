@@ -1898,13 +1898,18 @@
                 
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
                 
+                // Await the cloud saves to ensure they finish before logout
                 if (newGroupData) await window.cloudSaveGroup(newGroupData);
                 await window.cloudSaveUser(uObj);
                 
+                // Set the user locally immediately so we don't wait for the cloud sync
+                window.currentUser = uObj;
+                currentUser = uObj;
+
                 window.isRegistering = false; 
                 
-                // Do NOT logout. Hide overlay and let Firebase auth state listener trigger unlockPortal naturally
-                document.getElementById('auth-overlay').classList.add('hidden');
+                // Force the portal to unlock now that the data is safely saved
+                unlockPortal();
                 
             } catch (error) { 
                 window.isRegistering = false;
