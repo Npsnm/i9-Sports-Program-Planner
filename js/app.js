@@ -1,5 +1,17 @@
 const APP_VERSION = "3.0.0 (Marketing Cats, Notes, History & Date Resync)";
 
+// EXPLICIT GLOBAL WINDOW BINDINGS
+window.renderGroupPills = function() { if (typeof renderGroupPills === 'function') renderGroupPills(); };
+window.renderPermissions = function() { if (typeof renderPermissions === 'function') renderPermissions(); };
+window.renderUsersTable = function() { if (typeof renderUsersTable === 'function') renderUsersTable(); };
+window.renderActivityLog = function() { if (typeof renderActivityLog === 'function') renderActivityLog(); };
+window.populateYearDropdowns = function() { if (typeof populateYearDropdowns === 'function') populateYearDropdowns(); };
+window.renderTemplates = function() { if (typeof renderTemplates === 'function') renderTemplates(); };
+window.renderActiveTasks = function() { if (typeof renderActiveTasks === 'function') renderActiveTasks(); };
+window.applyBrandingUI = function() { if (typeof applyBrandingUI === 'function') applyBrandingUI(); };
+window.renderWorkloadSummary = function() { if (typeof renderWorkloadSummary === 'function') renderWorkloadSummary(); };
+window.renderCalendar = function() { if (typeof renderCalendar === 'function') renderCalendar(); };
+
 let calendarDate = new Date();
 calendarDate.setHours(0,0,0,0);
 let currentDashFilter = 'active';
