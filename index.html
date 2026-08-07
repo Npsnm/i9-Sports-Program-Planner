@@ -1042,11 +1042,29 @@
                         <label class="block font-bold mb-1 mt-2">Venue / Location</label>
                         <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
                     </div>
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="block font-bold mb-1 text-emerald-600">Program Pricing ($)</label>
-                        <input type="number" id="prog-price" step="0.01" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. 149.00">
-                        
-                        <label class="block font-bold mb-1 mt-2 text-i9blue">Bye Weeks / Skipped Dates</label>
+                    <div class="col-span-1 md:col-span-2 space-y-2">
+                    <label class="block font-bold text-emerald-700 border-b pb-1">Tiered Program Pricing ($)</label>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-[10px]">
+                        <div>
+                            <label class="block font-bold text-indigo-900">1. Offseason Price ($)</label>
+                            <input type="number" id="prog-price-offseason" step="0.01" class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 119.00">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-emerald-900">2. Early Price ($)</label>
+                            <input type="number" id="prog-price-early" step="0.01" class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 139.00">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-i9blue">3. Full Price ($)</label>
+                            <input type="number" id="prog-price" step="0.01" required class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 159.00">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-rose-900">4. Late Fee ($)</label>
+                            <input type="number" id="prog-price-late" step="0.01" class="w-full p-1.5 border rounded bg-gray-50" placeholder="e.g. 25.00">
+                        </div>
+                    </div>
+                    
+                    <label class="block font-bold mb-1 mt-2 text-i9blue">Bye Weeks / Skipped Dates</label>
                         <div class="flex gap-4 mb-2 text-[10px]">
                             <label><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
                             <label><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
