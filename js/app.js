@@ -884,20 +884,34 @@ function populateFilterOptions() {
 
     const asSel = document.getElementById('at-assignee');
     const bulkAsSel = document.getElementById('be-assignee');
+    const tplRoleSel = document.getElementById('tpl-role');
+
     if(asSel) {
         asSel.innerHTML = '<option value="">-- Leave Unassigned --</option>'; 
         if (bulkAsSel) bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
+        if (tplRoleSel) tplRoleSel.innerHTML = '<option value="">-- Unassigned / Any Staff --</option>';
+
+        // Default System Roles
+        if (tplRoleSel) {
+            ROLES.forEach(r => {
+                if (r === 'System Admin' && currentUser.role !== 'System Admin') return;
+                tplRoleSel.innerHTML += `<option value="${r}">Role: ${r}</option>`;
+            });
+        }
         
         users.forEach(u => { 
-            // Hide System Admin from dropdown lists for non-System Admin users
             if (u.role === 'System Admin' && currentUser.role !== 'System Admin') return;
             
             asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; 
             if (bulkAsSel) bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; 
+            if (tplRoleSel && u.status !== 'Archived' && u.status !== 'Frozen') {
+                tplRoleSel.innerHTML += `<option value="${u.name}">User: ${u.name}</option>`;
+            }
         });
         
         asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
         if (bulkAsSel) bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
+        if (tplRoleSel) tplRoleSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom Role / Person...</option>';
     }
     
     const auditFilter = document.getElementById('audit-log-group-filter');
@@ -1723,7 +1737,9 @@ function openAddTemplateModal() {
     document.getElementById('tpl-name').value = '';
     document.getElementById('tpl-desc').value = '';
     document.getElementById('tpl-offset-num').value = '0';
-    document.getElementById('tpl-role').value = '';
+    populateFilterOptions();
+    const tplRoleSel = document.getElementById('tpl-role');
+    if (tplRoleSel) tplRoleSel.value = '';
     document.getElementById('tpl-group').value = 'ALL';
     document.getElementById('tpl-level').value = 'Operational';
     
@@ -1761,7 +1777,40 @@ function openEditTemplate(id) {
     document.getElementById('tpl-name').value = t.name; document.getElementById('tpl-desc').value = t.desc || '';
     document.querySelectorAll('.tpl-season-cb').forEach(cb => cb.checked = t.seasons.includes(cb.value));
     document.getElementById('tpl-offset-num').value = t.offsetNum; document.getElementById('tpl-offset-dir').value = t.offsetDir;
-    document.getElementById('tpl-anchor').value = t.anchor; document.getElementById('tpl-role').value = t.role || '';
+    document.getElementById('tpl-anchor').value = t.anchor;
+    
+    populateFilterOptions();
+    const tplRoleSel = document.getElementById('tpl-role');
+    if (tplRoleSel) {
+        if (t.role) {
+            const foundUser = users.find(u => u.name === t.role);
+            const isArchived = foundUser && (foundUser.status === 'Archived' || foundUser.status === 'Frozen');
+
+            if (isArchived) {
+                // User was archived: Flag in red bold text
+                let optExists = Array.from(tplRoleSel.options).some(o => o.value === t.role);
+                if (!optExists) {
+                    let opt = document.createElement('option');
+                    opt.value = t.role;
+                    opt.text = `Archived User: ${t.role}`;
+                    opt.className = "text-rose-600 font-bold";
+                    tplRoleSel.add(opt, tplRoleSel.options[1]);
+                }
+                tplRoleSel.value = t.role;
+            } else {
+                let optExists = Array.from(tplRoleSel.options).some(o => o.value === t.role);
+                if (!optExists) {
+                    let opt = document.createElement('option');
+                    opt.value = t.role;
+                    opt.text = `Custom Role: ${t.role}`;
+                    tplRoleSel.add(opt, tplRoleSel.options[1]);
+                }
+                tplRoleSel.value = t.role;
+            }
+        } else {
+            tplRoleSel.value = '';
+        }
+    }
     document.getElementById('template-modal').classList.remove('hidden');
 }
 
@@ -2006,6 +2055,21 @@ window.handleTaskModalAssigneeChange = function(sel) {
         }
     } else {
         if (customInp) customInp.classList.add('hidden');
+    }
+};
+
+window.handleTplRoleChange = function(sel) {
+    if (sel.value === 'CUSTOM') {
+        const customTitle = prompt("Enter custom default role or person name:");
+        if (customTitle && customTitle.trim() !== '') {
+            let opt = document.createElement('option');
+            opt.value = customTitle.trim();
+            opt.text = `Custom Role: ${customTitle.trim()}`;
+            sel.add(opt, sel.options[1]);
+            sel.value = customTitle.trim();
+        } else {
+            sel.value = '';
+        }
     }
 };
 
@@ -3136,3 +3200,4 @@ window.saveProgramPricing = saveProgramPricing;
 window.handleTaskModalAssigneeChange = handleTaskModalAssigneeChange;
 window.handleDatePaste = handleDatePaste;
 window.formatInputDateBlur = formatInputDateBlur;
+window.handleTplRoleChange = handleTplRoleChange;
