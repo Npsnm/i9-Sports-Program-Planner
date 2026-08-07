@@ -1436,6 +1436,89 @@
             </form>
         </div>
     </div>
+
+<!-- PROGRAM PRICING & TIERED DEADLINES SIDE PANEL -->
+<div id="pricing-pane-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300" onclick="closePricingPane()"></div>
+<div id="pricing-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col hidden">
+    <div class="bg-i9blue text-white p-4 flex justify-between items-center">
+        <h3 class="font-bold text-sm flex items-center gap-2">
+            <i class="fa-solid fa-tags text-i9gold"></i> Manage Program Tiered Pricing
+        </h3>
+        <button onclick="closePricingPane()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
+    </div>
+
+    <form id="pricing-tier-form" onsubmit="saveProgramPricing(event)" class="p-6 overflow-y-auto flex-grow text-xs space-y-5">
+        <input type="hidden" id="price-prog-id">
+
+        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+            <p id="price-prog-title" class="font-bold text-i9blue text-sm">Program</p>
+            <p id="price-prog-subtitle" class="text-[10px] text-gray-500">Adjust tier prices and deadline milestones below.</p>
+        </div>
+
+        <!-- TIER 1: OFFSEASON -->
+        <div class="p-3 bg-gray-50 border rounded-lg space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-indigo-900"><i class="fa-solid fa-snowflake text-indigo-500"></i> 1. Offseason Tier</span>
+                <span class="text-[10px] text-gray-400">Lowest Rate</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-[10px] font-bold">Deadline Date</label><input type="date" id="price-date-offseason" class="w-full p-1.5 border rounded"></div>
+                <div><label class="block text-[10px] font-bold">Price ($)</label><input type="number" step="0.01" id="price-val-offseason" placeholder="e.g. 119.00" class="w-full p-1.5 border rounded"></div>
+            </div>
+        </div>
+
+        <!-- TIER 2: EARLY DEADLINE -->
+        <div class="p-3 bg-gray-50 border rounded-lg space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-emerald-900"><i class="fa-solid fa-clock text-emerald-600"></i> 2. Early Deadline</span>
+                <span class="text-[10px] text-gray-400">Early Bird</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-[10px] font-bold">Deadline Date</label><input type="date" id="price-date-early" class="w-full p-1.5 border rounded"></div>
+                <div><label class="block text-[10px] font-bold">Price ($)</label><input type="number" step="0.01" id="price-val-early" placeholder="e.g. 139.00" class="w-full p-1.5 border rounded"></div>
+            </div>
+        </div>
+
+        <!-- TIER 3: FINAL DEADLINE / FULL FEE -->
+        <div class="p-3 bg-blue-50/50 border border-blue-200 rounded-lg space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-i9blue"><i class="fa-solid fa-flag-checkered text-i9gold"></i> 3. Final Deadline (Full Fee)</span>
+                <span class="text-[10px] text-i9blue font-bold">Base Price</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-[10px] font-bold">Deadline Date</label><input type="date" id="price-date-final" required class="w-full p-1.5 border rounded"></div>
+                <div><label class="block text-[10px] font-bold">Full Price ($)</label><input type="number" step="0.01" id="price-val-full" required placeholder="e.g. 159.00" class="w-full p-1.5 border rounded"></div>
+            </div>
+        </div>
+
+        <!-- TIER 4: LATE FEE -->
+        <div class="p-3 bg-gray-50 border rounded-lg space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-rose-900"><i class="fa-solid fa-triangle-exclamation text-rose-500"></i> 4. Late Fee Tier</span>
+                <span class="text-[10px] text-gray-400">Post-Deadline</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-[10px] font-bold">Late Fee Amount ($)</label><input type="number" step="0.01" id="price-val-late" placeholder="e.g. 25.00" class="w-full p-1.5 border rounded"></div>
+            </div>
+        </div>
+
+        <!-- MASTER EDIT & MARKETING OPTIONS -->
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg space-y-2">
+            <label class="flex items-center gap-2 font-bold text-amber-900 cursor-pointer">
+                <input type="checkbox" id="price-master-edit-toggle" class="w-4 h-4">
+                <span>Master Edit: Generate Marketing Note & Calendar Entries</span>
+            </label>
+            <p class="text-[10px] text-amber-800">
+                When checked, saving will log a Marketing Note Event showing price adjustments (old vs. new) on the Task List and Calendar.
+            </p>
+        </div>
+    </form>
+
+    <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
+        <button onclick="closePricingPane()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
+        <button type="submit" form="pricing-tier-form" class="px-4 py-2 bg-i9blue font-bold rounded text-xs text-white shadow">Save & Sync Pricing</button>
+    </div>
+</div>
     
     <!-- EXTERNAL JS MODULES -->
     <script src="js/app.js"></script>
