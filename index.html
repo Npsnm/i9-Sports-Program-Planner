@@ -3375,13 +3375,18 @@
             if(!pendingTb || !activeTb) return;
             pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
             
-            // FIX: Force all IDs to be Strings so matches never fail due to Number vs String formatting
+            // FIX: Force all IDs to be Strings and ensure Group Owners see pending requests for their authorized groups
             const agIds = getAuthorizedGroups().map(g => String(g.id));
             const currTerrs = (currentUser.territories || []).map(t => String(t));
             
             const visibleUsers = users.filter(u => {
                 const userTerrs = (u.territories || []).map(t => String(t));
-                return currTerrs.includes('ALL') || userTerrs.some(t => agIds.includes(t));
+                // System Admin sees everyone
+                if (currTerrs.includes('ALL')) return true;
+                // Pending users are visible if any of their requested territories match the admin's authorized groups
+                if (u.role === 'Pending') return userTerrs.some(t => agIds.includes(t));
+                // Active/Archived users are visible if they share a territory
+                return userTerrs.some(t => agIds.includes(t));
             });
             
             let pendingCount = 0;
@@ -3606,12 +3611,18 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
         function adminSaveUser(e) {
             e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
             if(u) { 
-                u.role = document.getElementById('admin-u-role').value; 
-                u.territories = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value); 
+                const newRole = document.getElementById('admin-u-role').value;
+                const selectedTerrs = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value);
+                
+                u.role = newRole; 
+                // Ensure approved users retain at least their selected territories or original request
+                u.territories = selectedTerrs.length > 0 ? selectedTerrs : (u.territories || []); 
+                u.status = (newRole === 'Pending') ? 'Pending' : 'Active'; // Update status if approved
+                
                 window.cloudSaveUser(u); 
                 document.getElementById('admin-edit-user-modal').classList.add('hidden'); 
                 showToast("Saved", `Permissions updated for ${u.name}`);
-                logActivity('SYSTEM', 'User Role Update', `Updated access/role for ${u.username}`);
+                logActivity('SYSTEM', 'User Role Update', `Updated access/role for ${u.username} to ${newRole}`);
             }
         }
 
