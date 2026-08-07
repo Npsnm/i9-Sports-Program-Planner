@@ -1301,13 +1301,18 @@ window.openPricingPane = function(progId) {
 
     document.getElementById('price-master-edit-toggle').checked = true;
 
+    // Show overlay and slide side pane in smoothly
     document.getElementById('pricing-pane-overlay').classList.remove('hidden');
-    document.getElementById('pricing-pane').classList.remove('hidden');
+    const pane = document.getElementById('pricing-pane');
+    pane.classList.remove('translate-x-full');
+    pane.classList.add('translate-x-0');
 };
 
 window.closePricingPane = function() {
     document.getElementById('pricing-pane-overlay').classList.add('hidden');
-    document.getElementById('pricing-pane').classList.add('hidden');
+    const pane = document.getElementById('pricing-pane');
+    pane.classList.remove('translate-x-0');
+    pane.classList.add('translate-x-full');
 };
 
 window.saveProgramPricing = async function(e) {
