@@ -630,7 +630,8 @@
             </div>
 
         </section>
-<!-- TAB 8: PENDING APPROVAL LOCK SCREEN -->
+        
+        <!-- TAB 8: PENDING APPROVAL LOCK SCREEN -->
         <section id="view-pending" class="tab-view hidden space-y-6 max-w-2xl mx-auto mt-10">
             <div class="bg-white p-8 rounded-xl shadow-lg border border-amber-200 text-center space-y-4">
                 <div class="inline-flex bg-amber-50 p-5 rounded-full text-amber-500 mb-2 border border-amber-100">
@@ -663,7 +664,7 @@
                         <button onclick="openReRouteModal('join')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2">
                             <i class="fa-solid fa-sitemap"></i> Request a Different Group
                         </button>
-                        <button onclick="openSelfDeleteModal()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold rounded-lg transition shadow-sm flex items-center justify-center gap-2 mt-1">
+                        <button onclick="openSelfDeleteModal()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2 mt-1">
                             <i class="fa-solid fa-user-xmark"></i> Delete My Account & Exit
                         </button>
                     </div>
@@ -989,4 +990,427 @@
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-6 gap-2 hidden" id="sec-starts-container">
                         <input type="date" id="prog-start-sec-1" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
-                        <input type="date" id="prog-start-sec-2" class="w-fullI'm having a hard time fulfilling your request. Can I help you with something else instead?
+                        <input type="date" id="prog-start-sec-2" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-3" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-4" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-5" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                        <input type="date" id="prog-start-sec-6" class="w-full p-1.5 border border-gray-300 rounded bg-gray-50 hidden">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4 mt-2">
+                    <div class="col-span-1">
+                        <label class="block font-bold mb-1">Days of Week</label>
+                        <div class="grid grid-cols-4 gap-1 text-[10px]">
+                            <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label><label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
+                            <label><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label><label><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
+                            <label><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label><label><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
+                            <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                        </div>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block font-bold mb-1">Duration (Weeks)</label>
+                        <input type="number" id="prog-weeks" class="w-full p-2 border rounded bg-gray-50" min="1" max="52" placeholder="e.g. 7">
+                        <label class="block font-bold mb-1 mt-2">Venue / Location</label>
+                        <input type="text" id="prog-venue" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Central High School">
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block font-bold mb-1 text-emerald-600">Program Pricing ($)</label>
+                        <input type="number" id="prog-price" step="0.01" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. 149.00">
+                        
+                        <label class="block font-bold mb-1 mt-2 text-i9blue">Bye Weeks / Skipped Dates</label>
+                        <div class="flex gap-4 mb-2 text-[10px]">
+                            <label><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
+                            <label><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
+                            <label><input type="radio" name="prog-bye-count" value="2" onchange="updateByeCount()"> 2</label>
+                            <label><input type="radio" name="prog-bye-count" value="3" onchange="updateByeCount()"> 3</label>
+                            <label><input type="radio" name="prog-bye-count" value="4" onchange="updateByeCount()"> 4</label>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 hidden" id="bye-weeks-container">
+                            <input type="date" id="prog-bye-1" class="w-full p-2 border rounded bg-gray-50 hidden">
+                            <input type="date" id="prog-bye-2" class="w-full p-2 border rounded bg-gray-50 hidden">
+                            <input type="date" id="prog-bye-3" class="w-full p-2 border rounded bg-gray-50 hidden">
+                            <input type="date" id="prog-bye-4" class="w-full p-2 border rounded bg-gray-50 hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Program</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TASK TEMPLATE / PROFILE MODAL -->
+    <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-layer-group text-i9gold"></i> Add / Edit Task Profile Rule</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="tpl-edit-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Applies to Group</label><select id="tpl-group" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                    <div><label class="block font-bold mb-1">Program Type</label><select id="tpl-type" onchange="updateTplPreHeaderOptions()" class="w-full p-2 border rounded bg-gray-50"><option value="ALL">All Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option></select></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Required Pre-Header</label><select id="tpl-preheader" class="w-full p-2 border rounded bg-gray-50"></select></div>
+                    <div>
+                        <label class="block font-bold mb-1">Task Level (Dept)</label>
+                        <select id="tpl-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('tpl-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
+                            <option value="Operational">Operational</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Marketing Category for Template -->
+                <div id="tpl-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
+                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
+                    <select id="tpl-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('tpl-mktg-custom').classList.remove('hidden'); else document.getElementById('tpl-mktg-custom').classList.add('hidden');">
+                        <option value="">-- Select Category --</option>
+                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
+                    </select>
+                    <input type="text" id="tpl-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
+                </div>
+
+                <div><label class="block font-bold mb-1">Task Name</label><input type="text" id="tpl-name" required class="w-full p-2 border rounded bg-gray-50"></div>
+                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="tpl-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
+                
+                <div>
+                    <label class="block font-bold mb-1">Applies to Seasons</label>
+                    <div class="flex gap-4">
+                        <label><input type="checkbox" class="tpl-season-cb" value="Spring"> Spring</label>
+                        <label><input type="checkbox" class="tpl-season-cb" value="Summer"> Summer</label>
+                        <label><input type="checkbox" class="tpl-season-cb" value="Fall"> Fall</label>
+                        <label><input type="checkbox" class="tpl-season-cb" value="Winter"> Winter</label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 border-t pt-4">
+                    <div><label class="block font-bold mb-1">Offset Days</label><input type="number" id="tpl-offset-num" required class="w-full p-2 border rounded bg-gray-50" min="0"></div>
+                    <div><label class="block font-bold mb-1">Direction</label><select id="tpl-offset-dir" class="w-full p-2 border rounded bg-gray-50"><option value="Before">Before</option><option value="After">After</option></select></div>
+                    <div><label class="block font-bold mb-1">Anchor Deadline</label><select id="tpl-anchor" class="w-full p-2 border rounded bg-gray-50"><option value="dateStart">1. Start Date</option><option value="dateFinal">2. Final Deadline</option><option value="dateEarly">3. Early Deadline</option><option value="dateOffseason">4. Offseason</option></select></div>
+                </div>
+                
+                <div><label class="block font-bold mb-1">Default Assigned Role (Text)</label><input type="text" id="tpl-role" class="w-full p-2 border rounded bg-gray-50" placeholder="e.g. Program Director, Site Coord"></div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Profile Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACTIVE TASK MODAL -->
+    <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue" id="active-task-title"><i class="fa-solid fa-list-check text-i9gold"></i> Add / Edit Task</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="at-edit-id">
+                <input type="hidden" id="at-is-oneoff">
+                
+                <div id="at-program-select-container" class="hidden">
+                    <label class="block font-bold mb-1">Link to Program (Optional)</label>
+                    <select id="at-program" class="w-full p-2 border rounded bg-gray-50"></select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Task Level (Dept)</label>
+                        <select id="at-level" class="w-full p-2 border rounded bg-gray-50" onchange="document.getElementById('at-mktg-cat-container').classList.toggle('hidden', this.value !== 'Marketing')">
+                            <option value="Operational">Operational</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                    <div><label class="block font-bold mb-1">Status</label><select id="at-status" class="w-full p-2 border rounded bg-gray-50"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option></select></div>
+                </div>
+
+                <!-- Marketing Category for Active Task -->
+                <div id="at-mktg-cat-container" class="hidden bg-gray-50 p-2 border rounded">
+                    <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
+                    <select id="at-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('at-mktg-custom').classList.remove('hidden'); else document.getElementById('at-mktg-custom').classList.add('hidden');">
+                        <option value="">-- Select Category --</option>
+                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
+                    </select>
+                    <input type="text" id="at-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block font-bold">Task Name</label>
+                        <label class="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 cursor-pointer">
+                            <input type="checkbox" id="at-is-note" class="w-3 h-3"> Mark as Note Event (No action req)
+                        </label>
+                    </div>
+                    <input type="text" id="at-name" required class="w-full p-2 border rounded bg-gray-50">
+                </div>
+                <div><label class="block font-bold mb-1">Description / Instructions</label><textarea id="at-desc" class="w-full p-2 border rounded bg-gray-50 h-16"></textarea></div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold mb-1">Target Date</label><input type="date" id="at-date" required class="w-full p-2 border rounded bg-gray-50"></div>
+                    <div>
+                        <label class="block font-bold mb-1">Assign To</label>
+                        <select id="at-assignee" class="w-full p-2 border rounded bg-gray-50" onchange="if(this.value==='CUSTOM') document.getElementById('at-assignee-custom').classList.remove('hidden'); else document.getElementById('at-assignee-custom').classList.add('hidden');"></select>
+                        <input type="text" id="at-assignee-custom" class="w-full p-2 border rounded bg-gray-50 mt-1 hidden" placeholder="Enter custom / external name...">
+                    </div>
+                </div>
+
+                <div><label class="block font-bold mb-1 text-gray-500">History / Notes (Optional)</label><textarea id="at-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+                <div><label class="block font-bold mb-1 text-emerald-600">Completion Notes (Optional)</label><textarea id="at-completion-notes" class="w-full p-2 border rounded bg-gray-50 h-12"></textarea></div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ARCHIVE TASK MODAL -->
+    <div id="archive-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-rose-600"><i class="fa-solid fa-box-archive"></i> Archive / Remove Task(s)</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="submitArchiveTasks(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="archive-task-ids">
+                <div>
+                    <label class="block font-bold mb-1">Reason for Removal</label>
+                    <select id="archive-reason" required class="w-full p-2 border rounded bg-gray-50">
+                        <option value="">-- Select Reason --</option>
+                        <option value="Duplicate Task">Duplicate Task</option>
+                        <option value="Not Applicable this Season">Not Applicable this Season</option>
+                        <option value="Created in Error">Created in Error</option>
+                        <option value="Completed Outside System">Completed Outside System</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Removal Notes / Details (Optional)</label>
+                    <textarea id="archive-notes" class="w-full p-2 border rounded bg-gray-50 h-20" placeholder="Provide any optional details..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-rose-600 text-white rounded font-bold shadow">Confirm Removal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CUSTOM REPORTING MODAL -->
+    <div id="reporting-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-chart-line text-i9gold"></i> Generate Custom Report</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="generateCustomReport(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold mb-1">Data Type</label>
+                    <select id="report-type" class="w-full p-2 border rounded bg-gray-50 font-semibold text-i9blue">
+                        <option value="tasks">Active Tasks</option>
+                        <option value="programs">Programs</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold mb-1">Start Date</label>
+                        <input type="date" id="report-start" required class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">End Date</label>
+                        <input type="date" id="report-end" required class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-500">The report will include all data falling within this date range (Target Date for tasks, Start Date for programs) for your authorized groups.</p>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold shadow transition"><i class="fa-solid fa-download"></i> Download CSV</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BRANDING MODAL -->
+    <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="saveBranding(event)" class="space-y-4">
+                <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
+                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- EDIT GROUP MODAL -->
+    <div id="edit-group-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-pen"></i> Edit Group Details</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveGroupEdit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="edit-group-original-id">
+                <div>
+                    <label class="block font-bold mb-1">Group ID (Read Only)</label>
+                    <input type="text" id="edit-group-id" disabled class="w-full p-2 border rounded bg-gray-100 font-bold text-gray-500 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Group Name</label>
+                    <input type="text" id="edit-group-name" required class="w-full p-2 border rounded bg-gray-50">
+                </div>
+                <div class="flex justify-end pt-2 border-t gap-2">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ASSIGNEE TASK BREAKDOWN MODAL -->
+    <div id="assignee-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 flex flex-col h-[80vh]">
+            <div class="flex justify-between items-center border-b pb-2 mb-4">
+                <div>
+                    <h3 class="text-sm font-bold text-indigo-800"><i class="fa-solid fa-list-check"></i> Assignee Task Breakdown</h3>
+                    <p id="assignee-modal-subtitle" class="text-[10px] text-gray-500 font-bold"></p>
+                </div>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto border border-gray-200 rounded">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-[10px] sticky top-0 shadow-sm z-10">
+                        <tr>
+                            <th class="p-3">Program / Group</th>
+                            <th class="p-3">Task Name</th>
+                            <th class="p-3">Due Date</th>
+                            <th class="p-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignee-modal-table-body" class="divide-y divide-gray-100">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="flex justify-end pt-4 mt-2 border-t">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 rounded font-bold text-xs hover:bg-gray-300">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORT MODAL -->
+    <div id="import-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-indigo-700"><i class="fa-solid fa-file-import"></i> Bulk Import Data</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="hidden" id="import-type">
+            
+            <div class="space-y-4 text-xs">
+                <!-- Step 1: Template -->
+                <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2">
+                    <p class="font-bold text-indigo-900">Step 1: Download Template</p>
+                    <p class="text-[10px] text-indigo-700">Download the required CSV format. Do not modify the column headers.</p>
+                    <button onclick="downloadImportTemplate()" class="bg-white border border-indigo-300 text-indigo-700 px-3 py-1.5 rounded shadow-sm font-bold hover:bg-indigo-100 transition w-full flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download CSV Template
+                    </button>
+                </div>
+
+                <!-- Step 2: Upload -->
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-2">
+                    <p class="font-bold text-gray-800">Step 2: Upload Data</p>
+                    <p class="text-[10px] text-gray-500">Select your completed CSV file to import.</p>
+                    <input type="file" id="import-file-input" accept=".csv" class="w-full border border-gray-300 bg-white rounded p-1.5 text-[10px] cursor-pointer">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold text-xs">Cancel</button>
+                <button type="button" onclick="executeImport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold shadow text-xs transition">Process Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RE-ROUTE DENIED USER MODAL -->
+    <div id="reroute-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-i9blue" id="reroute-modal-title">Update Group Request</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="submitReRoute(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="reroute-action-type">
+                
+                <div id="reroute-create-fields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-bold mb-1">Group Number</label>
+                        <input type="number" id="reroute-create-id" placeholder="Group Number (Leave blank to auto-generate)" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Group Name</label>
+                        <input type="text" id="reroute-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <p class="text-[10px] text-gray-500">Creating a new group makes you the Group Owner with immediate access.</p>
+                </div>
+
+                <div id="reroute-join-fields" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-bold mb-1">Franchise / Group Number</label>
+                        <input type="number" id="reroute-join-id" placeholder="Enter Group Number (e.g. 8765)" class="w-full p-2 border rounded bg-gray-50">
+                    </div>
+                    <p class="text-[10px] text-gray-500">Sends a new request to the Group Owner for approval.</p>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SELF DELETE ACCOUNT MODAL -->
+    <div id="self-delete-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-rose-700"><i class="fa-solid fa-triangle-exclamation"></i> Delete Your Account</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded text-rose-800 text-[11px] space-y-1">
+                <p class="font-bold">Warning: This action cannot be undone.</p>
+                <p>Your profile data and group access permissions will be permanently removed from the system.</p>
+            </div>
+
+            <form onsubmit="handleSelfDeleteAccount(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold mb-1 text-gray-700">Type "DELETE" to confirm <span class="text-rose-500">*</span></label>
+                    <input type="text" id="self-delete-confirm-input" required placeholder="DELETE" class="w-full p-2 border rounded bg-gray-50 uppercase font-mono">
+                </div>
+                
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold shadow transition">Permanently Delete Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- EXTERNAL JS MODULES -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>
