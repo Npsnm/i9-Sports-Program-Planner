@@ -54,18 +54,17 @@ window.addEventListener('DOMContentLoaded', () => {
     applyBrandingUI(); updateTplPreHeaderOptions(); populateYearDropdowns();
     populateMarketingCats();
 });
+
 // --- FLEXIBLE DATE PASTING & PARSING UTILITIES ---
 function parseFlexibleDate(str) {
     if (!str) return '';
     str = str.trim();
     
-    // YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
         const [y, m, d] = str.split('-');
         return `${y}-${m}-${d}`;
     }
     
-    // MM/DD/YYYY or M/D/YY
     const parts = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
     if (parts) {
         let m = parts[1].padStart(2, '0');
@@ -75,7 +74,6 @@ function parseFlexibleDate(str) {
         return `${y}-${m}-${d}`;
     }
 
-    // Standard JS date parse (e.g. "Sep 12, 2026")
     const dObj = new Date(str);
     if (!isNaN(dObj.getTime())) {
         const y = dObj.getFullYear();
@@ -766,6 +764,7 @@ function hasPermission(permKey) {
     }
     return hasIt;
 }
+
 function applyPermissions() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
@@ -891,7 +890,6 @@ function populateFilterOptions() {
         if (bulkAsSel) bulkAsSel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
         if (tplRoleSel) tplRoleSel.innerHTML = '<option value="">-- Unassigned / Any Staff --</option>';
 
-        // Default System Roles
         if (tplRoleSel) {
             ROLES.forEach(r => {
                 if (r === 'System Admin' && currentUser.role !== 'System Admin') return;
@@ -1786,7 +1784,6 @@ function openEditTemplate(id) {
             const isArchived = foundUser && (foundUser.status === 'Archived' || foundUser.status === 'Frozen');
 
             if (isArchived) {
-                // User was archived: Flag in red bold text
                 let optExists = Array.from(tplRoleSel.options).some(o => o.value === t.role);
                 if (!optExists) {
                     let opt = document.createElement('option');
@@ -2145,6 +2142,7 @@ function openAddOneOffTaskModal(prefillDate = '') {
     document.getElementById('active-task-title').textContent = "Add One-Off Task"; 
     document.getElementById('active-task-modal').classList.remove('hidden'); 
 }
+
 function openEditActiveTask(id) {
     const t = activeTasks.find(x => x.id === id); if(!t) return;
     document.getElementById('at-edit-id').value = t.id; document.getElementById('at-is-oneoff').value = t.isOneOff.toString();
