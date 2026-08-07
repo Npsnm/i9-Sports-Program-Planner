@@ -1082,55 +1082,35 @@
                 <!-- Logistics & Tiered Pricing Section -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Logistics Card -->
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
-                        <label class="block font-bold text-gray-800 border-b pb-1">Program Logistics</label>
-                        <div>
-                            <label class="block font-bold text-gray-600 mb-1">Days of Week</label>
-                            <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-gray-700">
-                                <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label>
-                                <label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
-                                <label><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label>
-                                <label><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
-                                <label><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label>
-                                <label><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
-                                <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3 flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <label class="block font-bold text-gray-800 border-b pb-1">Program Logistics</label>
                             <div>
-                                <label class="block font-bold text-gray-600 mb-1">Duration (Weeks)</label>
-                                <input type="number" id="prog-weeks" min="1" max="52" placeholder="e.g. 7" class="w-full p-2 border rounded-lg bg-white">
+                                <label class="block font-bold text-gray-600 mb-1">Days of Week</label>
+                                <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-gray-700">
+                                    <label><input type="checkbox" class="prog-day-cb" value="Sun"> Sun</label>
+                                    <label><input type="checkbox" class="prog-day-cb" value="Mon"> Mon</label>
+                                    <label><input type="checkbox" class="prog-day-cb" value="Tue"> Tue</label>
+                                    <label><input type="checkbox" class="prog-day-cb" value="Wed"> Wed</label>
+                                    <label><input type="checkbox" class="prog-day-cb" value="Thu"> Thu</label>
+                                    <label><input type="checkbox" class="prog-day-cb" value="Fri"> Fri</label>
+                                    <label><input type="checkbox" class="prog-day-cb" value="Sat"> Sat</label>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block font-bold text-gray-600 mb-1">Venue / Location</label>
-                                <input type="text" id="prog-venue" placeholder="e.g. Central High School" class="w-full p-2 border rounded-lg bg-white">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pricing & Skipped Dates Card -->
-                    <div class="bg-emerald-50/40 p-4 rounded-xl border border-emerald-100 space-y-3">
-                        <label class="block font-bold text-emerald-800 border-b border-emerald-200 pb-1">Tiered Program Pricing ($)</label>
-                        <div class="grid grid-cols-2 gap-2 text-[10px]">
-                            <div>
-                                <label class="block font-bold text-indigo-900 mb-0.5">1. Offseason Price</label>
-                                <input type="number" id="prog-price-offseason" step="0.01" placeholder="e.g. 119.00" class="w-full p-1.5 border rounded-lg bg-white">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-emerald-900 mb-0.5">2. Early Price</label>
-                                <input type="number" id="prog-price-early" step="0.01" placeholder="e.g. 139.00" class="w-full p-1.5 border rounded-lg bg-white">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-i9blue mb-0.5">3. Full Price *</label>
-                                <input type="number" id="prog-price" step="0.01" required placeholder="e.g. 159.00" class="w-full p-1.5 border border-emerald-300 rounded-lg bg-white font-bold text-emerald-800">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-rose-900 mb-0.5">4. Late Fee</label>
-                                <input type="number" id="prog-price-late" step="0.01" placeholder="e.g. 25.00" class="w-full p-1.5 border rounded-lg bg-white">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-gray-600 mb-1">Duration (Weeks)</label>
+                                    <input type="number" id="prog-weeks" min="1" max="52" placeholder="e.g. 7" class="w-full p-2 border rounded-lg bg-white">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-gray-600 mb-1">Venue / Location</label>
+                                    <input type="text" id="prog-venue" placeholder="e.g. Central High School" class="w-full p-2 border rounded-lg bg-white">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="border-t border-emerald-100 pt-2">
+                        <!-- Bye Weeks Moved Inside Logistics -->
+                        <div class="border-t border-gray-200 pt-2">
                             <div class="flex justify-between items-center mb-1">
                                 <label class="font-bold text-i9blue text-[11px]">Bye Weeks / Skipped Dates</label>
                                 <div class="flex gap-2 text-[10px]">
@@ -1148,6 +1128,32 @@
                                 <input type="text" id="prog-bye-4" placeholder="MM/DD/YYYY" onpaste="handleDatePaste(event)" onblur="formatInputDateBlur(this)" class="w-full p-1.5 border rounded-lg bg-white font-mono hidden text-[10px]">
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Cleaned Tiered Pricing Card -->
+                    <div class="bg-emerald-50/40 p-4 rounded-xl border border-emerald-100 space-y-3 flex flex-col justify-between">
+                        <div>
+                            <label class="block font-bold text-emerald-800 border-b border-emerald-200 pb-1 mb-3">Tiered Program Pricing ($)</label>
+                            <div class="grid grid-cols-2 gap-3 text-[10px]">
+                                <div>
+                                    <label class="block font-bold text-indigo-900 mb-1">1. Offseason Price</label>
+                                    <input type="number" id="prog-price-offseason" step="0.01" placeholder="e.g. 119.00" class="w-full p-2 border rounded-lg bg-white">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-emerald-900 mb-1">2. Early Price</label>
+                                    <input type="number" id="prog-price-early" step="0.01" placeholder="e.g. 139.00" class="w-full p-2 border rounded-lg bg-white">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-i9blue mb-1">3. Full Price *</label>
+                                    <input type="number" id="prog-price" step="0.01" required placeholder="e.g. 159.00" class="w-full p-2 border border-emerald-300 rounded-lg bg-white font-bold text-emerald-800">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-rose-900 mb-1">4. Late Fee</label>
+                                    <input type="number" id="prog-price-late" step="0.01" placeholder="e.g. 25.00" class="w-full p-2 border rounded-lg bg-white">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-emerald-700 italic border-t border-emerald-100 pt-2">Full Price is required for base registration generation. Tier discounts align with milestone dates above.</p>
                     </div>
                 </div>
 
