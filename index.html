@@ -3425,6 +3425,8 @@
                         ? `<button onclick="toggleUserArchiveStatus('${u.username}', false)" class="text-emerald-600 border border-emerald-200 hover:bg-emerald-50 px-2 py-1 rounded shadow-sm" title="Restore User"><i class="fa-solid fa-rotate-left"></i></button>`
                         : `<button onclick="toggleUserArchiveStatus('${u.username}', true)" class="text-amber-600 border border-amber-200 hover:bg-amber-50 px-2 py-1 rounded shadow-sm" title="Archive User"><i class="fa-solid fa-box-archive"></i></button>`) : '';
 
+                    const deleteBtn = isSysAdmin ? `<button onclick="deleteUserRow('${u.username}')" class="text-red-600 border border-red-200 hover:bg-red-50 px-2 py-1 rounded shadow-sm" title="Permanently Delete User"><i class="fa-solid fa-trash-can"></i></button>` : '';
+
                     activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors">
                         ${checkboxHtml}
                         <td class="p-2"><div class="font-bold text-gray-900">${u.name} ${archiveBadge}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td>
@@ -3433,6 +3435,7 @@
                             ${quickArchiveBtn}
                             <button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm" title="Manage Options"><i class="fa-solid fa-gear"></i></button>
                             <button onclick="adminSendPasswordReset('${u.username}')" class="text-gray-500 border border-gray-200 hover:bg-gray-50 px-2 py-1 rounded shadow-sm" title="Send Password Reset"><i class="fa-solid fa-key"></i></button>
+                            ${deleteBtn}
                         </td>
                     </tr>`;
                 }
