@@ -892,13 +892,13 @@ function populateFilterOptions() {
 
         if (tplRoleSel) {
             ROLES.forEach(r => {
-                if (r === 'System Admin' && currentUser.role !== 'System Admin') return;
+                if (r === 'System Admin' && currentUser && currentUser.role !== 'System Admin') return;
                 tplRoleSel.innerHTML += `<option value="${r}">Role: ${r}</option>`;
             });
         }
         
         users.forEach(u => { 
-            if (u.role === 'System Admin' && currentUser.role !== 'System Admin') return;
+            if (u.role === 'System Admin' && currentUser && currentUser.role !== 'System Admin') return;
             
             asSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; 
             if (bulkAsSel) bulkAsSel.innerHTML += `<option value="${u.name}">${u.name} (${u.role})</option>`; 
