@@ -60,6 +60,19 @@ window.groupPermissions = {};
 var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
 var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
+// Make core UI & filter functions available globally
+window.populateFilterOptions = populateFilterOptions;
+window.renderGroupPills = renderGroupPills;
+window.renderPermissions = renderPermissions;
+window.renderUsersTable = renderUsersTable;
+window.renderActivityLog = renderActivityLog;
+window.populateYearDropdowns = populateYearDropdowns;
+window.renderTemplates = renderTemplates;
+window.renderActiveTasks = renderActiveTasks;
+window.applyBrandingUI = applyBrandingUI;
+window.renderWorkloadSummary = renderWorkloadSummary;
+window.renderCalendar = renderCalendar;
+window.unlockPortal = unlockPortal;
 window.addEventListener('DOMContentLoaded', () => {
     const versionEl = document.getElementById('app-version-display');
     if(versionEl) versionEl.textContent = APP_VERSION;
