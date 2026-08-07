@@ -2021,11 +2021,22 @@
         async function logout() {
             try { if (window.signOut) await window.signOut(); } catch (e) { console.error("Sign out error:", e); }
             currentUser = null; window.currentUser = null;
+
+            // Restore header buttons when logging out
+            const headerReportBtn = document.querySelector('button[onclick="openReportModal()"]');
+            const headerExportBtn = document.querySelector('button[onclick="exportCurrentViewToCSV()"]');
+            const headerUserBadge = document.getElementById('user-badge');
+            if (headerReportBtn) headerReportBtn.classList.remove('hidden');
+            if (headerExportBtn) headerExportBtn.classList.remove('hidden');
+            if (headerUserBadge) headerUserBadge.classList.remove('hidden');
+
             const overlay = document.getElementById('auth-overlay');
-            if (overlay) { overlay.style.display = 'flex'; overlay.classList.remove('hidden'); }
+            if (overlay) { 
+                overlay.style.display = 'flex'; 
+                overlay.classList.remove('hidden'); 
+            }
             showToast("Signed Out", "Securely disconnected.");
         }
-
         function showError(msg) { document.getElementById('auth-error-text').textContent = msg; document.getElementById('auth-error').classList.remove('hidden'); }
 
         function unlockPortal() {
@@ -2041,27 +2052,44 @@
             
             populateFilterOptions(); populateProfileForm(); applyPermissions(); 
             
+            // Elements in header to hide/show during pending/denied state
+            const headerReportBtn = document.querySelector('button[onclick="openReportModal()"]');
+            const headerExportBtn = document.querySelector('button[onclick="exportCurrentViewToCSV()"]');
+            const headerUserBadge = document.getElementById('user-badge');
+
             // Check if Pending or Denied
-            if (currentUser.role === "Pending") {
-                document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
-                document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.add('hidden'); // Hide navigation tabs completely
+            if (currentUser.role === "Pending" || currentUser.role === "Denied") {
+                // Hide header actions except Sign Out
+                if (headerReportBtn) headerReportBtn.classList.add('hidden');
+                if (headerExportBtn) headerExportBtn.classList.add('hidden');
+                if (headerUserBadge) headerUserBadge.classList.add('hidden');
+
+                // Hide navigation tabs completely
+                const navContainer = document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6');
+                if (navContainer && navContainer.parentElement) navContainer.parentElement.classList.add('hidden');
                 
                 document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-                document.getElementById('view-pending').classList.remove('hidden');
-            } else if (currentUser.role === "Denied") {
-                document.getElementById('denied-group-display').textContent = (currentUser.territories || []).join(', ');
-                document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.add('hidden'); // Hide navigation tabs completely
-                
-                document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-                document.getElementById('view-denied').classList.remove('hidden');
+
+                if (currentUser.role === "Pending") {
+                    document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
+                    document.getElementById('view-pending').classList.remove('hidden');
+                } else {
+                    document.getElementById('denied-group-display').textContent = (currentUser.territories || []).join(', ');
+                    document.getElementById('view-denied').classList.remove('hidden');
+                }
             } else {
-                // Fully Approved - Render normal portal
-                document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.remove('hidden'); // Show navigation tabs
+                // Fully Approved - Restore header buttons & navigation tabs
+                if (headerReportBtn) headerReportBtn.classList.remove('hidden');
+                if (headerExportBtn) headerExportBtn.classList.remove('hidden');
+                if (headerUserBadge) headerUserBadge.classList.remove('hidden');
+
+                const navContainer = document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6');
+                if (navContainer && navContainer.parentElement) navContainer.parentElement.classList.remove('hidden');
                 
                 renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
                 
-                // If they were stuck on pending and an admin just approved them, transition them directly to the dashboard
-                if (!document.getElementById('view-pending').classList.contains('hidden')) {
+                // If they were stuck on pending/denied and an admin approved them, transition them directly to the dashboard
+                if (!document.getElementById('view-pending').classList.contains('hidden') || !document.getElementById('view-denied').classList.contains('hidden')) {
                      switchTab('dashboard'); 
                 }
             }
