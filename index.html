@@ -3350,7 +3350,7 @@
             visibleUsers.forEach(u => {
                 const phoneDisplay = u.phone || "No Phone Provided";
                 const searchString = `${u.name || ''} ${u.username || ''} ${u.role || ''}`.toLowerCase();
-                const userTerrs = u.territories || []; // Safely map territories array for display
+                const userTerrs = (u.territories || []).map(t => String(t));
 
                 if (u.role === 'Pending') {
                     pendingCount++;
@@ -3384,7 +3384,6 @@
             if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
             if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
         }
-
         window.toggleUserArchiveStatus = function(email, archive) {
             if(!confirm(`Are you sure you want to ${archive ? 'archive' : 'restore'} access for ${email}?`)) return;
             const u = users.find(x => x.username === email);
