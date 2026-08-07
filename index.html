@@ -619,11 +619,20 @@
                     <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
                 </form>
 
-                <div class="space-y-3 text-xs pt-2">
+                <div class="space-y-3 text-xs pt-2 border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Linked Accounts</h3>
                     <p class="text-gray-500 mb-2">Link your Google Workspace account for quick sign-in.</p>
                     <button onclick="linkGoogleAccount()" class="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition border border-gray-300 shadow-sm flex items-center gap-2">
                         <i class="fa-brands fa-google text-red-500 text-sm"></i> Link Google Account
+                    </button>
+                </div>
+
+                <!-- Danger Zone: Self Account Deletion -->
+                <div class="space-y-3 text-xs pt-2">
+                    <h3 class="font-bold text-rose-700 text-sm flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+                    <p class="text-gray-500 mb-2">Permanently delete your user profile and remove your access from all assigned groups.</p>
+                    <button onclick="openSelfDeleteModal()" class="py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold rounded-lg transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-xmark"></i> Delete My Account
                     </button>
                 </div>
             </div>
@@ -811,8 +820,8 @@
     </div>
 
     <!-- AUTHENTICATION OVERLAY -->
-    <div id="auth-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
+    <div id="auth-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4 transition-opacity overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 max-w-md w-full overflow-hidden my-auto">
             <div class="flex text-sm font-bold text-center border-b">
                 <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue">Sign In</button>
                 <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Register / Join Group</button>
@@ -1370,6 +1379,33 @@
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SELF DELETE ACCOUNT MODAL -->
+    <div id="self-delete-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-rose-700"><i class="fa-solid fa-triangle-exclamation"></i> Delete Your Account</h3>
+                <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded text-rose-800 text-[11px] space-y-1">
+                <p class="font-bold">Warning: This action cannot be undone.</p>
+                <p>Your profile data and group access permissions will be permanently removed from the system.</p>
+            </div>
+
+            <form onsubmit="handleSelfDeleteAccount(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold mb-1 text-gray-700">Type "DELETE" to confirm <span class="text-rose-500">*</span></label>
+                    <input type="text" id="self-delete-confirm-input" required placeholder="DELETE" class="w-full p-2 border rounded bg-gray-50 uppercase font-mono">
+                </div>
+                
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold shadow transition">Permanently Delete Account</button>
                 </div>
             </form>
         </div>
@@ -3666,20 +3702,39 @@ function deleteUserRow(em) {
                     showToast("Access Denied", `Denied request for ${u.name}`);
                 }
             } 
-        }        
-        function deleteUserRow(em) { 
-            if(confirm(`Are you sure you want to deny access for ${em}?`)) { 
-                const u = users.find(x => x.username === em);
-                if (u) {
-                    u.role = 'Denied';
-                    u.status = 'Denied';
-                    window.cloudSaveUser(u);
-                    logActivity('SYSTEM', 'User Denied', `Denied group access request for ${em}`);
-                    showToast("Access Denied", `Denied request for ${u.name}`);
-                }
-            } 
         }
-window.openReRouteModal = function(type) {
+
+        window.openSelfDeleteModal = function() {
+            document.getElementById('self-delete-confirm-input').value = '';
+            document.getElementById('self-delete-modal').classList.remove('hidden');
+        }
+
+        window.handleSelfDeleteAccount = async function(e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const confirmText = document.getElementById('self-delete-confirm-input').value.trim();
+            if (confirmText !== 'DELETE') {
+                return alert("Please type 'DELETE' in all capital letters to confirm account deletion.");
+            }
+
+            try {
+                showToast("Processing", "Deleting profile data...");
+                const username = currentUser.username;
+                
+                await window.cloudDeleteUser(username);
+                logActivity('SYSTEM', 'Self Account Deletion', `User ${username} deleted their own account.`);
+                
+                closeModals();
+                showToast("Account Deleted", "Your user profile has been removed.");
+                logout();
+
+            } catch (err) {
+                alert("Error deleting account: " + err.message);
+            }
+        }
+
+        window.openReRouteModal = function(type) {
             document.getElementById('reroute-action-type').value = type;
             const createFields = document.getElementById('reroute-create-fields');
             const joinFields = document.getElementById('reroute-join-fields');
