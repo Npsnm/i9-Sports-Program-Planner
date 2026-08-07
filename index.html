@@ -1844,7 +1844,8 @@
         async function signup(e) {
             e.preventDefault();
             const fName = document.getElementById('signup-first').value.trim(); const lName = document.getElementById('signup-last').value.trim();
-            const phone = document.getElementById('signup-phone').value.trim(); const em = document.getElementById('signup-email').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim(); 
+            const em = document.getElementById('signup-email').value.trim().toLowerCase(); // Forced lowercase
             const pw = document.getElementById('signup-password').value.trim(); const action = document.querySelector('input[name="signup-action"]:checked').value;
             
             const fullName = `${fName} ${lName}`;
@@ -1874,11 +1875,14 @@
                 
                 window.isRegistering = false; // Resume normal security
                 
-                showError("Registration complete. Your account is pending admin approval.");
+                document.getElementById('auth-error-text').textContent = "Success! Your account is pending admin approval."; 
+                document.getElementById('auth-error').classList.remove('hidden', 'bg-rose-100', 'text-rose-700');
+                document.getElementById('auth-error').classList.add('bg-emerald-100', 'text-emerald-800');
+                
                 logout();
             } catch (error) { 
                 window.isRegistering = false;
-                showError(error.message); 
+                showError("Database Error: " + error.message); 
             }
         }
 
@@ -1941,7 +1945,8 @@
             if (currentUser.role === 'System Admin') return true;
             
             let hasIt = false;
-            const checkGroups = currentUser.territories.includes('ALL') ? groups.map(g=>g.id) : currentUser.territories;
+            const terrs = currentUser.territories || [];
+            const checkGroups = terrs.includes('ALL') ? groups.map(g=>g.id) : terrs;
             
             for (let gId of checkGroups) {
                 let gPerms = window.groupPermissions[gId] || window.DEFAULT_PERMISSIONS;
@@ -1953,7 +1958,6 @@
             }
             return hasIt;
         }
-
         function applyPermissions() {
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
@@ -2026,7 +2030,9 @@
         function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
         function getAuthorizedGroups() { 
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
-            return (!currentUser) ? [] : (currentUser.territories.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => currentUser.territories.includes(g.id) && g.status!=='Archived')); 
+            if (!currentUser) return [];
+            const terrs = currentUser.territories || [];
+            return terrs.includes('ALL') ? groups.filter(g=>g.status!=='Archived') : groups.filter(g => terrs.includes(g.id) && g.status!=='Archived'); 
         }
         function closeModals() { document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden')); }
 
