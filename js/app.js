@@ -1436,7 +1436,10 @@ function openAddProgramModal() {
     document.getElementById('prog-date-offseason').value = '';
     document.getElementById('prog-weeks').value = '';
     document.getElementById('prog-venue').value = '';
+    document.getElementById('prog-price-offseason').value = '';
+    document.getElementById('prog-price-early').value = '';
     document.getElementById('prog-price').value = '';
+    document.getElementById('prog-price-late').value = '';
     
     document.getElementById('program-modal').classList.remove('hidden'); 
 }
@@ -1465,7 +1468,11 @@ function openEditProgramModal(id) {
     document.getElementById('prog-date-offseason').value = p.dateOffseason || '';
     document.getElementById('prog-weeks').value = p.weeks || '';
     document.getElementById('prog-venue').value = p.venue || '';
+    document.getElementById('price-prog-id').value = p.id;
+    document.getElementById('prog-price-offseason').value = p.priceOffseason || '';
+    document.getElementById('prog-price-early').value = p.priceEarly || '';
     document.getElementById('prog-price').value = p.price || '';
+    document.getElementById('prog-price-late').value = p.priceLateFee || '';
 
     const secCount = p.secStartDates ? p.secStartDates.length : 0;
     document.getElementById('prog-sec-start-count').value = secCount <= 6 ? secCount.toString() : "6";
@@ -1530,7 +1537,12 @@ async function saveProgram(e) {
             weeks: document.getElementById('prog-weeks').value,
             byeDates: byeDatesArray,
             venue: document.getElementById('prog-venue').value,
-            price: document.getElementById('prog-price').value
+            
+            // Save all four pricing tiers
+            priceOffseason: document.getElementById('prog-price-offseason').value,
+            priceEarly: document.getElementById('prog-price-early').value,
+            price: document.getElementById('prog-price').value,
+            priceLateFee: document.getElementById('prog-price-late').value
         };
         await window.cloudSaveProgram(p);
         
