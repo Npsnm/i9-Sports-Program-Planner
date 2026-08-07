@@ -120,17 +120,48 @@ function getRecentLogHTML(itemId) {
 window.renderActivityLog = function() {
     const tb = document.getElementById('activity-log-table');
     const filterEl = document.getElementById('audit-log-group-filter');
-    if(!tb) return; tb.innerHTML = '';
+    if(!tb) return; 
+    tb.innerHTML = '';
     if(!currentUser) return;
-    const agIds = getAuthorizedGroups().map(g=>g.id);
+
+    const agIds = getAuthorizedGroups().map(g => g.id);
     const selectedGroup = filterEl ? filterEl.value : 'ALL';
-    
-    let visibleLogs = window.activityLogs.filter(l => currentUser.territories.includes('ALL') || agIds.includes(l.groupId) || l.userEmail === currentUser.username);
-    
+
+    // Parse Date & Time Filter Values
+    const startDateVal = document.getElementById('audit-log-start-date')?.value;
+    const startTimeVal = document.getElementById('audit-log-start-time')?.value || '00:00';
+    const endDateVal = document.getElementById('audit-log-end-date')?.value;
+    const endTimeVal = document.getElementById('audit-log-end-time')?.value || '23:59';
+
+    let startTimestamp = startDateVal ? new Date(`${startDateVal}T${startTimeVal}:00`).getTime() : null;
+    let endTimestamp = endDateVal ? new Date(`${endDateVal}T${endTimeVal}:59`).getTime() : null;
+
+    let visibleLogs = window.activityLogs.filter(l => 
+        currentUser.territories.includes('ALL') || 
+        agIds.includes(l.groupId) || 
+        l.userEmail === currentUser.username
+    );
+
+    // Filter by Group Context
     if (selectedGroup !== 'ALL') {
         visibleLogs = visibleLogs.filter(l => l.groupId === selectedGroup);
     }
-    
+
+    // Filter by Date and Time Bounds
+    if (startTimestamp || endTimestamp) {
+        visibleLogs = visibleLogs.filter(l => {
+            const logTime = new Date(l.timestamp).getTime();
+            if (startTimestamp && logTime < startTimestamp) return false;
+            if (endTimestamp && logTime > endTimestamp) return false;
+            return true;
+        });
+    }
+
+    if (visibleLogs.length === 0) {
+        tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">No activity logs found for the selected criteria.</td></tr>`;
+        return;
+    }
+
     visibleLogs.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(l => {
         tb.innerHTML += `<tr class="hover:bg-gray-50">
             <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
@@ -140,6 +171,22 @@ window.renderActivityLog = function() {
             <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
         </tr>`;
     });
+};
+
+// Clear Date/Time Filters Helper
+window.clearAuditLogFilters = function() {
+    const sDate = document.getElementById('audit-log-start-date');
+    const sTime = document.getElementById('audit-log-start-time');
+    const eDate = document.getElementById('audit-log-end-date');
+    const eTime = document.getElementById('audit-log-end-time');
+
+    if(sDate) sDate.value = '';
+    if(sTime) sTime.value = '';
+    if(eDate) eDate.value = '';
+    if(eTime) eTime.value = '';
+
+    window.renderActivityLog();
+};
 }
 
 function openHistoryModal(itemId, itemName) {
