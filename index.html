@@ -199,14 +199,14 @@
                         <label for="view-day" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/day:bg-white peer-checked/day:text-i9blue peer-checked/day:shadow z-10">Day</label>
                     </div>
 
-                    <select id="filter-cal-group" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                    <select id="filter-cal-group" onchange="saveFilterState('filter-cal-group'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
                         <option value="ALL">All Authorized Groups</option>
                     </select>
-                    <select id="filter-cal-prog-type" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                    <select id="filter-cal-prog-type" onchange="saveFilterState('filter-cal-prog-type'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
                         <option value="ALL">All Program Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option>
                     </select>
-                    <select id="filter-cal-program" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 max-w-[200px] outline-none focus:border-i9blue transition hover:bg-white"><option value="ALL">All Specific Programs</option></select>
-                    <select id="filter-cal-season" onchange="renderCalendar()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                    <select id="filter-cal-program" onchange="saveFilterState('filter-cal-program'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 max-w-[200px] outline-none focus:border-i9blue transition hover:bg-white"><option value="ALL">All Specific Programs</option></select>
+                    <select id="filter-cal-season" onchange="saveFilterState('filter-cal-season'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
                         <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
                     </select>
                 </div>
@@ -271,15 +271,15 @@
 
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap gap-2">
-                        <select id="filter-task-group" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
-                        <select id="filter-task-program" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 max-w-[200px]"><option value="ALL">All Programs</option></select>
-                        <select id="filter-task-level" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold text-i9blue">
+                        <select id="filter-task-group" onchange="saveFilterState('filter-task-group'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
+                        <select id="filter-task-program" onchange="saveFilterState('filter-task-program'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 max-w-[200px]"><option value="ALL">All Programs</option></select>
+                        <select id="filter-task-level" onchange="saveFilterState('filter-task-level'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold text-i9blue">
                             <option value="ALL">All Levels</option><option value="Operational">Operational Tasks</option><option value="Marketing">Marketing Tasks</option>
                         </select>
-                        <select id="filter-task-assignee" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
+                        <select id="filter-task-assignee" onchange="saveFilterState('filter-task-assignee'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
                             <option value="ALL">All Assignees</option><option value="ME">Assigned to Me</option><option value="UNASSIGNED">🚨 Missing Assignment</option>
                         </select>
-                        <select id="filter-task-status" onchange="renderActiveTasks()" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
+                        <select id="filter-task-status" onchange="saveFilterState('filter-task-status'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
                             <option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Complete">Complete</option>
                         </select>
                     </div>
@@ -324,14 +324,14 @@
 
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap gap-2">
-                        <select id="filter-prog-group" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"><option value="ALL">All Groups</option></select>
-                        <select id="filter-prog-year" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <select id="filter-prog-group" onchange="saveFilterState('filter-prog-group'); renderControlCenter();" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700"><option value="ALL">All Groups</option></select>
+                        <select id="filter-prog-year" onchange="saveFilterState('filter-prog-year'); renderControlCenter();" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <!-- Populated dynamically -->
                         </select>
-                        <select id="filter-prog-season" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <select id="filter-prog-season" onchange="saveFilterState('filter-prog-season'); renderControlCenter();" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
                         </select>
-                        <select id="filter-prog-type" onchange="renderControlCenter()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <select id="filter-prog-type" onchange="saveFilterState('filter-prog-type'); renderControlCenter();" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option>
                         </select>
                     </div>
@@ -381,10 +381,10 @@
                 
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap gap-2">
-                        <select id="filter-template-group" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <select id="filter-template-group" onchange="saveFilterState('filter-template-group'); renderTemplates();" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Authorized Groups</option>
                         </select>
-                        <select id="filter-template-type" onchange="renderTemplates()" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
+                        <select id="filter-template-type" onchange="saveFilterState('filter-template-type'); renderTemplates();" class="bg-gray-50 border border-gray-300 rounded text-[11px] p-2 font-semibold text-gray-700">
                             <option value="ALL">All Program Types</option>
                             <option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Training/Clinic</option><option value="School">School</option>
                         </select>
@@ -1917,6 +1917,34 @@
             }
         }
 
+        const PERSISTENT_FILTER_IDS = [
+            'filter-cal-group', 'filter-cal-prog-type', 'filter-cal-program', 'filter-cal-season',
+            'filter-task-group', 'filter-task-program', 'filter-task-level', 'filter-task-assignee', 'filter-task-status',
+            'filter-prog-group', 'filter-prog-year', 'filter-prog-season', 'filter-prog-type',
+            'filter-template-group', 'filter-template-type',
+            'workload-group-filter', 'audit-log-group-filter'
+        ];
+
+        function saveFilterState(elementId) {
+            const el = document.getElementById(elementId);
+            if (el && el.value !== undefined) {
+                localStorage.setItem(`pd_filter_${elementId}`, el.value);
+            }
+        }
+
+        function restoreSavedFilters() {
+            PERSISTENT_FILTER_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                const savedVal = localStorage.getItem(`pd_filter_${id}`);
+                if (el && savedVal !== null) {
+                    const optionExists = Array.from(el.options).some(opt => opt.value === savedVal);
+                    if (optionExists) {
+                        el.value = savedVal;
+                    }
+                }
+            });
+        }
+
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
             const icon = btn.querySelector('i');
@@ -2324,9 +2352,9 @@
                 });
             }
 
+            restoreSavedFilters();
             renderPermissions(); 
         }
-
         /* --- CALENDAR SYSTEM --- */
         function goToToday() {
             calendarDate = new Date();
