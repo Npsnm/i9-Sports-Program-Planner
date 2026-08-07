@@ -1244,32 +1244,121 @@ function renderControlCenter() {
         const priceDisplay = p.price ? `<span class="text-emerald-700 font-bold">$${p.price}</span>` : '<span class="text-gray-400 italic">No Price</span>';
 
         tb.innerHTML += `
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
-                <td class="px-4 py-2">
-                    <span class="font-bold text-i9blue">${p.groupId}</span><br>
-                    <span class="font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</span>
-                    ${getRecentLogHTML(p.id)}
-                </td>
-                <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
-                <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateStart2 ? `<br>Start 2: ${formatTargetDate(p.dateStart2)}` : ''}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
-                <td class="px-4 py-2 text-[10px] text-gray-600">${priceDisplay}<br>${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'} ${byeDisplay}</td>
-                <td class="px-4 py-2 text-center whitespace-nowrap">
-                    ${isManager ? `
-                    <div class="inline-flex flex-col gap-1 mr-1 align-middle">
-                        <button onclick="generateTaskPlan('${p.id}', 'Operational')" class="text-[9px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-gears"></i> Gen Ops</button>
-                        <button onclick="generateTaskPlan('${p.id}', 'Marketing')" class="text-[9px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-bullhorn"></i> Gen Mktg</button>
-                    </div>
-                    <button onclick="syncProgramTasks('${p.id}')" class="text-indigo-500 hover:text-indigo-700 mx-1" title="Sync Task Dates"><i class="fa-solid fa-rotate"></i></button>
-                    <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
-                    <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
-                    <button onclick="openHistoryModal('${p.id}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-gray-500 hover:text-gray-700 mx-1" title="View History"><i class="fa-solid fa-clock-rotate-left"></i></button>
-                    ${hasPermission('manageGroups') ? `<button onclick="openHardDeleteModal('program', '${p.id}', '${p.groupId}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-red-800 hover:text-red-900 mx-1" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                    ` : '-'}
-                </td>
-            </tr>`;
+        <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
+            <td class="px-4 py-2">
+                <span class="font-bold text-i9blue">${p.groupId}</span><br>
+                <span class="font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</span>
+                ${getRecentLogHTML(p.id)}
+            </td>
+            <td class="px-4 py-2"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px]">${p.type}</span></td>
+            <td class="px-4 py-2 text-[10px] text-gray-600">Start: ${formatTargetDate(p.dateStart)}${p.dateStart2 ? `<br>Start 2: ${formatTargetDate(p.dateStart2)}` : ''}${p.dateFinal ? `<br>Final: ${formatTargetDate(p.dateFinal)}` : ''}</td>
+            <td class="px-4 py-2 text-[10px] text-gray-600">${priceDisplay}<br>${p.days ? `<span class="font-bold text-gray-800">${p.days}</span><br>` : ''}${p.weeks} Wks | ${p.venue || 'No Venue'} ${byeDisplay}</td>
+            <td class="px-4 py-2 text-center whitespace-nowrap">
+                ${isManager ? `
+                <div class="inline-flex flex-col gap-1 mr-1 align-middle">
+                    <button onclick="generateTaskPlan('${p.id}', 'Operational')" class="text-[9px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-gears"></i> Gen Ops</button>
+                    <button onclick="generateTaskPlan('${p.id}', 'Marketing')" class="text-[9px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded shadow-sm transition"><i class="fa-solid fa-bullhorn"></i> Gen Mktg</button>
+                </div>
+                <button onclick="syncProgramTasks('${p.id}')" class="text-indigo-500 hover:text-indigo-700 mx-1" title="Sync Task Dates"><i class="fa-solid fa-rotate"></i></button>
+                <button onclick="openPricingPane('${p.id}')" class="text-emerald-600 hover:text-emerald-800 mx-1" title="Manage Tiered Pricing & Deadlines"><i class="fa-solid fa-tags"></i></button>
+                <button onclick="openEditProgramModal('${p.id}')" class="text-blue-600 hover:text-blue-800 mx-1"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="cloneProgram('${p.id}')" class="text-amber-500 hover:text-amber-700 mx-1"><i class="fa-regular fa-copy"></i></button>
+                <button onclick="openHistoryModal('${p.id}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-gray-500 hover:text-gray-700 mx-1" title="View History"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                ${hasPermission('manageGroups') ? `<button onclick="openHardDeleteModal('program', '${p.id}', '${p.groupId}', '${p.preHeader || ''} ${p.season} ${p.type}')" class="text-red-800 hover:text-red-900 mx-1" title="Permanently Delete"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                ` : '-'}
+            </td>
+        </tr>`;
     });
 }
+
+window.openPricingPane = function(progId) {
+    const p = programs.find(x => x.id === progId);
+    if (!p) return;
+
+    document.getElementById('price-prog-id').value = p.id;
+    document.getElementById('price-prog-title').textContent = `[${p.groupId}] ${p.preHeader || ''} ${p.season} ${p.type}`;
+    
+    // Bind dates
+    document.getElementById('price-date-offseason').value = p.dateOffseason || '';
+    document.getElementById('price-date-early').value = p.dateEarly || '';
+    document.getElementById('price-date-final').value = p.dateFinal || '';
+
+    // Bind price tier values
+    document.getElementById('price-val-offseason').value = p.priceOffseason || '';
+    document.getElementById('price-val-early').value = p.priceEarly || '';
+    document.getElementById('price-val-full').value = p.price || '';
+    document.getElementById('price-val-late').value = p.priceLateFee || '';
+
+    document.getElementById('price-master-edit-toggle').checked = true;
+
+    document.getElementById('pricing-pane-overlay').classList.remove('hidden');
+    document.getElementById('pricing-pane').classList.remove('hidden');
+};
+
+window.closePricingPane = function() {
+    document.getElementById('pricing-pane-overlay').classList.add('hidden');
+    document.getElementById('pricing-pane').classList.add('hidden');
+};
+
+window.saveProgramPricing = async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('price-prog-id').value;
+    const p = programs.find(x => x.id === id);
+    if (!p) return;
+
+    // Capture old values for marketing delta note
+    const oldPrices = {
+        offseason: p.priceOffseason || 'N/A',
+        early: p.priceEarly || 'N/A',
+        full: p.price || 'N/A',
+        late: p.priceLateFee || 'N/A'
+    };
+
+    // Update program object
+    p.dateOffseason = document.getElementById('price-date-offseason').value;
+    p.dateEarly = document.getElementById('price-date-early').value;
+    p.dateFinal = document.getElementById('price-date-final').value;
+
+    p.priceOffseason = document.getElementById('price-val-offseason').value;
+    p.priceEarly = document.getElementById('price-val-early').value;
+    p.price = document.getElementById('price-val-full').value;
+    p.priceLateFee = document.getElementById('price-val-late').value;
+
+    await window.cloudSaveProgram(p);
+
+    // Handle Master Edit: Generate Marketing Delta Note & Calendar Entries
+    const isMasterEdit = document.getElementById('price-master-edit-toggle').checked;
+    if (isMasterEdit) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const changeSummary = `Pricing updated for ${p.season} ${p.type}: Full Price ($${oldPrices.full} -> $${p.price}), Early ($${oldPrices.early} -> $${p.priceEarly || 'N/A'}), Offseason ($${oldPrices.offseason} -> $${p.priceOffseason || 'N/A'}), Late Fee ($${oldPrices.late} -> $${p.priceLateFee || 'N/A'}).`;
+
+        const marketingTask = {
+            id: generateId('ATK'),
+            programId: p.id,
+            groupId: p.groupId,
+            type: p.type,
+            preHeader: "Price Adjustment",
+            level: "Marketing",
+            marketingCategory: "Marketing Note",
+            name: `Price Tier Change: ${p.season} ${p.type}`,
+            desc: changeSummary,
+            targetDate: todayStr,
+            assignee: currentUser ? currentUser.name : '',
+            status: "Complete",
+            isOneOff: true,
+            isNote: true, // Appears as note event on calendar & task list
+            notes: `Old Full: $${oldPrices.full} | New Full: $${p.price}`
+        };
+
+        await window.cloudSaveActiveTask(marketingTask);
+        logActivity(p.groupId, 'Price Tier Change', changeSummary, p.id);
+    }
+
+    closePricingPane();
+    renderControlCenter();
+    showToast("Pricing Updated", "Program price tiers and marketing notes synced successfully.");
+};
 
 function updateDeadlineCount() {
     const count = parseInt(document.querySelector('input[name="prog-deadline-count"]:checked').value);
