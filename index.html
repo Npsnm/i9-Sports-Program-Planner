@@ -1915,12 +1915,13 @@
             if (!badge || !currentUser) return;
             
             if(hasPermission('manageGroups')) {
-                const agIds = getAuthorizedGroups().map(g => g.id);
-                // Safely filter the badge count to only show users relevant to this Admin
+                // FIX: Force all IDs to strings for the badge count as well
+                const agIds = getAuthorizedGroups().map(g => String(g.id));
+                const currTerrs = (currentUser.territories || []).map(t => String(t));
+                
                 const pendingCount = users.filter(u => {
                     if (u.role !== 'Pending') return false;
-                    const userTerrs = u.territories || [];
-                    const currTerrs = currentUser.territories || [];
+                    const userTerrs = (u.territories || []).map(t => String(t));
                     return currTerrs.includes('ALL') || userTerrs.some(t => agIds.includes(t));
                 }).length;
                 
@@ -3316,12 +3317,13 @@
             const searchVal = document.getElementById('user-search-input') ? document.getElementById('user-search-input').value.toLowerCase() : '';
             if(!pendingTb || !activeTb) return;
             pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
-            const agIds = getAuthorizedGroups().map(g=>g.id);
             
-            // BULLETPROOF: Safely handle users who might have corrupted or missing territories
+            // FIX: Force all IDs to be Strings so matches never fail due to Number vs String formatting
+            const agIds = getAuthorizedGroups().map(g => String(g.id));
+            const currTerrs = (currentUser.territories || []).map(t => String(t));
+            
             const visibleUsers = users.filter(u => {
-                const userTerrs = u.territories || [];
-                const currTerrs = currentUser.territories || [];
+                const userTerrs = (u.territories || []).map(t => String(t));
                 return currTerrs.includes('ALL') || userTerrs.some(t => agIds.includes(t));
             });
             
