@@ -628,7 +628,20 @@
             </div>
 
         </section>
-
+<!-- TAB 8: PENDING APPROVAL LOCK SCREEN -->
+        <section id="view-pending" class="tab-view hidden space-y-6 max-w-2xl mx-auto mt-10">
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-amber-200 text-center space-y-4">
+                <div class="inline-flex bg-amber-50 p-5 rounded-full text-amber-500 mb-2 border border-amber-100">
+                    <i class="fa-solid fa-lock text-5xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">Account Pending Approval</h2>
+                <p class="text-sm text-gray-600">You have successfully registered and requested access to Group(s): <span id="pending-group-display" class="font-bold text-i9blue"></span>.</p>
+                <div class="bg-gray-50 p-4 rounded text-xs text-gray-500 text-left border">
+                    <p class="font-bold mb-1 text-gray-700">Why am I seeing this?</p>
+                    <p>Your group administrator or owner must approve your requested access level before you can view tasks, programs, or calendar data for security purposes. Once approved, the portal will automatically unlock.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- FOOTER (Version Info) -->
@@ -827,16 +840,17 @@
                     <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
                         <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
                         <div class="flex gap-4 mb-2">
-                            <label><input type="radio" name="signup-action" value="join" checked onchange="toggleSignupAction()"> Join Existing</label>
-                            <label><input type="radio" name="signup-action" value="create" onchange="toggleSignupAction()"> Create New</label>
+                            <label><input type="radio" name="signup-action" value="create" checked onchange="toggleSignupAction()"> Create New Group</label>
+                            <label><input type="radio" name="signup-action" value="join" onchange="toggleSignupAction()"> Join Existing</label>
                         </div>
-                        <div id="signup-join-fields">
-                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
-                            <p class="text-[10px] text-gray-500 mt-1">Sends a request to the Group Admin for approval.</p>
-                        </div>
-                        <div id="signup-create-fields" class="hidden">
+                        <div id="signup-create-fields">
+                            <input type="number" id="signup-create-id" placeholder="Group Number (Leave blank to auto-generate)" class="w-full p-2 border rounded bg-white mb-2">
                             <input type="text" id="signup-create-name" placeholder="Enter New Group Name (e.g. Albuquerque)" class="w-full p-2 border rounded bg-white">
-                            <p class="text-[10px] text-gray-500 mt-1">Generates a new Franchise ID and sets you as Group Owner.</p>
+                            <p class="text-[10px] text-gray-500 mt-1">Automatically assigns you as the Group Owner with immediate full access.</p>
+                        </div>
+                        <div id="signup-join-fields" class="hidden">
+                            <input type="number" id="signup-join-id" placeholder="Enter Group/Franchise Number (e.g. 8765)" class="w-full p-2 border rounded bg-white">
+                            <p class="text-[10px] text-gray-500 mt-1">Logs you in, but requires Group Owner approval to view data.</p>
                         </div>
                     </div>
 
@@ -1785,12 +1799,12 @@
 
         function toggleSignupAction() {
             const action = document.querySelector('input[name="signup-action"]:checked').value;
-            if(action === 'join') { 
-                document.getElementById('signup-join-fields').classList.remove('hidden'); 
-                document.getElementById('signup-create-fields').classList.add('hidden'); 
-            } else { 
-                document.getElementById('signup-join-fields').classList.add('hidden'); 
+            if(action === 'create') { 
                 document.getElementById('signup-create-fields').classList.remove('hidden'); 
+                document.getElementById('signup-join-fields').classList.add('hidden'); 
+            } else { 
+                document.getElementById('signup-create-fields').classList.add('hidden'); 
+                document.getElementById('signup-join-fields').classList.remove('hidden'); 
             }
         }
 
@@ -1845,7 +1859,7 @@
             e.preventDefault();
             const fName = document.getElementById('signup-first').value.trim(); const lName = document.getElementById('signup-last').value.trim();
             const phone = document.getElementById('signup-phone').value.trim(); 
-            const em = document.getElementById('signup-email').value.trim().toLowerCase(); // Forced lowercase
+            const em = document.getElementById('signup-email').value.trim().toLowerCase(); 
             const pw = document.getElementById('signup-password').value.trim(); const action = document.querySelector('input[name="signup-action"]:checked').value;
             
             const fullName = `${fName} ${lName}`;
@@ -1853,33 +1867,45 @@
             let newGroupData = null;
 
             if(action === 'create') {
-                const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
-                const newId = (validIds.length > 0 ? Math.max(...validIds) : 8764 + 1).toString();
+                let requestedId = document.getElementById('signup-create-id').value.trim();
                 const gName = document.getElementById('signup-create-name').value.trim();
-                newGroupData = { id: newId, name: gName, fullName: `${newId} - ${gName}`, status: 'Active' };
-                uObj.role = 'Group Owner'; uObj.territories = [newId];
+                
+                if (!gName) return showError("Please provide a Group Name.");
+
+                // Validate if requested ID exists
+                if (requestedId) {
+                    if (groups.find(g => String(g.id) === requestedId)) {
+                        return showError(`Group Number ${requestedId} is already in use. Please select 'Join Existing' or choose a different number.`);
+                    }
+                } else {
+                    // Auto-generate if left blank
+                    const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
+                    requestedId = ((validIds.length > 0 ? Math.max(...validIds) : 8764) + 1).toString();
+                }
+
+                newGroupData = { id: requestedId, name: gName, fullName: `${requestedId} - ${gName}`, status: 'Active' };
+                uObj.role = 'Group Owner'; // Auto approve!
+                uObj.territories = [requestedId];
             } else {
                 const joinId = document.getElementById('signup-join-id').value.trim();
                 if(!joinId) return showError("Please enter a Group ID to join.");
                 uObj.territories = [joinId];
             }
+            
             try {
                 showToast("Registering", "Creating secure account...");
-                window.isRegistering = true; // Pause the automatic lockout
+                window.isRegistering = true; // Pause lockout
                 
                 await window.createUserWithEmailAndPassword(window.auth, em, pw);
                 
-                // Await the cloud saves to ensure they finish before logout
                 if (newGroupData) await window.cloudSaveGroup(newGroupData);
                 await window.cloudSaveUser(uObj);
                 
-                window.isRegistering = false; // Resume normal security
+                window.isRegistering = false; 
                 
-                document.getElementById('auth-error-text').textContent = "Success! Your account is pending admin approval."; 
-                document.getElementById('auth-error').classList.remove('hidden', 'bg-rose-100', 'text-rose-700');
-                document.getElementById('auth-error').classList.add('bg-emerald-100', 'text-emerald-800');
+                // Do NOT logout. Hide overlay and let Firebase auth state listener trigger unlockPortal naturally
+                document.getElementById('auth-overlay').classList.add('hidden');
                 
-                logout();
             } catch (error) { 
                 window.isRegistering = false;
                 showError("Database Error: " + error.message); 
@@ -1902,15 +1928,34 @@
             if (!currentUser && window.currentUser) currentUser = window.currentUser;
             if (!currentUser) return;
             
-            // Wait for registration to safely save to database before kicking them out
             if (window.isRegistering) return;
 
-            if (currentUser.role === "Pending") { showError("Your account is pending admin approval."); logout(); return; }
             if (currentUser.status === "Archived" || currentUser.status === "Frozen") { showError("Your account has been archived or temporarily disabled."); logout(); return; }
             
             const overlay = document.getElementById('auth-overlay');
             if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
-            populateFilterOptions(); populateProfileForm(); applyPermissions(); renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
+            
+            populateFilterOptions(); populateProfileForm(); applyPermissions(); 
+            
+            // Check if Pending
+            if (currentUser.role === "Pending") {
+                // Lock them into the pending view
+                document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
+                document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.add('hidden'); // Hide navigation tabs completely
+                
+                document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+                document.getElementById('view-pending').classList.remove('hidden');
+            } else {
+                // Fully Approved - Render normal portal
+                document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6').parentElement.classList.remove('hidden'); // Show navigation tabs
+                
+                renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
+                
+                // If they were stuck on pending and an admin just approved them, transition them directly to the dashboard
+                if (!document.getElementById('view-pending').classList.contains('hidden')) {
+                     switchTab('dashboard'); 
+                }
+            }
         }
 
         function checkPendingAlerts() {
