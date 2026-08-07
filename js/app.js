@@ -426,6 +426,7 @@ function togglePasswordVisibility(inputId, btn) {
     if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
     else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
 }
+
 // Make core handlers available globally to inline onclick events
 window.toggleAuthMode = toggleAuthMode;
 window.login = login;
@@ -439,6 +440,7 @@ window.switchTab = switchTab;
 window.openReportModal = openReportModal;
 window.exportCurrentViewToCSV = exportCurrentViewToCSV;
 window.closeModals = closeModals;
+
 /* --- AUTHENTICATION & USER MANAGEMENT --- */
 function toggleAuthMode(mode) {
     const err = document.getElementById('auth-error'); err.classList.add('hidden');
@@ -532,19 +534,17 @@ async function signup(e) {
         
         if (!gName) return showError("Please provide a Group Name.");
 
-        // Validate if requested ID exists
         if (requestedId) {
             if (groups.find(g => String(g.id) === requestedId)) {
                 return showError(`Group Number ${requestedId} is already in use. Please select 'Join Existing' or choose a different number.`);
             }
         } else {
-            // Auto-generate if left blank
             const validIds = groups.map(g => parseInt(g.id)).filter(id => !isNaN(id));
             requestedId = ((validIds.length > 0 ? Math.max(...validIds) : 8764) + 1).toString();
         }
 
         newGroupData = { id: requestedId, name: gName, fullName: `${requestedId} - ${gName}`, status: 'Active' };
-        uObj.role = 'Group Owner'; // Auto approve!
+        uObj.role = 'Group Owner'; 
         uObj.territories = [requestedId];
     } else {
         const joinId = document.getElementById('signup-join-id').value.trim();
@@ -554,21 +554,17 @@ async function signup(e) {
     
     try {
         showToast("Registering", "Creating secure account...");
-        window.isRegistering = true; // Pause lockout
+        window.isRegistering = true; 
         
         await window.createUserWithEmailAndPassword(window.auth, em, pw);
         
-        // Await the cloud saves to ensure they finish before logout
         if (newGroupData) await window.cloudSaveGroup(newGroupData);
         await window.cloudSaveUser(uObj);
         
-        // Set the user locally immediately so we don't wait for the cloud sync
         window.currentUser = uObj;
         currentUser = uObj;
 
         window.isRegistering = false; 
-        
-        // Force the portal to unlock now that the data is safely saved
         unlockPortal();
         
     } catch (error) { 
@@ -588,7 +584,6 @@ async function logout() {
     } catch (e) { console.error("Sign out error:", e); }
     currentUser = null; window.currentUser = null;
 
-    // Restore header buttons when logging out
     const headerReportBtn = document.querySelector('button[onclick="openReportModal()"]');
     const headerExportBtn = document.querySelector('button[onclick="exportCurrentViewToCSV()"]');
     const headerUserBadge = document.getElementById('user-badge');
@@ -618,19 +613,15 @@ function unlockPortal() {
     
     populateFilterOptions(); populateProfileForm(); applyPermissions(); 
     
-    // Elements in header to hide/show during pending/denied state
     const headerReportBtn = document.querySelector('button[onclick="openReportModal()"]');
     const headerExportBtn = document.querySelector('button[onclick="exportCurrentViewToCSV()"]');
     const headerUserBadge = document.getElementById('user-badge');
 
-    // Check if Pending or Denied
     if (currentUser.role === "Pending" || currentUser.role === "Denied") {
-        // Hide header actions except Sign Out
         if (headerReportBtn) headerReportBtn.classList.add('hidden');
         if (headerExportBtn) headerExportBtn.classList.add('hidden');
         if (headerUserBadge) headerUserBadge.classList.add('hidden');
 
-        // Hide navigation tabs completely
         const navContainer = document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6');
         if (navContainer && navContainer.parentElement) navContainer.parentElement.classList.add('hidden');
         
@@ -644,7 +635,6 @@ function unlockPortal() {
             document.getElementById('view-denied').classList.remove('hidden');
         }
     } else {
-        // Fully Approved - Restore header buttons & navigation tabs
         if (headerReportBtn) headerReportBtn.classList.remove('hidden');
         if (headerExportBtn) headerExportBtn.classList.remove('hidden');
         if (headerUserBadge) headerUserBadge.classList.remove('hidden');
@@ -654,7 +644,6 @@ function unlockPortal() {
         
         renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
         
-        // If they were stuck on pending/denied and an admin approved them, transition them directly to the dashboard
         if (!document.getElementById('view-pending').classList.contains('hidden') || !document.getElementById('view-denied').classList.contains('hidden')) {
              switchTab('dashboard'); 
         }
@@ -667,7 +656,6 @@ function checkPendingAlerts() {
     if (!badge || !currentUser) return;
     
     if(hasPermission('manageGroups')) {
-        // FIX: Force all IDs to strings for the badge count as well
         const agIds = getAuthorizedGroups().map(g => String(g.id));
         const currTerrs = (currentUser.territories || []).map(t => String(t));
         
@@ -842,6 +830,7 @@ function populateFilterOptions() {
     restoreSavedFilters();
     renderPermissions(); 
 }
+
 /* --- CALENDAR SYSTEM --- */
 function goToToday() {
     calendarDate = new Date();
@@ -1169,7 +1158,7 @@ function renderDashboard() {
                         <span><i class="fa-solid fa-bullhorn text-emerald-600 mr-1"></i> Marketing Execution</span>
                         <span class="text-emerald-600">${pCompMkt}/${pTotMkt} (${pctMkt}%)</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${pctMkt}%"></div></div>
+                    <div class="w-full bg-emerald-200 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${pctMkt}%"></div></div>
                 </div>
             </div>`; 
         }
@@ -1382,7 +1371,6 @@ function openEditProgramModal(id) {
     document.getElementById('prog-venue').value = p.venue || '';
     document.getElementById('prog-price').value = p.price || '';
 
-    // Handle Sec Starts binding
     const secCount = p.secStartDates ? p.secStartDates.length : 0;
     document.getElementById('prog-sec-start-count').value = secCount <= 6 ? secCount.toString() : "6";
     updateSecStartsCount();
@@ -1393,7 +1381,6 @@ function openEditProgramModal(id) {
         }
     }
 
-    // Handle Bye Dates binding
     const byeCount = p.byeDates ? p.byeDates.length : 0;
     const byeRb = document.querySelector(`input[name="prog-bye-count"][value="${byeCount}"]`);
     if(byeRb) byeRb.checked = true; else document.querySelector(`input[name="prog-bye-count"][value="0"]`).checked = true;
@@ -2093,17 +2080,13 @@ window.renderUsersTable = function() {
     if(!pendingTb || !activeTb) return;
     pendingTb.innerHTML = ''; activeTb.innerHTML = ''; 
     
-    // FIX: Force all IDs to be Strings and ensure Group Owners see pending requests for their authorized groups
     const agIds = getAuthorizedGroups().map(g => String(g.id));
     const currTerrs = (currentUser.territories || []).map(t => String(t));
     
     const visibleUsers = users.filter(u => {
         const userTerrs = (u.territories || []).map(t => String(t));
-        // System Admin sees everyone
         if (currTerrs.includes('ALL')) return true;
-        // Pending users are visible if any of their requested territories match the admin's authorized groups
         if (u.role === 'Pending') return userTerrs.some(t => agIds.includes(t));
-        // Active/Archived users are visible if they share a territory
         return userTerrs.some(t => agIds.includes(t));
     });
     
@@ -2167,6 +2150,7 @@ window.renderUsersTable = function() {
     if (pendingCount === 0) pendingTb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">No users currently waiting for approval.</td></tr>`;
     if (pendingBadge) pendingBadge.textContent = `${pendingCount} Waiting`;
 }
+
 window.toggleUserArchiveStatus = function(email, archive) {
     if(!confirm(`Are you sure you want to ${archive ? 'archive' : 'restore'} access for ${email}?`)) return;
     const u = users.find(x => x.username === email);
@@ -2193,6 +2177,7 @@ window.bulkArchiveUsers = function(archive) {
     showToast("Status Updated", `${emails.length} user(s) have been ${archive ? 'archived' : 'restored'}.`);
     document.querySelectorAll('.user-cb').forEach(cb => cb.checked = false);
 }
+
 window.renderWorkloadSummary = function() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
@@ -2201,7 +2186,6 @@ window.renderWorkloadSummary = function() {
     const filterEl = document.getElementById('workload-group-filter');
     if (!tb || !filterEl) return;
     
-    // 1. Populate filter dropdown if it's currently empty
     const agIds = getAuthorizedGroups().map(g => g.id);
     if (filterEl.options.length === 0) {
         filterEl.innerHTML = '<option value="ALL">All Authorized Groups</option>';
@@ -2214,7 +2198,6 @@ window.renderWorkloadSummary = function() {
     tb.innerHTML = '';
     const workload = {};
 
-    // 2. Calculate open and overdue tasks per assignee (respecting the filter)
     activeTasks.forEach(t => {
         if (!agIds.includes(t.groupId)) return;
         if (selectedGroup !== 'ALL' && t.groupId !== selectedGroup) return;
@@ -2238,7 +2221,6 @@ window.renderWorkloadSummary = function() {
         return;
     }
 
-    // 3. Render the table rows and make them clickable
     sortedAssignees.forEach(user => {
         const data = workload[user];
         const isUnassigned = user === '🚨 Unassigned';
@@ -2258,7 +2240,6 @@ window.renderWorkloadSummary = function() {
     });
 }
 
-// 4. Function to open and populate the Assignee Task Modal
 window.openAssigneeTaskModal = function(assignee, selectedGroup) {
     const subtitle = document.getElementById('assignee-modal-subtitle');
     const tb = document.getElementById('assignee-modal-table-body');
@@ -2269,7 +2250,6 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
     const today = new Date(); 
     today.setHours(0,0,0,0);
     
-    // Filter tasks for this assignee
     let userTasks = activeTasks.filter(t => {
         if (!agIds.includes(t.groupId)) return false;
         if (selectedGroup !== 'ALL' && t.groupId !== selectedGroup) return false;
@@ -2279,7 +2259,6 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
         return taskAssignee === assignee;
     });
     
-    // Sort chronologically by due date
     userTasks.sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate));
     
     userTasks.forEach(t => {
@@ -2310,6 +2289,7 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
     
     document.getElementById('assignee-task-modal').classList.remove('hidden');
 }
+
 function deleteUserRow(em) { 
     if(confirm(`Are you sure you want to deny access for ${em}?`)) { 
         const u = users.find(x => x.username === em);
@@ -2341,11 +2321,9 @@ window.handleSelfDeleteAccount = async function(e) {
         showToast("Processing", "Deleting profile and authentication credentials...");
         const username = currentUser.username;
         
-        // 1. Erase user record from Firestore database
         await window.cloudDeleteUser(username);
         logActivity('SYSTEM', 'Self Account Deletion', `User ${username} deleted their own account.`);
         
-        // 2. Erase user credentials from Firebase Authentication vault
         if (window.auth && window.auth.currentUser && typeof window.deleteAuthUser === 'function') {
             await window.deleteAuthUser();
         }
@@ -2431,6 +2409,7 @@ window.submitReRoute = async function(e) {
         unlockPortal();
     }
 }
+
 function openAdminEdit(em) {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
@@ -2441,11 +2420,11 @@ function openAdminEdit(em) {
     roleSel.innerHTML += `<option value="Pending">Pending (Lock Out)</option>`; roleSel.value = u.role;
     renderTerritoryCheckboxes(); 
     
-    // Bulletproof: Safely read the territories array for the checkboxes
     const userTerrs = u.territories || [];
     document.querySelectorAll('.admin-cb').forEach(cb => cb.checked = userTerrs.includes(cb.value));
     document.getElementById('admin-edit-user-modal').classList.remove('hidden');
 }
+
 function adminSaveUser(e) {
     e.preventDefault(); const em = document.getElementById('admin-u-email').value; const u = users.find(x => x.username === em);
     if(u) { 
@@ -2453,9 +2432,8 @@ function adminSaveUser(e) {
         const selectedTerrs = Array.from(document.querySelectorAll('.admin-cb:checked')).map(cb=>cb.value);
         
         u.role = newRole; 
-        // Ensure approved users retain at least their selected territories or original request
         u.territories = selectedTerrs.length > 0 ? selectedTerrs : (u.territories || []); 
-        u.status = (newRole === 'Pending') ? 'Pending' : 'Active'; // Update status if approved
+        u.status = (newRole === 'Pending') ? 'Pending' : 'Active'; 
         
         window.cloudSaveUser(u); 
         document.getElementById('admin-edit-user-modal').classList.add('hidden'); 
@@ -2620,7 +2598,6 @@ function applyBrandingUI() {
     const logoImg = document.getElementById('brand-logo-img'); 
     if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
 
-    // Add this line to update the login overlay logo:
     const authLogoImg = document.getElementById('auth-logo-img');
     if(authLogoImg) authLogoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
 }
