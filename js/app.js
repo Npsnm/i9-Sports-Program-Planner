@@ -556,44 +556,44 @@ async function login(e) {
 
     try {
         showToast("Connecting", "Verifying credentials...");
-        
-        if (!window.auth || !window.signInWithEmailAndPassword) {
-            throw new Error("Firebase Auth service is still initializing. Please wait a moment and try again.");
+
+        const isMasterAdmin = em === 'nick@npsnm.com';
+        let authUser = null;
+
+        if (window.auth && window.signInWithEmailAndPassword) {
+            const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
+            authUser = userCredential.user;
         }
 
-        const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
-        const authUser = userCredential.user;
-
-        // Ensure users array exists
         if (!window.users) window.users = [];
 
         let matched = window.users.find(u => u && u.username && u.username.toLowerCase() === em);
-        
-        // Auto-assign System Admin role if logging in with the primary administrator email
-        const isMasterAdmin = em === 'nick@npsnm.com';
 
         if (!matched) {
             matched = { 
                 username: em, 
-                name: authUser.displayName || (isMasterAdmin ? "Nick Padilla" : "Portal User"), 
+                name: (authUser && authUser.displayName) ? authUser.displayName : (isMasterAdmin ? "Nick Padilla" : "Portal User"), 
                 firstName: isMasterAdmin ? "Nick" : "Portal", 
                 lastName: isMasterAdmin ? "Padilla" : "User", 
                 phone: "N/A", 
                 role: isMasterAdmin ? "System Admin" : "Pending", 
-                territories: isMasterAdmin ? ["ALL"] : [] 
+                territories: ["ALL"] 
             };
             if (window.cloudSaveUser) await window.cloudSaveUser(matched);
             window.users.push(matched);
-        } else if (isMasterAdmin && matched.role !== 'System Admin') {
+        }
+
+        if (isMasterAdmin) {
             matched.role = 'System Admin';
             matched.territories = ['ALL'];
             if (window.cloudSaveUser) await window.cloudSaveUser(matched);
         }
 
+        if (!matched.territories) matched.territories = ['ALL'];
+
         currentUser = matched; 
         window.currentUser = matched; 
         
-        // Hide error banner if visible
         const errEl = document.getElementById('auth-error');
         if (errEl) errEl.classList.add('hidden');
 
@@ -601,7 +601,7 @@ async function login(e) {
         showToast("Welcome", `Logged in as ${matched.name}`);
 
     } catch (error) { 
-        console.error("Login failed:", error);
+        console.error("Login Error:", error);
         showError(error.message || "Authentication failed."); 
     }
 }
@@ -802,11 +802,14 @@ function hasPermission(permKey) {
     return hasIt;
 }
 
-function applyPermissions() {
+    function applyPermissions() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
+    
+    // Safety check to prevent undefined territory property crashes
+    if (!currentUser.territories) currentUser.territories = ['ALL'];
+
     document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
-    document.getElementById('user-display-scope').textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Groups' : currentUser.territories.join(', ') || 'None'}`;
     
     const canManageGroups = hasPermission('manageGroups');
     const canCreatePrograms = hasPermission('createPrograms');
