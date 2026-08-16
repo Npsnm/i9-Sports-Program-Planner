@@ -577,6 +577,7 @@ async function login(e) {
                 lastName: isMasterAdmin ? "Padilla" : "User", 
                 phone: "N/A", 
                 role: isMasterAdmin ? "System Admin" : "Pending", 
+                status: "Active",
                 territories: ["ALL"] 
             };
             if (window.cloudSaveUser) await window.cloudSaveUser(matched);
@@ -585,6 +586,7 @@ async function login(e) {
 
         if (isMasterAdmin) {
             matched.role = 'System Admin';
+            matched.status = 'Active';
             matched.territories = ['ALL'];
             if (window.cloudSaveUser) await window.cloudSaveUser(matched);
         }
