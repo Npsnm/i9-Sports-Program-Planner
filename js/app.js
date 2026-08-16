@@ -55,6 +55,13 @@ window.addEventListener('DOMContentLoaded', () => {
     populateMarketingCats();
 });
 
+// --- HTML ESCAPING SECURITY UTILITY ---
+function escapeHTML(str) {
+    return String(str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[m]);
+}
+
 // --- FLEXIBLE DATE PASTING & PARSING UTILITIES ---
 function parseFlexibleDate(str) {
     if (!str) return '';
@@ -1418,61 +1425,65 @@ window.closePricingPane = function() {
 
 window.saveProgramPricing = async function(e) {
     e.preventDefault();
-    const id = document.getElementById('price-prog-id').value;
-    const p = programs.find(x => x.id === id);
-    if (!p) return;
+    try {
+        const id = document.getElementById('price-prog-id').value;
+        const p = programs.find(x => x.id === id);
+        if (!p) return;
 
-    // Capture old values for marketing delta note
-    const oldPrices = {
-        offseason: p.priceOffseason || 'N/A',
-        early: p.priceEarly || 'N/A',
-        full: p.price || 'N/A',
-        late: p.priceLateFee || 'N/A'
-    };
-
-    // Update program object
-    p.dateOffseason = document.getElementById('price-date-offseason').value;
-    p.dateEarly = document.getElementById('price-date-early').value;
-    p.dateFinal = document.getElementById('price-date-final').value;
-
-    p.priceOffseason = document.getElementById('price-val-offseason').value;
-    p.priceEarly = document.getElementById('price-val-early').value;
-    p.price = document.getElementById('price-val-full').value;
-    p.priceLateFee = document.getElementById('price-val-late').value;
-
-    await window.cloudSaveProgram(p);
-
-    // Handle Master Edit: Generate Marketing Delta Note & Calendar Entries
-    const isMasterEdit = document.getElementById('price-master-edit-toggle').checked;
-    if (isMasterEdit) {
-        const todayStr = new Date().toISOString().split('T')[0];
-        const changeSummary = `Pricing updated for ${p.season} ${p.type}: Full Price ($${oldPrices.full} -> $${p.price}), Early ($${oldPrices.early} -> $${p.priceEarly || 'N/A'}), Offseason ($${oldPrices.offseason} -> $${p.priceOffseason || 'N/A'}), Late Fee ($${oldPrices.late} -> $${p.priceLateFee || 'N/A'}).`;
-
-        const marketingTask = {
-            id: generateId('ATK'),
-            programId: p.id,
-            groupId: p.groupId,
-            type: p.type,
-            preHeader: "Price Adjustment",
-            level: "Marketing",
-            marketingCategory: "Marketing Note",
-            name: `Price Tier Change: ${p.season} ${p.type}`,
-            desc: changeSummary,
-            targetDate: todayStr,
-            assignee: currentUser ? currentUser.name : '',
-            status: "Complete",
-            isOneOff: true,
-            isNote: true, // Appears as note event on calendar & task list
-            notes: `Old Full: $${oldPrices.full} | New Full: $${p.price}`
+        // Capture old values for marketing delta note
+        const oldPrices = {
+            offseason: p.priceOffseason || 'N/A',
+            early: p.priceEarly || 'N/A',
+            full: p.price || 'N/A',
+            late: p.priceLateFee || 'N/A'
         };
 
-        await window.cloudSaveActiveTask(marketingTask);
-        logActivity(p.groupId, 'Price Tier Change', changeSummary, p.id);
-    }
+        // Update program object
+        p.dateOffseason = document.getElementById('price-date-offseason').value;
+        p.dateEarly = document.getElementById('price-date-early').value;
+        p.dateFinal = document.getElementById('price-date-final').value;
 
-    closePricingPane();
-    renderControlCenter();
-    showToast("Pricing Updated", "Program price tiers and marketing notes synced successfully.");
+        p.priceOffseason = document.getElementById('price-val-offseason').value;
+        p.priceEarly = document.getElementById('price-val-early').value;
+        p.price = document.getElementById('price-val-full').value;
+        p.priceLateFee = document.getElementById('price-val-late').value;
+
+        await window.cloudSaveProgram(p);
+
+        // Handle Master Edit: Generate Marketing Delta Note & Calendar Entries
+        const isMasterEdit = document.getElementById('price-master-edit-toggle').checked;
+        if (isMasterEdit) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const changeSummary = `Pricing updated for ${p.season} ${p.type}: Full Price ($${oldPrices.full} -> $${p.price}), Early ($${oldPrices.early} -> $${p.priceEarly || 'N/A'}), Offseason ($${oldPrices.offseason} -> $${p.priceOffseason || 'N/A'}), Late Fee ($${oldPrices.late} -> $${p.priceLateFee || 'N/A'}).`;
+
+            const marketingTask = {
+                id: generateId('ATK'),
+                programId: p.id,
+                groupId: p.groupId,
+                type: p.type,
+                preHeader: "Price Adjustment",
+                level: "Marketing",
+                marketingCategory: "Marketing Note",
+                name: `Price Tier Change: ${p.season} ${p.type}`,
+                desc: changeSummary,
+                targetDate: todayStr,
+                assignee: currentUser ? currentUser.name : '',
+                status: "Complete",
+                isOneOff: true,
+                isNote: true, // Appears as note event on calendar & task list
+                notes: `Old Full: $${oldPrices.full} | New Full: $${p.price}`
+            };
+
+            await window.cloudSaveActiveTask(marketingTask);
+            logActivity(p.groupId, 'Price Tier Change', changeSummary, p.id);
+        }
+
+        closePricingPane();
+        renderControlCenter();
+        showToast("Pricing Updated", "Program price tiers and marketing notes synced successfully.");
+    } catch (err) {
+        showToast("Error", "Failed to update pricing: " + err.message);
+    }
 };
 
 function updateDeadlineCount() {
