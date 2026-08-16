@@ -1370,11 +1370,10 @@ function executeHardDelete(e) {
     closeModals();
     showToast("Permanently Deleted", `${ids.length} item(s) have been erased.`);
     
-    if(type==='program') document.getElementById('selectAllProgs')?.checked = false;
-    if(type==='task') document.getElementById('selectAllTasks')?.checked = false;
-    if(type==='template') document.getElementById('selectAllTpls')?.checked = false;
+    const elProg = document.getElementById('selectAllProgs'); if (elProg) elProg.checked = false;
+    const elTask = document.getElementById('selectAllTasks'); if (elTask) elTask.checked = false;
+    const elTpl = document.getElementById('selectAllTpls'); if (elTpl) elTpl.checked = false;
 }
-
 /* --- PROGRAMS --- */
 function renderControlCenter() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
@@ -2971,9 +2970,9 @@ function executeBulkEdit(e) {
     }
     
     closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
-    if(mode==='programs') document.getElementById('selectAllProgs')?.checked = false;
-    if(mode==='tasks') document.getElementById('selectAllTasks')?.checked = false;
-    if(mode==='templates') document.getElementById('selectAllTpls')?.checked = false;
+    const elProg = document.getElementById('selectAllProgs'); if (elProg) elProg.checked = false;
+    const elTask = document.getElementById('selectAllTasks'); if (elTask) elTask.checked = false;
+    const elTpl = document.getElementById('selectAllTpls'); if (elTpl) elTpl.checked = false;
 }
 
 /* --- BRANDING --- */
