@@ -550,11 +550,7 @@ async function login(e) {
         const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
         const authUser = userCredential.user;
 
-        if (em === 'nick@npsnm.com') {
-            currentUser = { username: 'nick@npsnm.com', name: authUser.displayName || "Nick Padilla", firstName: 'Nick', lastName: 'Padilla', phone: 'N/A', role: "System Admin", territories: ["ALL"] };
-            window.currentUser = currentUser; window.cloudSaveUser(currentUser); unlockPortal();
-            showToast("Welcome", "Logged in as System Admin"); return;
-        }
+        // User roles and permissions are dynamically validated via cloud records
 
         let matched = window.users.find(u => u.username.toLowerCase() === em);
         if (!matched) {
@@ -1321,9 +1317,9 @@ function executeHardDelete(e) {
     closeModals();
     showToast("Permanently Deleted", `${ids.length} item(s) have been erased.`);
     
-    if(type==='program') document.getElementById('selectAllProgs').checked=false;
-    if(type==='task') document.getElementById('selectAllTasks').checked=false;
-    if(type==='template') document.getElementById('selectAllTpls').checked=false;
+    if(type==='program') document.getElementById('selectAllProgs')?.checked = false;
+    if(type==='task') document.getElementById('selectAllTasks')?.checked = false;
+    if(type==='template') document.getElementById('selectAllTpls')?.checked = false;
 }
 
 /* --- PROGRAMS --- */
@@ -2281,8 +2277,10 @@ function cloneTask(id) {
     const t = activeTasks.find(x=>x.id===id); 
     if(t) { 
         const newT = {...t, id: generateId('ATK')};
+        activeTasks.push(newT);
         window.cloudSaveActiveTask(newT); 
         logActivity(t.groupId, 'Task Cloned', `Cloned Task: ${t.name}`, newT.id);
+        renderActiveTasks();
         showToast("Cloned", "Task duplicated successfully."); 
     } 
 }
@@ -2916,9 +2914,9 @@ function executeBulkEdit(e) {
     }
     
     closeBulkEdit(); showToast("Bulk Edit Complete", `${ids.length} items updated.`);
-    if(mode==='programs') document.getElementById('selectAllProgs').checked = false;
-    if(mode==='tasks') document.getElementById('selectAllTasks').checked = false;
-    if(mode==='templates') document.getElementById('selectAllTpls').checked = false;
+    if(mode==='programs') document.getElementById('selectAllProgs')?.checked = false;
+    if(mode==='tasks') document.getElementById('selectAllTasks')?.checked = false;
+    if(mode==='templates') document.getElementById('selectAllTpls')?.checked = false;
 }
 
 /* --- BRANDING --- */
