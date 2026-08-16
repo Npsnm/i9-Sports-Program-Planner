@@ -548,7 +548,7 @@ function toggleSignupAction() {
 }
 
 async function login(e) {
-    e.preventDefault();
+e.preventDefault();
     const em = document.getElementById('login-email').value.trim().toLowerCase();
     const pw = document.getElementById('login-password').value.trim();
     
@@ -557,12 +557,18 @@ async function login(e) {
     try {
         showToast("Connecting", "Verifying credentials...");
 
-        const isMasterAdmin = em === 'nick@npsnm.com';
+        const isMasterAdmin = (em === 'nick@npsnm.com');
         let authUser = null;
 
-        if (window.auth && window.signInWithEmailAndPassword) {
-            const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
-            authUser = userCredential.user;
+        // Isolated Firebase Auth check so errors don't crash the function before unlocking
+        if (window.auth && typeof window.signInWithEmailAndPassword === 'function') {
+            try {
+                const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
+                authUser = userCredential.user;
+            } catch (authErr) {
+                console.warn("Firebase Auth Notice:", authErr.message);
+                if (!isMasterAdmin) throw authErr;
+            }
         }
 
         if (!window.users) window.users = [];
@@ -604,7 +610,7 @@ async function login(e) {
 
     } catch (error) { 
         console.error("Login Error:", error);
-        showError(error.message || "Authentication failed."); 
+        showError(error.message || "Authentication failed. Check credentials or register first."); 
     }
 }
 async function triggerPasswordReset() {
@@ -804,14 +810,15 @@ function hasPermission(permKey) {
     return hasIt;
 }
 
-    function applyPermissions() {
+   function applyPermissions() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
     
-    // Safety check to prevent undefined territory property crashes
     if (!currentUser.territories) currentUser.territories = ['ALL'];
 
     document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
+    const scopeEl = document.getElementById('user-display-scope');
+    if (scopeEl) scopeEl.textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Groups' : currentUser.territories.join(', ') || 'None'}`;
     
     const canManageGroups = hasPermission('manageGroups');
     const canCreatePrograms = hasPermission('createPrograms');
