@@ -552,25 +552,59 @@ async function login(e) {
     const em = document.getElementById('login-email').value.trim().toLowerCase();
     const pw = document.getElementById('login-password').value.trim();
     
+    if (!em || !pw) return showError("Please enter both email and password.");
+
     try {
         showToast("Connecting", "Verifying credentials...");
+        
+        if (!window.auth || !window.signInWithEmailAndPassword) {
+            throw new Error("Firebase Auth service is still initializing. Please wait a moment and try again.");
+        }
+
         const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
         const authUser = userCredential.user;
 
-        // User roles and permissions are dynamically validated via cloud records
+        // Ensure users array exists
+        if (!window.users) window.users = [];
 
-        let matched = window.users.find(u => u.username.toLowerCase() === em);
+        let matched = window.users.find(u => u && u.username && u.username.toLowerCase() === em);
+        
+        // Auto-assign System Admin role if logging in with the primary administrator email
+        const isMasterAdmin = em === 'nick@npsnm.com';
+
         if (!matched) {
-            matched = { username: em, name: authUser.displayName || "New User", firstName: "Unknown", lastName: "User", phone: "N/A", role: "Pending", territories: [] };
-            await window.cloudSaveUser(matched); window.users.push(matched);
+            matched = { 
+                username: em, 
+                name: authUser.displayName || (isMasterAdmin ? "Nick Padilla" : "Portal User"), 
+                firstName: isMasterAdmin ? "Nick" : "Portal", 
+                lastName: isMasterAdmin ? "Padilla" : "User", 
+                phone: "N/A", 
+                role: isMasterAdmin ? "System Admin" : "Pending", 
+                territories: isMasterAdmin ? ["ALL"] : [] 
+            };
+            if (window.cloudSaveUser) await window.cloudSaveUser(matched);
+            window.users.push(matched);
+        } else if (isMasterAdmin && matched.role !== 'System Admin') {
+            matched.role = 'System Admin';
+            matched.territories = ['ALL'];
+            if (window.cloudSaveUser) await window.cloudSaveUser(matched);
         }
 
-        currentUser = matched; window.currentUser = matched; unlockPortal();
+        currentUser = matched; 
+        window.currentUser = matched; 
+        
+        // Hide error banner if visible
+        const errEl = document.getElementById('auth-error');
+        if (errEl) errEl.classList.add('hidden');
+
+        unlockPortal();
         showToast("Welcome", `Logged in as ${matched.name}`);
 
-    } catch (error) { showError(error.message); }
+    } catch (error) { 
+        console.error("Login failed:", error);
+        showError(error.message || "Authentication failed."); 
+    }
 }
-
 async function triggerPasswordReset() {
     const em = document.getElementById('login-email').value.trim();
     if (!em) return showError("Please enter your email address first to reset your password.");
