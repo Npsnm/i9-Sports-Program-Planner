@@ -50,7 +50,7 @@
 
             <div class="flex items-center flex-wrap gap-2 text-xs">
                 <div id="user-badge" class="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                    <i class="fa-solid fa-user-gear text-i9gold"></i>
+                    <i class="fa-solid fa-user-gear text-brandAccent"></i>
                     <div>
                         <p id="user-display-name" class="font-bold text-white leading-none">Not Logged In</p>
                         <p id="user-display-scope" class="text-[10px] text-slate-300 leading-tight">Tier: Loading...</p>
@@ -60,7 +60,7 @@
                 <button onclick="openReportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-chart-line"></i> Custom Report
                 </button>
-                <button onclick="exportCurrentViewToCSV()" class="bg-i9red hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                <button onclick="exportCurrentViewToCSV()" class="bg-brandDanger hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-file-excel"></i> Export View
                 </button>
                 <button onclick="logout()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 border border-slate-700">
@@ -73,26 +73,26 @@
     <!-- NAVIGATION TABS -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[60px] z-30">
         <div class="max-w-7xl mx-auto px-4 flex space-x-6 overflow-x-auto">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 px-1 border-b-2 border-brandLight font-bold text-brandLight text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-chart-pie"></i> Dashboard
             </button>
-            <button onclick="switchTab('calendar')" id="tab-calendar" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchTab('calendar')" id="tab-calendar" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-regular fa-calendar"></i> Calendar
             </button>
-            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-list-check"></i> Task List
             </button>
-            <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-calendar-days"></i> Programs
             </button>
-            <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-layer-group"></i> Task Profiles
             </button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden permission-manage-groups">
+            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden permission-manage-groups">
                 <i class="fa-solid fa-users-gear"></i> Admin Dashboard
                 <span id="admin-alert-badge" class="absolute -top-1 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
             </button>
-            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
                 <i class="fa-solid fa-gear"></i> Settings
             </button>
         </div>
@@ -104,12 +104,12 @@
         <!-- TAB 1: HOME DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
             <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button onclick="setDashboardFilter('active')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-i9blue border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
+                <button onclick="setDashboardFilter('active')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-brandLight border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-i9blue transition">Active Tasks</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-brandLight transition">Active Tasks</p>
                         <p id="kpi-total" class="text-2xl font-black text-gray-800">0</p>
                     </div>
-                    <div class="p-3 bg-blue-50 text-i9blue rounded-lg"><i class="fa-solid fa-list-ul text-lg"></i></div>
+                    <div class="p-3 bg-blue-50 text-brandLight rounded-lg"><i class="fa-solid fa-list-ul text-lg"></i></div>
                 </button>
                 <button onclick="setDashboardFilter('completed')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
@@ -138,15 +138,15 @@
                 <!-- Main Content: Today & Focused Filter -->
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-calendar-day text-i9gold"></i> Today at a Glance
+                        <h3 class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-calendar-day text-brandAccent"></i> Today at a Glance
                         </h3>
                         <div id="dashboard-today-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
                     
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 id="dash-focused-title" class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-list text-i9blue"></i> Focused Task Viewer: Active Tasks
+                        <h3 id="dash-focused-title" class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-list text-brandLight"></i> Focused Task Viewer: Active Tasks
                         </h3>
                         <div id="dashboard-focused-list" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
                     </div>
@@ -155,15 +155,15 @@
                 <!-- Side Panel: Progress & My Tasks -->
                 <div class="space-y-6">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
+                        <h3 class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
                             <i class="fa-solid fa-user-check text-emerald-600"></i> My Upcoming Tasks <span class="text-[10px] text-gray-400 font-normal">(Next 7 Days)</span>
                         </h3>
                         <div id="dashboard-my-tasks" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
 
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-sm font-bold text-i9blue mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-chart-column text-i9red"></i> Program Execution
+                        <h3 class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-chart-column text-brandDanger"></i> Program Execution
                         </h3>
                         <div id="dashboard-season-progress" class="space-y-4 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
@@ -176,7 +176,7 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-regular fa-calendar text-i9gold"></i> Task Calendar</h2>
+                        <h2 class="text-sm font-bold text-brandLight flex items-center gap-2"><i class="fa-regular fa-calendar text-brandAccent"></i> Task Calendar</h2>
                         <p class="text-xs text-gray-500">Visual overview of upcoming operational and marketing tasks. Click a day to quick-add a task.</p>
                     </div>
                 </div>
@@ -184,23 +184,23 @@
                 <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
                     <div class="inline-flex bg-gray-100 p-1 rounded-full border border-gray-200 shadow-inner relative">
                         <input type="radio" name="cal-view-type" id="view-month" value="month" class="hidden peer/month" checked onchange="renderCalendar()">
-                        <label for="view-month" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/month:bg-white peer-checked/month:text-i9blue peer-checked/month:shadow z-10">Month</label>
+                        <label for="view-month" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/month:bg-white peer-checked/month:text-brandLight peer-checked/month:shadow z-10">Month</label>
                         
                         <input type="radio" name="cal-view-type" id="view-week" value="week" class="hidden peer/week" onchange="renderCalendar()">
-                        <label for="view-week" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/week:bg-white peer-checked/week:text-i9blue peer-checked/week:shadow z-10">Week</label>
+                        <label for="view-week" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/week:bg-white peer-checked/week:text-brandLight peer-checked/week:shadow z-10">Week</label>
                         
                         <input type="radio" name="cal-view-type" id="view-day" value="day" class="hidden peer/day" onchange="renderCalendar()">
-                        <label for="view-day" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/day:bg-white peer-checked/day:text-i9blue peer-checked/day:shadow z-10">Day</label>
+                        <label for="view-day" class="px-5 py-1.5 text-xs font-bold text-gray-500 rounded-full cursor-pointer transition-all peer-checked/day:bg-white peer-checked/day:text-brandLight peer-checked/day:shadow z-10">Day</label>
                     </div>
 
-                    <select id="filter-cal-group" onchange="saveFilterState('filter-cal-group'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                    <select id="filter-cal-group" onchange="saveFilterState('filter-cal-group'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-brandLight transition hover:bg-white">
                         <option value="ALL">All Authorized Groups</option>
                     </select>
-                    <select id="filter-cal-prog-type" onchange="saveFilterState('filter-cal-prog-type'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                    <select id="filter-cal-prog-type" onchange="saveFilterState('filter-cal-prog-type'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-brandLight transition hover:bg-white">
                         <option value="ALL">All Program Types</option><option value="League">League</option><option value="Camp">Camp</option><option value="Training/Clinic">Clinic/Training</option><option value="School">School</option>
                     </select>
-                    <select id="filter-cal-program" onchange="saveFilterState('filter-cal-program'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 max-w-[200px] outline-none focus:border-i9blue transition hover:bg-white"><option value="ALL">All Specific Programs</option></select>
-                    <select id="filter-cal-season" onchange="saveFilterState('filter-cal-season'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-i9blue transition hover:bg-white">
+                    <select id="filter-cal-program" onchange="saveFilterState('filter-cal-program'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 max-w-[200px] outline-none focus:border-brandLight transition hover:bg-white"><option value="ALL">All Specific Programs</option></select>
+                    <select id="filter-cal-season" onchange="saveFilterState('filter-cal-season'); renderCalendar();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-full px-3 py-1.5 outline-none focus:border-brandLight transition hover:bg-white">
                         <option value="ALL">All Seasons</option><option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option><option value="Winter">Winter</option>
                     </select>
                 </div>
@@ -230,7 +230,7 @@
                     <div class="flex items-center gap-2">
                         <button onclick="goToToday()" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-gray-700 text-xs font-bold shadow-sm transition">Today</button>
                         <button onclick="changeCalendarDate(-1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="calendar-date-display" class="font-bold text-i9blue min-w-[150px] text-center text-sm uppercase tracking-wide"></span>
+                        <span id="calendar-date-display" class="font-bold text-brandLight min-w-[150px] text-center text-sm uppercase tracking-wide"></span>
                         <button onclick="changeCalendarDate(1)" class="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-lg text-gray-600 shadow-sm transition"><i class="fa-solid fa-chevron-right"></i></button>
                         <input type="date" id="calendar-jump-date" onchange="jumpToDate(this.value)" class="ml-1 p-1.5 border border-gray-300 rounded-lg bg-gray-50 text-xs text-gray-700 outline-none cursor-pointer shadow-sm transition hover:bg-white" title="Direct jump to date">
                     </div>
@@ -250,7 +250,7 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
                     <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-list-check text-i9gold"></i> Task Directory</h2>
+                        <h2 class="text-sm font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-list-check text-brandAccent"></i> Task Directory</h2>
                         <p class="text-xs text-gray-500">Manage, execute, and track all tasks across your groups.</p>
                     </div>
                     <button onclick="openAddOneOffTaskModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm permission-edit-tasks hidden">
@@ -259,7 +259,7 @@
                 </div>
 
                 <div class="flex gap-2 text-xs font-bold mb-2">
-                    <button onclick="setTaskView('active')" id="btn-tasks-active" class="px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition">Active Tasks</button>
+                    <button onclick="setTaskView('active')" id="btn-tasks-active" class="px-4 py-1.5 rounded-full bg-brandLight text-white shadow transition">Active Tasks</button>
                     <button onclick="setTaskView('archived')" id="btn-tasks-archived" class="px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition">Archived / Removed</button>
                 </div>
 
@@ -267,7 +267,7 @@
                     <div class="flex flex-wrap gap-2">
                         <select id="filter-task-group" onchange="saveFilterState('filter-task-group'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold"><option value="ALL">All Authorized Groups</option></select>
                         <select id="filter-task-program" onchange="saveFilterState('filter-task-program'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 max-w-[200px]"><option value="ALL">All Programs</option></select>
-                        <select id="filter-task-level" onchange="saveFilterState('filter-task-level'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold text-i9blue">
+                        <select id="filter-task-level" onchange="saveFilterState('filter-task-level'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2 font-semibold text-brandLight">
                             <option value="ALL">All Levels</option><option value="Operational">Operational Tasks</option><option value="Marketing">Marketing Tasks</option>
                         </select>
                         <select id="filter-task-assignee" onchange="saveFilterState('filter-task-assignee'); renderActiveTasks();" class="bg-gray-50 border border-gray-300 text-gray-800 text-[11px] rounded-lg p-2">
@@ -306,12 +306,12 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
                 <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
                     <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-calendar-days text-i9gold"></i> Programs</h2>
+                        <h2 class="text-sm font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-calendar-days text-brandAccent"></i> Programs</h2>
                         <p class="text-xs text-gray-500">Establish program dates, deadlines, and generate task lists.</p>
                     </div>
                     <div class="flex items-center gap-2 permission-create-program hidden">
-                        <button onclick="openAddProgramModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
-                            <i class="fa-solid fa-plus text-i9gold"></i> Add New Program
+                        <button onclick="openAddProgramModal()" class="bg-brandLight hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
+                            <i class="fa-solid fa-plus text-brandAccent"></i> Add New Program
                         </button>
                     </div>
                 </div>
@@ -365,11 +365,11 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
                 <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-3">
                     <div>
-                        <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-layer-group text-i9gold"></i> Task Profiles</h2>
+                        <h2 class="text-sm font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-layer-group text-brandAccent"></i> Task Profiles</h2>
                         <p class="text-xs text-gray-500">Build blueprint rules for task generation linked to program milestones.</p>
                     </div>
-                    <button onclick="openAddTemplateModal()" class="bg-i9blue hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
-                        <i class="fa-solid fa-plus text-i9gold"></i> Add Profile Rule
+                    <button onclick="openAddTemplateModal()" class="bg-brandLight hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition permission-edit-template hidden">
+                        <i class="fa-solid fa-plus text-brandAccent"></i> Add Profile Rule
                     </button>
                 </div>
                 
@@ -421,7 +421,7 @@
         <section id="view-admin" class="tab-view hidden space-y-6">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-start flex-wrap gap-3">
                 <div>
-                    <h2 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-users-gear text-i9gold"></i> Admin Dashboard</h2>
+                    <h2 class="text-sm font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-users-gear text-brandAccent"></i> Admin Dashboard</h2>
                     <p class="text-xs text-gray-500">Approve users, configure groups, review system activity, and send invitations.</p>
                 </div>
                 <div class="relative">
@@ -457,7 +457,7 @@
                         <div class="bg-gray-50 p-3 border-b flex flex-wrap justify-between items-center gap-2">
                             <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-user-check text-emerald-600"></i> User Directory</h4>
                             <div class="flex gap-2">
-                                <button onclick="setUserView('active')" id="btn-view-active-users" class="px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition">Active</button>
+                                <button onclick="setUserView('active')" id="btn-view-active-users" class="px-3 py-1 text-[10px] font-bold rounded bg-brandLight text-white shadow-sm transition">Active</button>
                                 <button onclick="setUserView('inactive')" id="btn-view-inactive-users" class="px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition">Archived</button>
                             </div>
                         </div>
@@ -522,12 +522,12 @@
                 <div class="lg:col-span-3 bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4 permission-manage-groups hidden mt-2">
                     <div class="border-b pb-4 flex flex-wrap justify-between items-end gap-3">
                         <div>
-                            <h4 class="text-xs font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-shield-halved text-i9gold"></i> System Permissions Matrix</h4>
+                            <h4 class="text-xs font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-shield-halved text-brandAccent"></i> System Permissions Matrix</h4>
                             <p class="text-[10px] text-gray-500">Configure feature access capabilities for each system tier within your group.</p>
                         </div>
                         <div>
                             <label class="block font-bold text-[10px] text-gray-500 mb-1">Select Group Context</label>
-                            <select id="perm-group-select" onchange="renderPermissions()" class="p-2 border border-gray-300 rounded-lg bg-gray-50 text-xs font-bold text-i9blue min-w-[150px] outline-none hover:bg-white transition"></select>
+                            <select id="perm-group-select" onchange="renderPermissions()" class="p-2 border border-gray-300 rounded-lg bg-gray-50 text-xs font-bold text-brandLight min-w-[150px] outline-none hover:bg-white transition"></select>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -549,7 +549,7 @@
                 <!-- SYSTEM ACTIVITY & AUDIT LOG -->
                 <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-4">
                     <div class="bg-gray-50 p-3 border-b flex flex-wrap justify-between items-center gap-3">
-                        <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-i9blue"></i> System Activity & Audit Log</h4>
+                        <h4 class="text-xs font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-brandLight"></i> System Activity & Audit Log</h4>
                         
                         <!-- Date, Time, Apply, and Reset Controls -->
                         <div class="flex flex-wrap items-center gap-2 text-[10px]">
@@ -570,7 +570,7 @@
                             </select>
                 
                             <!-- Apply Filter Button -->
-                            <button onclick="renderActivityLog()" class="bg-i9blue hover:bg-blue-900 text-white font-bold px-2.5 py-1 rounded transition shadow-sm" title="Apply Date & Time Filter">
+                            <button onclick="renderActivityLog()" class="bg-brandLight hover:bg-blue-900 text-white font-bold px-2.5 py-1 rounded transition shadow-sm" title="Apply Date & Time Filter">
                                 <i class="fa-solid fa-filter mr-1"></i> Apply
                             </button>
                 
@@ -599,7 +599,7 @@
             <!-- Personal Account Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
                 <div class="border-b pb-4">
-                    <h2 class="text-lg font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-user-gear text-i9gold"></i> My Account Settings</h2>
+                    <h2 class="text-lg font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-user-gear text-brandAccent"></i> My Account Settings</h2>
                     <p class="text-xs text-gray-500">Manage your profile, credentials, and view your system account links.</p>
                 </div>
 
@@ -616,13 +616,13 @@
                 <form onsubmit="handleEmailUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Email Address</h3>
                     <div><label class="block font-bold mb-1">New Email</label><input type="email" id="setting-new-email" required class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Email</button>
+                    <button type="submit" class="bg-brandLight text-white px-4 py-2 rounded-lg font-bold">Update Email</button>
                 </form>
 
                 <form onsubmit="handlePasswordUpdate(event)" class="space-y-3 text-xs border-b pb-6">
                     <h3 class="font-bold text-gray-800 text-sm">Update Password</h3>
                     <div><label class="block font-bold mb-1">New Password (Min 6 Chars)</label><input type="password" id="setting-new-password" required minlength="6" class="w-full max-w-md p-2 border rounded-lg bg-gray-50"></div>
-                    <button type="submit" class="bg-i9blue text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
+                    <button type="submit" class="bg-brandLight text-white px-4 py-2 rounded-lg font-bold">Update Password</button>
                 </form>
 
                 <div class="space-y-3 text-xs pt-2 border-b pb-6">
@@ -652,7 +652,7 @@
                     <i class="fa-solid fa-lock text-5xl"></i>
                 </div>
                 <h2 class="text-xl font-bold text-gray-800">Account Pending Approval</h2>
-                <p class="text-sm text-gray-600">You have successfully registered and requested access to Group(s): <span id="pending-group-display" class="font-bold text-i9blue"></span>.</p>
+                <p class="text-sm text-gray-600">You have successfully registered and requested access to Group(s): <span id="pending-group-display" class="font-bold text-brandLight"></span>.</p>
                 <div class="bg-gray-50 p-4 rounded text-xs text-gray-500 text-left border">
                     <p class="font-bold mb-1 text-gray-700">Why am I seeing this?</p>
                     <p>Your group administrator or owner must approve your requested access level before you can view tasks, programs, or calendar data for security purposes. Once approved, the portal will automatically unlock.</p>
@@ -672,8 +672,8 @@
                 <div class="p-4 bg-gray-50 border rounded-lg text-xs space-y-3 max-w-md mx-auto">
                     <p class="font-bold text-gray-700">What would you like to do next?</p>
                     <div class="flex flex-col gap-2">
-                        <button onclick="openReRouteModal('create')" class="w-full bg-i9blue hover:bg-blue-900 text-white font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-plus text-i9gold"></i> Create a New Franchise Group
+                        <button onclick="openReRouteModal('create')" class="w-full bg-brandLight hover:bg-blue-900 text-white font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus text-brandAccent"></i> Create a New Franchise Group
                         </button>
                         <button onclick="openReRouteModal('join')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded transition shadow-sm flex items-center justify-center gap-2">
                             <i class="fa-solid fa-sitemap"></i> Request a Different Group
@@ -696,7 +696,7 @@
     <div id="history-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Change History Logs</h3>
+                <h3 class="text-sm font-bold text-brandLight flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Change History Logs</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p class="text-xs text-gray-500 font-bold" id="history-modal-title">Item History</p>
@@ -717,12 +717,12 @@
     <!-- BULK EDIT SLIDE-OVER PANE -->
     <div id="bulk-edit-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300"></div>
     <div id="bulk-edit-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] slide-pane flex flex-col">
-        <div class="bg-i9blue text-white p-4 flex justify-between items-center">
-            <h3 class="font-bold text-sm flex items-center gap-2" id="bulk-edit-title"><i class="fa-solid fa-pen-to-square text-i9gold"></i> Bulk Edit Options</h3>
+        <div class="bg-brandLight text-white p-4 flex justify-between items-center">
+            <h3 class="font-bold text-sm flex items-center gap-2" id="bulk-edit-title"><i class="fa-solid fa-pen-to-square text-brandAccent"></i> Bulk Edit Options</h3>
             <button onclick="closeBulkEdit()" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
         <div class="p-6 overflow-y-auto flex-grow text-xs space-y-6">
-            <p class="text-gray-500 mb-2">Check the box next to the fields you want to overwrite for <span id="bulk-edit-count" class="font-bold text-i9blue">0</span> selected items.</p>
+            <p class="text-gray-500 mb-2">Check the box next to the fields you want to overwrite for <span id="bulk-edit-count" class="font-bold text-brandLight">0</span> selected items.</p>
             
             <form id="bulk-edit-form" onsubmit="executeBulkEdit(event)" class="space-y-4">
                 <input type="hidden" id="bulk-edit-mode">
@@ -787,7 +787,7 @@
         </div>
         <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
             <button onclick="closeBulkEdit()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
-            <button type="submit" form="bulk-edit-form" class="px-4 py-2 bg-i9blue font-bold rounded text-xs text-white shadow">Apply Changes</button>
+            <button type="submit" form="bulk-edit-form" class="px-4 py-2 bg-brandLight font-bold rounded text-xs text-white shadow">Apply Changes</button>
         </div>
     </div>
 
@@ -833,7 +833,7 @@
     <div id="auth-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4 transition-opacity overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 max-w-md w-full overflow-hidden my-auto">
             <div class="flex text-sm font-bold text-center border-b">
-                <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue">Sign In</button>
+                <button onclick="toggleAuthMode('login')" id="tab-login" class="flex-1 py-3 bg-white text-brandLight border-b-2 border-brandLight">Sign In</button>
                 <button onclick="toggleAuthMode('signup')" id="tab-signup" class="flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent">Register / Join Group</button>
             </div>
 
@@ -842,7 +842,7 @@
                     <div class="inline-flex items-center justify-center p-2 mb-1 max-h-16">
                         <img id="auth-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Brand Logo" class="max-h-12 object-contain">
                     </div>
-                    <h2 class="text-lg font-bold text-i9blue" id="auth-title">Sign In to PD Planner</h2>
+                    <h2 class="text-lg font-bold text-brandLight" id="auth-title">Sign In to PD Planner</h2>
                 </div>
 
                 <!-- Login Form -->
@@ -851,7 +851,7 @@
                     <div>
                         <div class="flex justify-between items-end mb-1">
                             <label class="block text-xs font-bold text-gray-700">Password</label>
-                            <button type="button" onclick="triggerPasswordReset()" class="text-i9blue text-[10px] font-bold hover:underline">Forgot Password?</button>
+                            <button type="button" onclick="triggerPasswordReset()" class="text-brandLight text-[10px] font-bold hover:underline">Forgot Password?</button>
                         </div>
                         <div class="relative">
                             <input type="password" id="login-password" required class="w-full p-2.5 pr-10 border rounded-lg bg-gray-50 text-xs">
@@ -860,7 +860,7 @@
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="w-full py-2.5 bg-i9blue hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
+                    <button type="submit" class="w-full py-2.5 bg-brandLight hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow-md">Authenticate</button>
                 </form>
 
                 <!-- Signup Form -->
@@ -883,7 +883,7 @@
                     </div>
                     
                     <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg space-y-3">
-                        <label class="block font-bold text-i9blue mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
+                        <label class="block font-bold text-brandLight mb-1"><i class="fa-solid fa-sitemap mr-1"></i> Franchise / Group Selection</label>
                         <div class="flex gap-4 mb-2">
                             <label><input type="radio" name="signup-action" value="create" checked onchange="toggleSignupAction()"> Create New Group</label>
                             <label><input type="radio" name="signup-action" value="join" onchange="toggleSignupAction()"> Join Existing</label>
@@ -916,7 +916,7 @@
     <div id="admin-edit-user-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue">Edit User Access</h3>
+                <h3 class="text-sm font-bold text-brandLight">Edit User Access</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="adminSaveUser(event)" class="space-y-4 text-xs">
@@ -924,7 +924,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block font-bold mb-1">Role Tier</label>
-                        <select id="admin-u-role" class="w-full p-2 border border-gray-300 rounded bg-gray-50 font-semibold text-i9blue"></select>
+                        <select id="admin-u-role" class="w-full p-2 border border-gray-300 rounded bg-gray-50 font-semibold text-brandLight"></select>
                         <p class="text-[10px] text-gray-500 mt-1">Leaving a user as 'Pending' revokes their access.</p>
                     </div>
                     <div>
@@ -934,7 +934,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-3.5 py-1.5 bg-i9blue text-white rounded font-bold shadow">Save User Settings</button>
+                    <button type="submit" class="px-3.5 py-1.5 bg-brandLight text-white rounded font-bold shadow">Save User Settings</button>
                 </div>
             </form>
         </div>
@@ -945,8 +945,8 @@
         <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 space-y-5 max-h-[92vh] flex flex-col">
             <!-- Modal Header -->
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold text-i9blue flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-days text-i9gold"></i> Add / Edit Program
+                <h3 class="text-base font-bold text-brandLight flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-brandAccent"></i> Add / Edit Program
                 </h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700 transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -960,7 +960,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                     <div>
                         <label class="block font-bold text-gray-700 mb-1">Group Context</label>
-                        <select id="prog-group" class="w-full p-2 border border-gray-300 rounded-lg bg-white font-semibold text-i9blue outline-none"></select>
+                        <select id="prog-group" class="w-full p-2 border border-gray-300 rounded-lg bg-white font-semibold text-brandLight outline-none"></select>
                     </div>
                     <div>
                         <label class="block font-bold text-gray-700 mb-1">Program Year</label>
@@ -980,7 +980,7 @@
                 <!-- Program Type & Timing Pre-Header Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-100 flex flex-col justify-between">
-                        <label class="block font-bold text-i9blue mb-2">Program Type</label>
+                        <label class="block font-bold text-brandLight mb-2">Program Type</label>
                         <div class="grid grid-cols-2 gap-2 text-xs font-medium">
                             <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="prog-type-radio" value="League" checked onchange="updateProgPreHeaderOptions()"> League</label>
                             <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="prog-type-radio" value="Camp" onchange="updateProgPreHeaderOptions()"> Camp</label>
@@ -999,8 +999,8 @@
                 <!-- Milestone Tracking Card -->
                 <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
                     <div class="flex justify-between items-center flex-wrap gap-2 border-b pb-2">
-                        <label class="font-bold text-i9blue flex items-center gap-1.5">
-                            <i class="fa-solid fa-flag text-i9gold"></i> Milestone Deadlines
+                        <label class="font-bold text-brandLight flex items-center gap-1.5">
+                            <i class="fa-solid fa-flag text-brandAccent"></i> Milestone Deadlines
                         </label>
                         <div class="flex gap-3 text-[11px]">
                             <label class="cursor-pointer"><input type="radio" name="prog-deadline-count" value="1" onchange="updateDeadlineCount()"> 1 (Start Only)</label>
@@ -1045,7 +1045,7 @@
                     <!-- Secondary Start Dates -->
                     <div class="border-t pt-3 mt-1">
                         <div class="flex justify-between items-center mb-2">
-                            <label class="font-bold text-[11px] text-i9blue">Additional / Secondary Start Dates</label>
+                            <label class="font-bold text-[11px] text-brandLight">Additional / Secondary Start Dates</label>
                             <select id="prog-sec-start-count" onchange="updateSecStartsCount()" class="p-1 border border-gray-300 rounded bg-gray-50 text-[10px] outline-none">
                                 <option value="0">None</option>
                                 <option value="1">1 Additional</option>
@@ -1100,7 +1100,7 @@
                         <!-- Bye Weeks Moved Inside Logistics -->
                         <div class="border-t border-gray-200 pt-2">
                             <div class="flex justify-between items-center mb-1">
-                                <label class="font-bold text-i9blue text-[11px]">Bye Weeks / Skipped Dates</label>
+                                <label class="font-bold text-brandLight text-[11px]">Bye Weeks / Skipped Dates</label>
                                 <div class="flex gap-2 text-[10px]">
                                     <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="0" onchange="updateByeCount()" checked> 0</label>
                                     <label class="cursor-pointer"><input type="radio" name="prog-bye-count" value="1" onchange="updateByeCount()"> 1</label>
@@ -1132,7 +1132,7 @@
                                     <input type="number" id="prog-price-early" step="0.01" placeholder="e.g. 139.00" class="w-full p-2 border rounded-lg bg-white">
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-i9blue mb-1">3. Full Price *</label>
+                                    <label class="block font-bold text-brandLight mb-1">3. Full Price *</label>
                                     <input type="number" id="prog-price" step="0.01" required placeholder="e.g. 159.00" class="w-full p-2 border border-emerald-300 rounded-lg bg-white font-bold text-emerald-800">
                                 </div>
                                 <div>
@@ -1148,7 +1148,7 @@
                 <!-- Action Footer -->
                 <div class="flex justify-end gap-2 pt-3 border-t">
                     <button type="button" onclick="closeModals()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-700 transition">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-i9blue hover:bg-blue-900 text-white rounded-lg font-bold shadow-md transition">Save Program</button>
+                    <button type="submit" class="px-5 py-2 bg-brandLight hover:bg-blue-900 text-white rounded-lg font-bold shadow-md transition">Save Program</button>
                 </div>
             </form>
         </div>
@@ -1158,7 +1158,7 @@
     <div id="template-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-layer-group text-i9gold"></i> Add / Edit Task Profile Rule</h3>
+                <h3 class="text-sm font-bold text-brandLight"><i class="fa-solid fa-layer-group text-brandAccent"></i> Add / Edit Task Profile Rule</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="saveTemplate(event)" class="space-y-4 text-xs">
@@ -1183,7 +1183,7 @@
                     <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
                     <select id="tpl-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('tpl-mktg-custom').classList.remove('hidden'); else document.getElementById('tpl-mktg-custom').classList.add('hidden');">
                         <option value="">-- Select Category --</option>
-                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
+                        <option value="CUSTOM" class="font-bold text-brandLight">+ Custom Category...</option>
                     </select>
                     <input type="text" id="tpl-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
                 </div>
@@ -1213,7 +1213,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Profile Rule</button>
+                    <button type="submit" class="px-4 py-2 bg-brandLight text-white rounded font-bold shadow">Save Profile Rule</button>
                 </div>
             </form>
         </div>
@@ -1223,7 +1223,7 @@
     <div id="active-task-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue" id="active-task-title"><i class="fa-solid fa-list-check text-i9gold"></i> Add / Edit Task</h3>
+                <h3 class="text-sm font-bold text-brandLight" id="active-task-title"><i class="fa-solid fa-list-check text-brandAccent"></i> Add / Edit Task</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="saveActiveTask(event)" class="space-y-4 text-xs">
@@ -1251,7 +1251,7 @@
                     <label class="block font-bold mb-1 text-emerald-700">Marketing Category</label>
                     <select id="at-mktg-cat" class="w-full p-2 border rounded bg-white" onchange="if(this.value==='CUSTOM') document.getElementById('at-mktg-custom').classList.remove('hidden'); else document.getElementById('at-mktg-custom').classList.add('hidden');">
                         <option value="">-- Select Category --</option>
-                        <option value="CUSTOM" class="font-bold text-i9blue">+ Custom Category...</option>
+                        <option value="CUSTOM" class="font-bold text-brandLight">+ Custom Category...</option>
                     </select>
                     <input type="text" id="at-mktg-custom" class="w-full p-2 border rounded bg-white mt-2 hidden" placeholder="Enter custom category name...">
                 </div>
@@ -1281,7 +1281,7 @@
 
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Task</button>
+                    <button type="submit" class="px-4 py-2 bg-brandLight text-white rounded font-bold shadow">Save Task</button>
                 </div>
             </form>
         </div>
@@ -1323,13 +1323,13 @@
     <div id="reporting-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-chart-line text-i9gold"></i> Generate Custom Report</h3>
+                <h3 class="text-sm font-bold text-brandLight"><i class="fa-solid fa-chart-line text-brandAccent"></i> Generate Custom Report</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="generateCustomReport(event)" class="space-y-4 text-xs">
                 <div>
                     <label class="block font-bold mb-1">Data Type</label>
-                    <select id="report-type" class="w-full p-2 border rounded bg-gray-50 font-semibold text-i9blue">
+                    <select id="report-type" class="w-full p-2 border rounded bg-gray-50 font-semibold text-brandLight">
                         <option value="tasks">Active Tasks</option>
                         <option value="programs">Programs</option>
                     </select>
@@ -1356,10 +1356,10 @@
     <!-- BRANDING MODAL -->
     <div id="branding-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4 text-xs">
-            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-i9blue">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-brandLight">Branding Settings</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
             <form onsubmit="saveBranding(event)" class="space-y-4">
                 <div><label class="font-bold block mb-1">Title</label><input type="text" id="branding-title-input" class="w-full p-2 border rounded bg-gray-50"></div>
-                <button type="submit" class="w-full bg-i9blue text-white py-2 rounded font-bold">Save Theme</button>
+                <button type="submit" class="w-full bg-brandLight text-white py-2 rounded font-bold">Save Theme</button>
             </form>
         </div>
     </div>
@@ -1368,7 +1368,7 @@
     <div id="edit-group-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue"><i class="fa-solid fa-pen"></i> Edit Group Details</h3>
+                <h3 class="text-sm font-bold text-brandLight"><i class="fa-solid fa-pen"></i> Edit Group Details</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="saveGroupEdit(event)" class="space-y-4 text-xs">
@@ -1383,7 +1383,7 @@
                 </div>
                 <div class="flex justify-end pt-2 border-t gap-2">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Save Changes</button>
+                    <button type="submit" class="px-4 py-2 bg-brandLight text-white rounded font-bold shadow">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -1461,7 +1461,7 @@
     <div id="reroute-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-i9blue" id="reroute-modal-title">Update Group Request</h3>
+                <h3 class="text-sm font-bold text-brandLight" id="reroute-modal-title">Update Group Request</h3>
                 <button type="button" onclick="closeModals()" class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="submitReRoute(event)" class="space-y-4 text-xs">
@@ -1489,7 +1489,7 @@
 
                 <div class="flex justify-end gap-2 pt-2 border-t">
                     <button type="button" onclick="closeModals()" class="px-3 py-1.5 bg-gray-200 rounded font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-i9blue text-white rounded font-bold shadow">Submit Request</button>
+                    <button type="submit" class="px-4 py-2 bg-brandLight text-white rounded font-bold shadow">Submit Request</button>
                 </div>
             </form>
         </div>
@@ -1525,9 +1525,9 @@
 <!-- PROGRAM PRICING & TIERED DEADLINES SIDE PANEL -->
 <div id="pricing-pane-overlay" class="fixed inset-0 bg-black/50 hidden z-[60] transition-opacity duration-300" onclick="closePricingPane()"></div>
 <div id="pricing-pane" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col">
-    <div class="bg-i9blue text-white p-4 flex justify-between items-center">
+    <div class="bg-brandLight text-white p-4 flex justify-between items-center">
         <h3 class="font-bold text-sm flex items-center gap-2">
-            <i class="fa-solid fa-tags text-i9gold"></i> Manage Program Tiered Pricing
+            <i class="fa-solid fa-tags text-brandAccent"></i> Manage Program Tiered Pricing
         </h3>
         <button onclick="closePricingPane()" type="button" class="text-white hover:text-gray-200"><i class="fa-solid fa-xmark text-xl"></i></button>
     </div>
@@ -1536,7 +1536,7 @@
         <input type="hidden" id="price-prog-id">
 
         <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-            <p id="price-prog-title" class="font-bold text-i9blue text-sm">Program</p>
+            <p id="price-prog-title" class="font-bold text-brandLight text-sm">Program</p>
             <p id="price-prog-subtitle" class="text-[10px] text-gray-500">Adjust tier prices and deadline milestones below.</p>
         </div>
 
@@ -1567,8 +1567,8 @@
         <!-- TIER 3: FINAL DEADLINE / FULL FEE -->
         <div class="p-3 bg-blue-50/50 border border-blue-200 rounded-lg space-y-2">
             <div class="flex justify-between items-center">
-                <span class="font-bold text-i9blue"><i class="fa-solid fa-flag-checkered text-i9gold"></i> 3. Final Deadline (Full Fee)</span>
-                <span class="text-[10px] text-i9blue font-bold">Base Price</span>
+                <span class="font-bold text-brandLight"><i class="fa-solid fa-flag-checkered text-brandAccent"></i> 3. Final Deadline (Full Fee)</span>
+                <span class="text-[10px] text-brandLight font-bold">Base Price</span>
             </div>
             <div class="grid grid-cols-2 gap-2">
                 <div><label class="block text-[10px] font-bold">Deadline Date</label><input type="date" id="price-date-final" required class="w-full p-1.5 border rounded"></div>
@@ -1601,7 +1601,7 @@
 
     <div class="p-4 border-t bg-gray-50 flex justify-end gap-2">
         <button onclick="closePricingPane()" type="button" class="px-4 py-2 bg-gray-200 font-bold rounded text-xs text-gray-700">Cancel</button>
-        <button type="submit" form="pricing-tier-form" class="px-4 py-2 bg-i9blue font-bold rounded text-xs text-white shadow">Save & Sync Pricing</button>
+        <button type="submit" form="pricing-tier-form" class="px-4 py-2 bg-brandLight font-bold rounded text-xs text-white shadow">Save & Sync Pricing</button>
     </div>
 </div>
     
