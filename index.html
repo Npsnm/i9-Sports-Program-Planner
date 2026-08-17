@@ -34,17 +34,17 @@
     <aside id="sidebar" class="w-64 bg-slate-900 text-white flex flex-col justify-between flex-shrink-0 z-40 border-r border-slate-800 h-screen">
         <div>
             <!-- Branding Header -->
-            <div class="p-3.5 flex items-center justify-between border-b border-slate-800">
+            <div class="sidebar-header-container p-3.5 flex items-center justify-between border-b border-slate-800">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg flex items-center justify-center w-9 h-9 flex-shrink-0 shadow-sm">
-                        <img id="brand-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Logo" class="max-h-6 w-auto object-contain">
+                    <div id="brand-logo-container" class="bg-white p-1 rounded-lg flex items-center justify-center min-w-[36px] max-w-[110px] h-9 px-2 shadow-sm flex-shrink-0">
+                        <img id="brand-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Logo" class="max-h-7 w-auto object-contain">
                     </div>
                     <div class="overflow-hidden sidebar-label">
                         <h1 id="brand-title-display" class="font-bold text-sm leading-tight text-white truncate">TerritoryHub</h1>
                         <p class="text-[10px] text-slate-400 truncate sidebar-subtext">by NP Solutions LLC</p>
                     </div>
                 </div>
-                <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white p-1 rounded transition flex-shrink-0" title="Toggle Sidebar">
+                <button onclick="toggleSidebar()" class="sidebar-toggle-btn text-slate-400 hover:text-white p-1 rounded transition flex-shrink-0" title="Toggle Sidebar">
                     <i class="fa-solid fa-bars-staggered text-xs"></i>
                 </button>
             </div>
