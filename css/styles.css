@@ -1,7 +1,15 @@
+/* Scheme 2: Slate & Electric Indigo (5-Color Palette) */
 :root { 
-    --i9blue: #002855; 
-    --i9red: #E31837; 
-    --i9gold: #FDB827; 
+    --brand-primary: #0F172A;       /* Dark Slate */
+    --brand-primary-light: #6366F1; /* Electric Indigo */
+    --brand-accent: #06B6D4;        /* Bright Cyan */
+    --brand-success: #059669;       /* Forest Emerald */
+    --brand-danger: #E11D48;        /* Rose Red */
+
+    /* Legacy Mappings for Backwards Compatibility */
+    --i9blue: var(--brand-primary);
+    --i9red: var(--brand-danger);
+    --i9gold: var(--brand-accent);
 }
 
 ::-webkit-scrollbar { 
@@ -59,3 +67,23 @@
         margin-right: 0.5rem;
     }
 }
+
+/* Neutral Brand Utility Classes */
+.bg-brandPrimary, .bg-i9blue { background-color: var(--brand-primary) !important; }
+.text-brandPrimary, .text-i9blue { color: var(--brand-primary) !important; }
+.border-brandPrimary, .border-i9blue { border-color: var(--brand-primary) !important; }
+
+.bg-brandLight { background-color: var(--brand-primary-light) !important; }
+.text-brandLight { color: var(--brand-primary-light) !important; }
+.border-brandLight { border-color: var(--brand-primary-light) !important; }
+
+.bg-brandAccent, .bg-i9gold { background-color: var(--brand-accent) !important; }
+.text-brandAccent, .text-i9gold { color: var(--brand-accent) !important; }
+.border-brandAccent, .border-i9gold { border-color: var(--brand-accent) !important; }
+
+.bg-brandSuccess { background-color: var(--brand-success) !important; }
+.text-brandSuccess { color: var(--brand-success) !important; }
+
+.bg-brandDanger, .bg-i9red { background-color: var(--brand-danger) !important; }
+.text-brandDanger, .text-i9red { color: var(--brand-danger) !important; }
+.border-brandDanger, .border-i9red { border-color: var(--brand-danger) !important; }
