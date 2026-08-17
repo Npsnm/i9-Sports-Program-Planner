@@ -38,10 +38,15 @@
 }
 #sidebar.collapsed .sidebar-label,
 #sidebar.collapsed .sidebar-subtext {
-    display: none;
+    display: none !important;
 }
 #sidebar.collapsed .sidebar-icon {
     margin-right: 0;
+}
+#sidebar.collapsed #brand-logo-container {
+    min-width: 2.25rem !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
 }
 
 /* Drawer / Slide-Over Pane */
