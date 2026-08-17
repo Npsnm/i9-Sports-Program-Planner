@@ -883,7 +883,21 @@ async function linkGoogleAccount() { try { await window.linkGoogle(); showToast(
 /* --- NAVIGATION & SIDEBAR MANAGEMENT --- */
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.toggle('collapsed');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    
+    if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+        
+        if (toggleIcon) {
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        }
+    }
 }
 
 function switchTab(tab) {
