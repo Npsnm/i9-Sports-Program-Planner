@@ -825,7 +825,9 @@ function hasPermission(permKey) {
     
     if (!currentUser.territories) currentUser.territories = ['ALL'];
 
-    document.getElementById('user-display-name').textContent = `${currentUser.name} (${currentUser.role})`;
+    const nameEl = document.getElementById('user-display-name');
+    if (nameEl) nameEl.textContent = `${currentUser.name} (${currentUser.role})`;
+
     const scopeEl = document.getElementById('user-display-scope');
     if (scopeEl) scopeEl.textContent = `Groups: ${currentUser.territories.includes('ALL') ? 'All Groups' : currentUser.territories.join(', ') || 'None'}`;
     
@@ -841,7 +843,11 @@ function hasPermission(permKey) {
     document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.add('hidden'));
 
     if (currentUser.role === 'System Admin') document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-    if (canManageGroups) { document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); document.getElementById('tab-admin').classList.remove('hidden'); }
+    if (canManageGroups) { 
+        document.querySelectorAll('.permission-manage-groups').forEach(el => el.classList.remove('hidden')); 
+        const adminBtn = document.getElementById('nav-admin') || document.getElementById('tab-admin');
+        if (adminBtn) adminBtn.classList.remove('hidden'); 
+    }
     if (canCreatePrograms) document.querySelectorAll('.permission-create-program').forEach(el => el.classList.remove('hidden'));
     if (canEditTemplates) document.querySelectorAll('.permission-edit-template').forEach(el => el.classList.remove('hidden'));
     if (canEditTasks) document.querySelectorAll('.permission-edit-tasks').forEach(el => el.classList.remove('hidden'));
