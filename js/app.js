@@ -2988,23 +2988,23 @@ function executeBulkEdit(e) {
 function applyBrandingUI() {
     if(!currentBranding) return;
 
-    // Enforce Scheme 2 Palette Defaults if cloud values are missing or old
-    const primary = currentBranding.primaryColor || '#0F172A';
-    const primaryLight = currentBranding.primaryLightColor || '#6366F1';
-    const accent = currentBranding.accentColor || '#06B6D4';
-    const success = currentBranding.successColor || '#059669';
-    const danger = currentBranding.dangerColor || currentBranding.secondaryColor || '#E11D48';
+    // Force Scheme 2 Colors (Overriding stale database records)
+    currentBranding.primaryColor = '#0F172A';       // Dark Slate Header
+    currentBranding.primaryLightColor = '#6366F1';  // Electric Indigo Tabs & Buttons
+    currentBranding.accentColor = '#06B6D4';        // Bright Cyan
+    currentBranding.successColor = '#059669';       // Forest Emerald
+    currentBranding.dangerColor = '#E11D48';        // Rose Red
 
-    document.documentElement.style.setProperty('--brand-primary', primary);
-    document.documentElement.style.setProperty('--brand-primary-light', primaryLight);
-    document.documentElement.style.setProperty('--brand-accent', accent);
-    document.documentElement.style.setProperty('--brand-success', success);
-    document.documentElement.style.setProperty('--brand-danger', danger);
+    document.documentElement.style.setProperty('--brand-primary', currentBranding.primaryColor);
+    document.documentElement.style.setProperty('--brand-primary-light', currentBranding.primaryLightColor);
+    document.documentElement.style.setProperty('--brand-accent', currentBranding.accentColor);
+    document.documentElement.style.setProperty('--brand-success', currentBranding.successColor);
+    document.documentElement.style.setProperty('--brand-danger', currentBranding.dangerColor);
     
-    // Legacy support variable fallbacks
-    document.documentElement.style.setProperty('--i9blue', primary);
-    document.documentElement.style.setProperty('--i9gold', accent);
-    document.documentElement.style.setProperty('--i9red', danger);
+    // Legacy mapping support
+    document.documentElement.style.setProperty('--i9blue', currentBranding.primaryLightColor);
+    document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
+    document.documentElement.style.setProperty('--i9red', currentBranding.dangerColor);
     
     const titleEl = document.getElementById('brand-title-display'); 
     if(titleEl) titleEl.textContent = currentBranding.title || "TerritoryHub";
