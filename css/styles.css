@@ -67,9 +67,14 @@
 }
 
 /* Neutral Brand Utility Classes */
-.bg-brandPrimary, .bg-i9blue { background-color: var(--brand-primary) !important; }
-.text-brandPrimary, .text-i9blue { color: var(--brand-primary) !important; }
-.border-brandPrimary, .border-i9blue { border-color: var(--brand-primary) !important; }
+.bg-brandPrimary { background-color: var(--brand-primary) !important; }
+.bg-brandLight, .bg-i9blue { background-color: var(--brand-primary-light) !important; }
+
+.text-brandPrimary { color: var(--brand-primary) !important; }
+.text-brandLight, .text-i9blue { color: var(--brand-primary-light) !important; }
+
+.border-brandPrimary { border-color: var(--brand-primary) !important; }
+.border-brandLight, .border-i9blue { border-color: var(--brand-primary-light) !important; }
 
 .bg-brandLight { background-color: var(--brand-primary-light) !important; }
 .text-brandLight { color: var(--brand-primary-light) !important; }
