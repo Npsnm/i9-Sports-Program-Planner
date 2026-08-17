@@ -45,7 +45,15 @@ const MARKETING_CATEGORIES = {
 window.DEFAULT_PERMISSIONS = DEFAULT_PERMISSIONS;
 window.groupPermissions = {}; 
 
-var currentBranding = { title: "Program Director Planner", primaryColor: "#002855", accentColor: "#FDB827", secondaryColor: "#E31837", logoUrl: "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" };
+var currentBranding = { 
+  title: "TerritoryHub", 
+  primaryColor: "#0F172A", 
+  primaryLightColor: "#6366F1", 
+  accentColor: "#06B6D4", 
+  successColor: "#059669",
+  dangerColor: "#E11D48",
+  logoUrl: "" 
+};
 var users = [], currentUser = null, groups = [], programs = [], templates = [], activeTasks = [];
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -2978,18 +2986,25 @@ function executeBulkEdit(e) {
 /* --- BRANDING --- */
 function applyBrandingUI() {
     if(!currentBranding) return;
+    document.documentElement.style.setProperty('--brand-primary', currentBranding.primaryColor);
+    document.documentElement.style.setProperty('--brand-primary-light', currentBranding.primaryLightColor);
+    document.documentElement.style.setProperty('--brand-accent', currentBranding.accentColor);
+    document.documentElement.style.setProperty('--brand-success', currentBranding.successColor);
+    document.documentElement.style.setProperty('--brand-danger', currentBranding.dangerColor);
+    
+    // Legacy support variables
     document.documentElement.style.setProperty('--i9blue', currentBranding.primaryColor);
     document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
-    document.documentElement.style.setProperty('--i9red', currentBranding.secondaryColor);
+    document.documentElement.style.setProperty('--i9red', currentBranding.dangerColor);
     
     const titleEl = document.getElementById('brand-title-display'); 
     if(titleEl) titleEl.textContent = currentBranding.title;
     
     const logoImg = document.getElementById('brand-logo-img'); 
-    if(logoImg) logoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
+    if(logoImg && currentBranding.logoUrl) logoImg.src = currentBranding.logoUrl;
 
     const authLogoImg = document.getElementById('auth-logo-img');
-    if(authLogoImg) authLogoImg.src = currentBranding.logoUrl || "https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png";
+    if(authLogoImg && currentBranding.logoUrl) authLogoImg.src = currentBranding.logoUrl;
 }
 
 // --- CSV DOWNLOAD UTILITY ---
