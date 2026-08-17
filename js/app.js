@@ -880,12 +880,35 @@ async function handlePasswordUpdate(e) {
 
 async function linkGoogleAccount() { try { await window.linkGoogle(); showToast("Success", "Google account linked successfully!"); } catch (err) { alert(err.message); } }
 
-/* --- CORE APPLICATION LOGIC & UI --- */
+/* --- NAVIGATION & SIDEBAR MANAGEMENT --- */
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.toggle('collapsed');
+}
+
 function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap" + (btn.classList.contains('permission-manage-groups') ? ' hidden permission-manage-groups' : '') + (btn.classList.contains('admin-only') ? ' hidden admin-only' : ''));
+    // Reset all sidebar buttons
+    document.querySelectorAll('.sidebar-btn').forEach(btn => {
+        btn.className = "sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition" + 
+            (btn.classList.contains('permission-manage-groups') ? ' hidden permission-manage-groups' : '') + 
+            (btn.classList.contains('admin-only') ? ' hidden admin-only' : '');
+    });
+
+    // Hide all view sections
     document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-    document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-brandLight font-bold text-brandLight text-xs flex items-center gap-2 whitespace-nowrap";
-    document.getElementById(`view-${tab}`).classList.remove('hidden');
+
+    // Highlight active sidebar button
+    const activeNav = document.getElementById(`nav-${tab}`);
+    if (activeNav) {
+        activeNav.className = "sidebar-btn w-full px-3 py-2.5 rounded-lg font-bold flex items-center gap-3 text-white bg-indigo-600 transition shadow-sm" +
+            (activeNav.classList.contains('permission-manage-groups') ? ' permission-manage-groups' : '') + 
+            (activeNav.classList.contains('admin-only') ? ' admin-only' : '');
+    }
+
+    // Display active tab view
+    const targetView = document.getElementById(`view-${tab}`);
+    if (targetView) targetView.classList.remove('hidden');
+
     if (tab === 'dashboard') renderDashboard();
     if (tab === 'calendar') renderCalendar();
     if (tab === 'settings') populateProfileForm();
@@ -3277,6 +3300,7 @@ window.applyBrandingUI = applyBrandingUI;
 window.renderWorkloadSummary = renderWorkloadSummary;
 window.renderCalendar = renderCalendar;
 window.unlockPortal = unlockPortal;
+window.toggleSidebar = toggleSidebar;
 
 // Pricing Side Panel Assignments
 window.openPricingPane = openPricingPane;
