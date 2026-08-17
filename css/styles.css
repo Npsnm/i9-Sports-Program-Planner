@@ -1,14 +1,9 @@
 :root { 
-    --brand-primary: #0F172A;       /* Dark Slate (Header & Dark Cards) */
-    --brand-primary-light: #6366F1; /* Electric Indigo (Tabs, Active Highlights, Buttons) */
-    --brand-accent: #06B6D4;        /* Bright Cyan (Badges & Milestones) */
-    --brand-success: #059669;       /* Forest Emerald (Completion & Success) */
-    --brand-danger: #E11D48;        /* Rose Red (Overdue & Danger Actions) */
-
-    /* Legacy Mappings for Backwards Compatibility */
-    --i9blue: var(--brand-primary-light);
-    --i9red: var(--brand-danger);
-    --i9gold: var(--brand-accent);
+    --brand-primary: #0F172A;       /* Dark Slate */
+    --brand-primary-light: #6366F1; /* Electric Indigo */
+    --brand-accent: #06B6D4;        /* Bright Cyan */
+    --brand-success: #059669;       /* Forest Emerald */
+    --brand-danger: #E11D48;        /* Rose Red */
 }
 ::-webkit-scrollbar { 
     width: 6px; 
@@ -68,25 +63,20 @@
 
 /* Neutral Brand Utility Classes */
 .bg-brandPrimary { background-color: var(--brand-primary) !important; }
-.bg-brandLight, .bg-i9blue { background-color: var(--brand-primary-light) !important; }
-
 .text-brandPrimary { color: var(--brand-primary) !important; }
-.text-brandLight, .text-i9blue { color: var(--brand-primary-light) !important; }
-
 .border-brandPrimary { border-color: var(--brand-primary) !important; }
-.border-brandLight, .border-i9blue { border-color: var(--brand-primary-light) !important; }
 
 .bg-brandLight { background-color: var(--brand-primary-light) !important; }
 .text-brandLight { color: var(--brand-primary-light) !important; }
 .border-brandLight { border-color: var(--brand-primary-light) !important; }
 
-.bg-brandAccent, .bg-i9gold { background-color: var(--brand-accent) !important; }
-.text-brandAccent, .text-i9gold { color: var(--brand-accent) !important; }
-.border-brandAccent, .border-i9gold { border-color: var(--brand-accent) !important; }
+.bg-brandAccent { background-color: var(--brand-accent) !important; }
+.text-brandAccent { color: var(--brand-accent) !important; }
+.border-brandAccent { border-color: var(--brand-accent) !important; }
 
 .bg-brandSuccess { background-color: var(--brand-success) !important; }
 .text-brandSuccess { color: var(--brand-success) !important; }
 
-.bg-brandDanger, .bg-i9red { background-color: var(--brand-danger) !important; }
-.text-brandDanger, .text-i9red { color: var(--brand-danger) !important; }
-.border-brandDanger, .border-i9red { border-color: var(--brand-danger) !important; }
+.bg-brandDanger { background-color: var(--brand-danger) !important; }
+.text-brandDanger { color: var(--brand-danger) !important; }
+.border-brandDanger { border-color: var(--brand-danger) !important; }
