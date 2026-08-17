@@ -254,7 +254,7 @@ window.renderActivityLog = function() {
         tb.innerHTML += `<tr class="hover:bg-gray-50">
             <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
             <td class="p-3 font-bold text-gray-800">${l.userName}</td>
-            <td class="p-3 font-mono text-[10px] text-i9blue">${l.groupId}</td>
+            <td class="p-3 font-mono text-[10px] text-brandLight">${l.groupId}</td>
             <td class="p-3 font-bold text-gray-700">${l.action}</td>
             <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
         </tr>`;
@@ -288,7 +288,7 @@ function openHistoryModal(itemId, itemName) {
             tb.innerHTML += `<tr class="hover:bg-gray-50">
                 <td class="p-3 whitespace-nowrap text-[10px] text-gray-500">${new Date(l.timestamp).toLocaleString()}</td>
                 <td class="p-3 font-bold text-gray-800">${l.userName}</td>
-                <td class="p-3 font-bold text-i9blue text-[10px]">${l.action}</td>
+                <td class="p-3 font-bold text-brandLight text-[10px]">${l.action}</td>
                 <td class="p-3 text-[10px] text-gray-600">${l.details}</td>
             </tr>`;
         });
@@ -445,7 +445,7 @@ function showToast(title, message) {
     const toast = document.createElement('div');
     toast.className = "bg-gray-900 text-white p-3 rounded-lg shadow-xl text-xs flex items-center gap-3 border border-gray-700 transition-all duration-300 pointer-events-auto";
     toast.innerHTML = `
-        <div class="text-i9gold"><i class="fa-solid fa-circle-check text-base"></i></div>
+        <div class="text-brandAccent"><i class="fa-solid fa-circle-check text-base"></i></div>
         <div>
             <p class="font-bold">${title}</p>
             <p class="text-gray-300 text-[11px]">${message}</p>
@@ -533,13 +533,13 @@ function toggleAuthMode(mode) {
     if (mode === 'login') {
         document.getElementById('form-login').classList.remove('hidden');
         document.getElementById('form-signup').classList.add('hidden');
-        document.getElementById('tab-login').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
+        document.getElementById('tab-login').className = "flex-1 py-3 bg-white text-brandLight border-b-2 border-brandLight";
         document.getElementById('tab-signup').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
         document.getElementById('auth-title').textContent = "Sign In to PD Planner";
     } else {
         document.getElementById('form-login').classList.add('hidden');
         document.getElementById('form-signup').classList.remove('hidden');
-        document.getElementById('tab-signup').className = "flex-1 py-3 bg-white text-i9blue border-b-2 border-i9blue";
+        document.getElementById('tab-signup').className = "flex-1 py-3 bg-white text-brandLight border-b-2 border-brandLight";
         document.getElementById('tab-login').className = "flex-1 py-3 bg-gray-50 text-gray-500 hover:text-gray-700 border-b-2 border-transparent";
         document.getElementById('auth-title').textContent = "Request Access";
     }
@@ -882,9 +882,9 @@ async function linkGoogleAccount() { try { await window.linkGoogle(); showToast(
 
 /* --- CORE APPLICATION LOGIC & UI --- */
 function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-i9blue font-bold text-xs flex items-center gap-2 whitespace-nowrap" + (btn.classList.contains('permission-manage-groups') ? ' hidden permission-manage-groups' : '') + (btn.classList.contains('admin-only') ? ' hidden admin-only' : ''));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap" + (btn.classList.contains('permission-manage-groups') ? ' hidden permission-manage-groups' : '') + (btn.classList.contains('admin-only') ? ' hidden admin-only' : ''));
     document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-    document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-i9blue font-bold text-i9blue text-xs flex items-center gap-2 whitespace-nowrap";
+    document.getElementById(`tab-${tab}`).className = "tab-btn py-3 px-1 border-b-2 border-brandLight font-bold text-brandLight text-xs flex items-center gap-2 whitespace-nowrap";
     document.getElementById(`view-${tab}`).classList.remove('hidden');
     if (tab === 'dashboard') renderDashboard();
     if (tab === 'calendar') renderCalendar();
@@ -965,9 +965,9 @@ function populateFilterOptions() {
             }
         });
         
-        asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
-        if (bulkAsSel) bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>';
-        if (tplRoleSel) tplRoleSel.innerHTML += '<option value="CUSTOM" class="font-bold text-i9blue">+ Custom Role / Person...</option>';
+        asSel.innerHTML += '<option value="CUSTOM" class="font-bold text-brandLight">+ Custom / External...</option>';
+        if (bulkAsSel) bulkAsSel.innerHTML += '<option value="CUSTOM" class="font-bold text-brandLight">+ Custom / External...</option>';
+        if (tplRoleSel) tplRoleSel.innerHTML += '<option value="CUSTOM" class="font-bold text-brandLight">+ Custom Role / Person...</option>';
     }
     
     const auditFilter = document.getElementById('audit-log-group-filter');
@@ -1104,7 +1104,7 @@ function renderCalendar() {
         grid.className = "grid grid-cols-1 gap-2";
 
         const daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        headerGrid.innerHTML = `<div class="font-bold text-left text-sm text-i9blue uppercase tracking-wider">${daysFull[calendarDate.getDay()]} Schedule</div>`;
+        headerGrid.innerHTML = `<div class="font-bold text-left text-sm text-brandLight uppercase tracking-wider">${daysFull[calendarDate.getDay()]} Schedule</div>`;
 
         const displayEl = document.getElementById('calendar-date-display');
         if(displayEl) displayEl.textContent = calendarDate.toLocaleDateString('en-US', {month: 'long', day:'numeric', year: 'numeric'});
@@ -1182,13 +1182,13 @@ function generateCalendarDayCell(dayStr, displayDay, renderDate, todayDate, agId
 
     let dateStyle = '';
     if(isToday) {
-        dateStyle = 'bg-i9blue text-white w-6 h-6 flex items-center justify-center rounded-full text-xs shadow-md';
+        dateStyle = 'bg-brandLight text-white w-6 h-6 flex items-center justify-center rounded-full text-xs shadow-md';
     } else {
-        dateStyle = 'text-gray-400 group-hover:text-i9blue ' + (view === 'day' ? 'text-4xl opacity-40 mb-2' : 'text-[10px]');
+        dateStyle = 'text-gray-400 group-hover:text-brandLight ' + (view === 'day' ? 'text-4xl opacity-40 mb-2' : 'text-[10px]');
     }
 
-    const cellHighlight = isToday ? 'ring-2 ring-i9blue border-transparent shadow-sm' : 'border-gray-200 hover:border-blue-300';
-    const todayText = isToday ? `<span class="text-[9px] uppercase tracking-wider font-black text-i9blue mr-2">TODAY</span>` : '';
+    const cellHighlight = isToday ? 'ring-2 ring-brandLight border-transparent shadow-sm' : 'border-gray-200 hover:border-blue-300';
+    const todayText = isToday ? `<span class="text-[9px] uppercase tracking-wider font-black text-brandLight mr-2">TODAY</span>` : '';
 
     let tasksHTML = dayTasks.map(t => {
         const isComplete = t.status === 'Complete';
@@ -1241,10 +1241,10 @@ function renderDashList(containerId, tasks, emptyMsg) {
     
     tasks.forEach(t => {
         const isOverdue = !t.isNote && t.status !== 'Complete' && t.status !== 'Archived' && (new Date(t.targetDate + "T00:00:00") < new Date().setHours(0,0,0,0));
-        let borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-i9blue';
+        let borderLeft = isOverdue ? 'border-l-4 border-l-rose-500' : 'border-l-4 border-l-brandLight';
         if(t.isNote) borderLeft = 'border-l-4 border-l-gray-800';
 
-        let levelIcon = '<i class="fa-solid fa-gears text-i9blue"></i>';
+        let levelIcon = '<i class="fa-solid fa-gears text-brandLight"></i>';
         if(t.isNote) levelIcon = '<i class="fa-solid fa-circle-info text-gray-800"></i>';
         else if(t.level === 'Marketing') levelIcon = '<i class="fa-solid fa-bullhorn text-emerald-600"></i>';
 
@@ -1254,7 +1254,7 @@ function renderDashList(containerId, tasks, emptyMsg) {
                 <div class="font-bold text-gray-800 text-xs flex items-center gap-1.5 truncate">${levelIcon} <span class="text-gray-400 font-normal text-[10px]">[${t.groupId}]</span> ${t.name}</div>
                 <div class="text-[10px] text-gray-600 mt-0.5 truncate">Due: ${formatTargetDate(t.targetDate)} | Assigned: ${t.isNote ? 'N/A' : (t.assignee || '<span class="text-rose-500 font-bold">Unassigned</span>')}</div>
             </div>
-            <button class="text-gray-400 hover:text-i9blue flex-shrink-0"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+            <button class="text-gray-400 hover:text-brandLight flex-shrink-0"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
         </div>`;
     });
 }
@@ -1275,7 +1275,7 @@ function renderDashboard() {
     document.getElementById('dashboard-season-progress').innerHTML = '';
 
     const focusTitle = {
-        'active': '<i class="fa-solid fa-list-ul text-i9blue"></i> Focused Viewer: Active Tasks',
+        'active': '<i class="fa-solid fa-list-ul text-brandLight"></i> Focused Viewer: Active Tasks',
         'completed': '<i class="fa-solid fa-circle-check text-emerald-600"></i> Focused Viewer: Completed',
         'unassigned': '<i class="fa-solid fa-user-minus text-amber-600"></i> Focused Viewer: Unassigned',
         'overdue': '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Focused Viewer: Overdue'
@@ -1299,10 +1299,10 @@ function renderDashboard() {
                 <h4 class="text-[11px] font-bold text-gray-800 mb-2 border-b pb-1">[${p.groupId}] ${p.preHeader} ${p.season} ${p.type}</h4>
                 <div class="mb-2">
                     <div class="flex justify-between text-[10px] font-bold mb-1 text-gray-600">
-                        <span><i class="fa-solid fa-gears text-i9blue mr-1"></i> Operational Execution</span>
-                        <span class="text-i9blue">${pCompOp}/${pTotOp} (${pctOp}%)</span>
+                        <span><i class="fa-solid fa-gears text-brandLight mr-1"></i> Operational Execution</span>
+                        <span class="text-brandLight">${pCompOp}/${pTotOp} (${pctOp}%)</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-i9blue h-1.5 rounded-full" style="width: ${pctOp}%"></div></div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-brandLight h-1.5 rounded-full" style="width: ${pctOp}%"></div></div>
                 </div>
                 <div>
                     <div class="flex justify-between text-[10px] font-bold mb-1 text-gray-600">
@@ -1418,7 +1418,7 @@ function renderControlCenter() {
         <tr class="hover:bg-gray-50">
             <td class="px-4 py-2 text-center"><input type="checkbox" class="prog-cb" value="${p.id}"></td>
             <td class="px-4 py-2">
-                <span class="font-bold text-i9blue">${p.groupId}</span><br>
+                <span class="font-bold text-brandLight">${p.groupId}</span><br>
                 <span class="font-bold text-gray-800">${p.preHeader} ${p.season} ${p.year}</span>
                 ${getRecentLogHTML(p.id)}
             </td>
@@ -1757,7 +1757,7 @@ function renderTemplates() {
         if (f !== 'ALL' && t.type !== f) return false;
         return true;
     }).forEach(t => {
-        const grpDisplay = t.groupId === 'ALL' ? '<span class="text-i9blue font-bold">All Groups</span>' : `<span class="text-gray-800 font-bold">${t.groupId}</span>`;
+        const grpDisplay = t.groupId === 'ALL' ? '<span class="text-brandLight font-bold">All Groups</span>' : `<span class="text-gray-800 font-bold">${t.groupId}</span>`;
         
         let levelDisplay = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px]">Operational</span>`;
         if(t.level === 'Marketing') {
@@ -1774,7 +1774,7 @@ function renderTemplates() {
                 <td class="px-4 py-2 text-[11px]">${grpDisplay}</td>
                 <td class="px-4 py-2 font-bold text-gray-800">${levelDisplay}</td>
                 <td class="px-4 py-2 font-bold text-gray-800">${t.type}${t.preHeader ? `<br><span class="text-gray-500 font-normal">${t.preHeader}</span>` : ''}</td>
-                <td class="px-4 py-2 text-i9blue font-medium">${t.name} ${getRecentLogHTML(t.id)}</td>
+                <td class="px-4 py-2 text-brandLight font-medium">${t.name} ${getRecentLogHTML(t.id)}</td>
                 <td class="px-4 py-2 text-[10px] text-gray-500">${t.seasons.join(', ')}</td>
                 <td class="px-4 py-2 text-gray-700 font-mono text-[10px]">${t.offsetNum} Days ${t.offsetDir} ${t.anchor.replace('date','')}</td>
                 <td class="px-4 py-2 text-gray-500 text-[10px]">${t.role}</td>
@@ -1915,13 +1915,13 @@ function setTaskView(view) {
     const bulkDelBtn = document.getElementById('btn-task-bulk-delete');
 
     if (view === 'active') {
-        btnAct.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
+        btnAct.className = "px-4 py-1.5 rounded-full bg-brandLight text-white shadow transition";
         btnArch.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
         bulkEditBtn.style.display = 'block'; bulkArchBtn.style.display = 'block';
         if(bulkDelBtn) bulkDelBtn.style.display = 'none';
     } else {
         btnAct.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 border border-gray-200 transition";
-        btnArch.className = "px-4 py-1.5 rounded-full bg-i9blue text-white shadow transition";
+        btnArch.className = "px-4 py-1.5 rounded-full bg-brandLight text-white shadow transition";
         bulkEditBtn.style.display = 'none'; bulkArchBtn.style.display = 'none';
         if(bulkDelBtn && hasPermission('manageGroups')) bulkDelBtn.style.display = 'block';
     }
@@ -2027,7 +2027,7 @@ function renderActiveTasks() {
 
             const notesText = `History: ${t.notes || 'None'}\nCompletion: ${t.completionNotes || 'None'}`;
             const hasAnyNotes = (t.notes && t.notes.trim() !== '') || (t.completionNotes && t.completionNotes.trim() !== '');
-            const notesDisplay = hasAnyNotes ? `<div class="text-[10px] text-gray-500 italic max-w-[150px] truncate cursor-help" title="${notesText.replace(/"/g, '&quot;')}"><i class="fa-regular fa-comment-dots text-i9blue"></i> ${t.notes || t.completionNotes}</div>` : `<span class="text-gray-300 text-[10px]">-</span>`;
+            const notesDisplay = hasAnyNotes ? `<div class="text-[10px] text-gray-500 italic max-w-[150px] truncate cursor-help" title="${notesText.replace(/"/g, '&quot;')}"><i class="fa-regular fa-comment-dots text-brandLight"></i> ${t.notes || t.completionNotes}</div>` : `<span class="text-gray-300 text-[10px]">-</span>`;
             
             const descDisplay = t.desc && t.desc.trim() !== '' ? `<div class="text-[9px] text-gray-500 font-normal mt-0.5 max-w-[200px] truncate" title="${t.desc.replace(/"/g, '&quot;')}">${t.desc}</div>` : '';
 
@@ -2036,7 +2036,7 @@ function renderActiveTasks() {
                 <option value="" class="text-gray-500">-- Unassigned --</option>
                 ${users.map(u => `<option value="${u.name}" ${t.assignee === u.name ? 'selected' : ''}>${u.name}</option>`).join('')}
                 ${isCustomExt ? `<option value="${t.assignee}" selected>${t.assignee} (External)</option>` : ''}
-                <option value="CUSTOM" class="font-bold text-i9blue">+ Custom / External...</option>
+                <option value="CUSTOM" class="font-bold text-brandLight">+ Custom / External...</option>
             </select>`;
 
             let statusSelect = `<select onchange="updateActiveTaskStatus('${t.id}', this.value)" class="ml-1 bg-white border border-gray-300 rounded px-1 text-[10px] outline-none" ${canEdit ? '' : 'disabled'}>
@@ -2048,7 +2048,7 @@ function renderActiveTasks() {
             tb.innerHTML += `
                 <tr class="hover:bg-gray-50">
                     <td class="px-3 py-2 text-center" data-label="Select"><input type="checkbox" class="task-cb" value="${t.id}"></td>
-                    <td class="px-3 py-2 font-bold text-i9blue text-[11px]" data-label="Program / Group">${pName}</td>
+                    <td class="px-3 py-2 font-bold text-brandLight text-[11px]" data-label="Program / Group">${pName}</td>
                     <td class="px-3 py-2" data-label="Level">${levelBadge}</td>
                     <td class="px-3 py-2 font-medium text-gray-900 text-xs" data-label="Task">${t.name} ${descDisplay} ${getRecentLogHTML(t.id)}</td>
                     <td class="px-3 py-2 font-mono font-bold text-gray-700 text-[11px] whitespace-nowrap" data-label="Target Date">${formatTargetDate(t.targetDate)}</td>
@@ -2355,8 +2355,8 @@ function openUserManagementModal() { switchTab('admin'); }
 let currentGroupView = 'active';
 function setGroupView(view) {
     currentGroupView = view;
-    document.getElementById('btn-view-active-groups').className = view === 'active' ? "px-2 py-1 text-[9px] font-bold rounded bg-i9blue text-white transition" : "px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition";
-    document.getElementById('btn-view-archived-groups').className = view === 'archived' ? "px-2 py-1 text-[9px] font-bold rounded bg-i9blue text-white transition" : "px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition";
+    document.getElementById('btn-view-active-groups').className = view === 'active' ? "px-2 py-1 text-[9px] font-bold rounded bg-brandLight text-white transition" : "px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition";
+    document.getElementById('btn-view-archived-groups').className = view === 'archived' ? "px-2 py-1 text-[9px] font-bold rounded bg-brandLight text-white transition" : "px-2 py-1 text-[9px] font-bold rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition";
     renderGroupPills();
 }
 
@@ -2376,7 +2376,7 @@ window.renderGroupPills = function() {
     }).forEach(g => { 
         const isArchived = g.status === 'Archived';
         ct.innerHTML += `<div class="flex justify-between items-center bg-white p-2 rounded border border-blue-100 shadow-sm ${isArchived ? 'opacity-60' : ''}">
-            <span class="font-bold text-i9blue">${g.fullName}</span> 
+            <span class="font-bold text-brandLight">${g.fullName}</span> 
             <div>
                 ${isArchived ? 
                     `<button onclick="unarchiveGroup('${g.id}')" class="text-emerald-500 hover:text-emerald-700 mr-2 text-[10px]" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>` : 
@@ -2418,7 +2418,7 @@ function renderTerritoryCheckboxes() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return;
     const ct = document.getElementById('admin-u-terr'); if(!ct) return;
-    ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-i9blue"><input type="checkbox" value="ALL" class="admin-cb"> All Groups</label>` : '';
+    ct.innerHTML = currentUser.territories.includes('ALL') ? `<label class="flex items-center gap-1 font-bold text-brandLight"><input type="checkbox" value="ALL" class="admin-cb"> All Groups</label>` : '';
     getAuthorizedGroups().forEach(g => ct.innerHTML += `<label class="flex items-center gap-1"><input type="checkbox" value="${g.id}" class="admin-cb"> ${g.fullName}</label>`);
 }
 function addGroup(e) { 
@@ -2436,8 +2436,8 @@ function archiveGroup(id) { const g = groups.find(x=>x.id===id); if(g && confirm
 let currentUserView = 'active';
 function setUserView(view) {
     currentUserView = view;
-    document.getElementById('btn-view-active-users').className = view === 'active' ? "px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
-    document.getElementById('btn-view-inactive-users').className = view === 'inactive' ? "px-3 py-1 text-[10px] font-bold rounded bg-i9blue text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
+    document.getElementById('btn-view-active-users').className = view === 'active' ? "px-3 py-1 text-[10px] font-bold rounded bg-brandLight text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
+    document.getElementById('btn-view-inactive-users').className = view === 'inactive' ? "px-3 py-1 text-[10px] font-bold rounded bg-brandLight text-white shadow-sm transition" : "px-3 py-1 text-[10px] font-bold rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition";
     
     renderUsersTable();
 }
@@ -2511,7 +2511,7 @@ window.renderUsersTable = function() {
             activeTb.innerHTML += `<tr class="hover:bg-gray-50 transition-colors">
                 ${checkboxHtml}
                 <td class="p-2"><div class="font-bold text-gray-900">${u.name} ${archiveBadge}</div><div class="text-[9px] text-gray-500">${u.username} • ${phoneDisplay}</div></td>
-                <td class="p-2"><span class="font-bold text-i9blue">${u.role}</span><div class="text-[9px] text-gray-500">${userTerrs.includes('ALL')?'All Groups':userTerrs.join(', ')}</div></td>
+                <td class="p-2"><span class="font-bold text-brandLight">${u.role}</span><div class="text-[9px] text-gray-500">${userTerrs.includes('ALL')?'All Groups':userTerrs.join(', ')}</div></td>
                 <td class="p-2 text-center space-x-1 whitespace-nowrap">
                     ${quickArchiveBtn}
                     <button onclick="openAdminEdit('${u.username}')" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded shadow-sm" title="Manage Options"><i class="fa-solid fa-gear"></i></button>
@@ -2626,7 +2626,7 @@ window.renderWorkloadSummary = function() {
                     ${user} 
                     <i class="fa-solid fa-arrow-up-right-from-square text-indigo-300 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"></i>
                 </td>
-                <td class="p-3 text-center font-bold text-i9blue">${data.total}</td>
+                <td class="p-3 text-center font-bold text-brandLight">${data.total}</td>
                 <td class="p-3 text-center rounded ${overdueClass}">${data.overdue}</td>
             </tr>`;
     });
@@ -2672,7 +2672,7 @@ window.openAssigneeTaskModal = function(assignee, selectedGroup) {
         tb.innerHTML += `
             <tr class="hover:bg-indigo-50 cursor-pointer" onclick="openEditActiveTask('${t.id}')">
                 <td class="p-3 font-bold text-gray-500 text-[10px] leading-tight">${pName}</td>
-                <td class="p-3 font-bold text-i9blue">${t.name}</td>
+                <td class="p-3 font-bold text-brandLight">${t.name}</td>
                 <td class="p-3 whitespace-nowrap">${dateDisplay}</td>
                 <td class="p-3 text-center">${statusBadge}</td>
             </tr>
@@ -2988,7 +2988,7 @@ function executeBulkEdit(e) {
 function applyBrandingUI() {
     if(!currentBranding) return;
 
-    // Force Scheme 2 Colors (Overriding stale database records)
+    // Force Scheme 2 Colors
     currentBranding.primaryColor = '#0F172A';       // Dark Slate Header
     currentBranding.primaryLightColor = '#6366F1';  // Electric Indigo Tabs & Buttons
     currentBranding.accentColor = '#06B6D4';        // Bright Cyan
@@ -3000,11 +3000,6 @@ function applyBrandingUI() {
     document.documentElement.style.setProperty('--brand-accent', currentBranding.accentColor);
     document.documentElement.style.setProperty('--brand-success', currentBranding.successColor);
     document.documentElement.style.setProperty('--brand-danger', currentBranding.dangerColor);
-    
-    // Legacy mapping support
-    document.documentElement.style.setProperty('--i9blue', currentBranding.primaryLightColor);
-    document.documentElement.style.setProperty('--i9gold', currentBranding.accentColor);
-    document.documentElement.style.setProperty('--i9red', currentBranding.dangerColor);
     
     const titleEl = document.getElementById('brand-title-display'); 
     if(titleEl) titleEl.textContent = currentBranding.title || "TerritoryHub";
