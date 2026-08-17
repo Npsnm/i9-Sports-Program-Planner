@@ -1,17 +1,15 @@
-/* Scheme 2: Slate & Electric Indigo (5-Color Palette) */
 :root { 
-    --brand-primary: #0F172A;       /* Dark Slate */
-    --brand-primary-light: #6366F1; /* Electric Indigo */
-    --brand-accent: #06B6D4;        /* Bright Cyan */
-    --brand-success: #059669;       /* Forest Emerald */
-    --brand-danger: #E11D48;        /* Rose Red */
+    --brand-primary: #0F172A;       /* Dark Slate (Header & Dark Cards) */
+    --brand-primary-light: #6366F1; /* Electric Indigo (Tabs, Active Highlights, Buttons) */
+    --brand-accent: #06B6D4;        /* Bright Cyan (Badges & Milestones) */
+    --brand-success: #059669;       /* Forest Emerald (Completion & Success) */
+    --brand-danger: #E11D48;        /* Rose Red (Overdue & Danger Actions) */
 
     /* Legacy Mappings for Backwards Compatibility */
-    --i9blue: var(--brand-primary);
+    --i9blue: var(--brand-primary-light);
     --i9red: var(--brand-danger);
     --i9gold: var(--brand-accent);
 }
-
 ::-webkit-scrollbar { 
     width: 6px; 
     height: 6px; 
