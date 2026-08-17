@@ -28,106 +28,121 @@
         }
     </script>
 </head>
-<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex overflow-hidden">
 
-    <!-- APP HEADER -->
-    <header class="bg-brandPrimary text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-3">
-            <div class="flex items-center gap-3">
-                <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg shadow-sm border border-slate-700 flex items-center justify-center min-w-[38px] h-10">
-                    <img id="brand-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Logo" class="max-h-8 object-contain">
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 id="brand-title-display" class="font-bold text-lg leading-tight tracking-tight text-white">TerritoryHub</h1>
-                        <span id="cloud-sync-badge" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="fa-solid fa-cloud"></i> <span id="sync-status-text">Connecting...</span>
-                        </span>
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <aside id="sidebar" class="w-64 bg-slate-900 text-white flex flex-col justify-between flex-shrink-0 z-40 border-r border-slate-800 h-screen">
+        <div>
+            <!-- Branding Header -->
+            <div class="p-4 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div id="brand-logo-container" class="bg-white p-1.5 rounded-lg flex items-center justify-center min-w-[36px] h-9">
+                        <img id="brand-logo-img" src="https://246939605.fs1.hubspotusercontent-na2.net/hubfs/246939605/NP%20Solutions%20Logo%20-%20White%20Background-1.png" alt="Logo" class="max-h-7 object-contain">
                     </div>
-                    <p class="text-[11px] text-slate-300">by NP Solutions LLC • Multi-Territory Operations Portal</p>
+                    <div class="overflow-hidden">
+                        <h1 id="brand-title-display" class="font-bold text-sm leading-tight text-white truncate">TerritoryHub</h1>
+                        <p class="text-[10px] text-slate-400 truncate sidebar-subtext">by NP Solutions LLC</p>
+                    </div>
                 </div>
+                <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white p-1 rounded transition" title="Toggle Sidebar">
+                    <i class="fa-solid fa-bars-staggered text-xs"></i>
+                </button>
             </div>
 
-            <div class="flex items-center flex-wrap gap-2 text-xs">
-                <div id="user-badge" class="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                    <i class="fa-solid fa-user-gear text-brandAccent"></i>
-                    <div>
-                        <p id="user-display-name" class="font-bold text-white leading-none">Not Logged In</p>
-                        <p id="user-display-scope" class="text-[10px] text-slate-300 leading-tight">Tier: Loading...</p>
-                    </div>
-                </div>
+            <!-- Sidebar Navigation Links -->
+            <nav class="p-3 space-y-1 text-xs">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-bold flex items-center gap-3 text-white bg-indigo-600 transition">
+                    <i class="fa-solid fa-chart-pie sidebar-icon text-indigo-200"></i> <span class="sidebar-label">Dashboard</span>
+                </button>
+                <button onclick="switchTab('calendar')" id="nav-calendar" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-regular fa-calendar sidebar-icon"></i> <span class="sidebar-label">Calendar</span>
+                </button>
+                <button onclick="switchTab('tasks')" id="nav-tasks" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-list-check sidebar-icon"></i> <span class="sidebar-label">Task List</span>
+                </button>
+                <button onclick="switchTab('control')" id="nav-control" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-calendar-days sidebar-icon"></i> <span class="sidebar-label">Programs</span>
+                </button>
+                <button onclick="switchTab('templates')" id="nav-templates" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-layer-group sidebar-icon"></i> <span class="sidebar-label">Task Profiles</span>
+                </button>
+                <button onclick="switchTab('admin')" id="nav-admin" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition relative hidden permission-manage-groups">
+                    <i class="fa-solid fa-users-gear sidebar-icon"></i> <span class="sidebar-label">Admin Dashboard</span>
+                    <span id="admin-alert-badge" class="ml-auto bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full hidden">!</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-gear sidebar-icon"></i> <span class="sidebar-label">Settings</span>
+                </button>
+            </nav>
+        </div>
 
-                <button onclick="openReportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+        <!-- User Profile Footer -->
+        <div class="p-3 border-t border-slate-800">
+            <div id="user-badge" class="bg-slate-800/80 p-2.5 rounded-lg flex items-center gap-2.5">
+                <i class="fa-solid fa-user-gear text-cyan-400 text-sm"></i>
+                <div class="overflow-hidden sidebar-label">
+                    <p id="user-display-name" class="font-bold text-white text-xs truncate">Not Logged In</p>
+                    <p id="user-display-scope" class="text-[10px] text-slate-400 truncate">Tier: Loading...</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN RIGHT CONTENT WRAPPER -->
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+        <!-- TOP ACTION BAR -->
+        <header class="bg-white border-b border-slate-200 px-6 py-3 sticky top-0 z-30 flex justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span id="cloud-sync-badge" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <i class="fa-solid fa-cloud"></i> <span id="sync-status-text">Connecting...</span>
+                </span>
+            </div>
+
+            <div class="flex items-center gap-2 text-xs">
+                <button onclick="openReportModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition shadow-sm">
                     <i class="fa-solid fa-chart-line"></i> Custom Report
                 </button>
-                <button onclick="exportCurrentViewToCSV()" class="bg-brandDanger hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition">
+                <button onclick="exportCurrentViewToCSV()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition shadow-sm">
                     <i class="fa-solid fa-file-excel"></i> Export View
                 </button>
-                <button onclick="logout()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 border border-slate-700">
+                <button onclick="logout()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 border border-slate-300">
                     <i class="fa-solid fa-right-from-bracket"></i> Sign Out
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- NAVIGATION TABS -->
-    <div class="bg-white border-b border-gray-200 shadow-sm sticky top-[60px] z-30">
-        <div class="max-w-7xl mx-auto px-4 flex space-x-6 overflow-x-auto">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 px-1 border-b-2 border-brandLight font-bold text-brandLight text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-chart-pie"></i> Dashboard
-            </button>
-            <button onclick="switchTab('calendar')" id="tab-calendar" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-regular fa-calendar"></i> Calendar
-            </button>
-            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-list-check"></i> Task List
-            </button>
-            <button onclick="switchTab('control')" id="tab-control" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-calendar-days"></i> Programs
-            </button>
-            <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-layer-group"></i> Task Profiles
-            </button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap relative hidden permission-manage-groups">
-                <i class="fa-solid fa-users-gear"></i> Admin Dashboard
-                <span id="admin-alert-badge" class="absolute -top-1 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow border border-white hidden">!</span>
-            </button>
-            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-brandLight font-bold text-xs flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-gear"></i> Settings
-            </button>
-        </div>
-    </div>
-
-    <!-- MAIN APP CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
+        <!-- MAIN APP CONTENT -->
+        <main class="px-6 py-6 flex-grow space-y-6">
 
         <!-- TAB 1: HOME DASHBOARD -->
         <section id="view-dashboard" class="tab-view space-y-6">
+            <!-- UNIFIED KPI BAR -->
             <div id="kpi-bar" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button onclick="setDashboardFilter('active')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-brandLight border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
+                <button onclick="setDashboardFilter('active')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-indigo-600 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-brandLight transition">Active Tasks</p>
-                        <p id="kpi-total" class="text-2xl font-black text-gray-800">0</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-indigo-600 transition">Active Tasks</p>
+                        <p id="kpi-total" class="text-2xl font-black text-slate-900">0</p>
                     </div>
-                    <div class="p-3 bg-blue-50 text-brandLight rounded-lg"><i class="fa-solid fa-list-ul text-lg"></i></div>
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-list-ul text-lg"></i></div>
                 </button>
-                <button onclick="setDashboardFilter('completed')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
+                <button onclick="setDashboardFilter('completed')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-emerald-600 transition">Completed</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-emerald-600 transition">Completed</p>
                         <p id="kpi-completed" class="text-2xl font-black text-emerald-600">0</p>
                     </div>
                     <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-circle-check text-lg"></i></div>
                 </button>
-                <button onclick="setDashboardFilter('unassigned')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
+                <button onclick="setDashboardFilter('unassigned')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-amber-600 transition">Unassigned</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-amber-600 transition">Unassigned</p>
                         <p id="kpi-unassigned" class="text-2xl font-black text-amber-600">0</p>
                     </div>
                     <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-user-minus text-lg"></i></div>
                 </button>
-                <button onclick="setDashboardFilter('overdue')" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-rose-500 border-t border-b border-r border-gray-100 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
+                <button onclick="setDashboardFilter('overdue')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex justify-between items-center text-left hover:shadow-md transition cursor-pointer group">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-rose-600 transition">Overdue</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider group-hover:text-rose-600 transition">Overdue</p>
                         <p id="kpi-overdue" class="text-2xl font-black text-rose-600">0</p>
                     </div>
                     <div class="p-3 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-triangle-exclamation text-lg"></i></div>
@@ -137,16 +152,16 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Main Content: Today & Focused Filter -->
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-calendar-day text-brandAccent"></i> Today at a Glance
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-calendar-day text-cyan-500"></i> Today at a Glance
                         </h3>
                         <div id="dashboard-today-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
                     
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 id="dash-focused-title" class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-list text-brandLight"></i> Focused Task Viewer: Active Tasks
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 id="dash-focused-title" class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-list text-indigo-600"></i> Focused Task Viewer: Active Tasks
                         </h3>
                         <div id="dashboard-focused-list" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
                     </div>
@@ -154,23 +169,23 @@
                 
                 <!-- Side Panel: Progress & My Tasks -->
                 <div class="space-y-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-user-check text-emerald-600"></i> My Upcoming Tasks <span class="text-[10px] text-gray-400 font-normal">(Next 7 Days)</span>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-user-check text-emerald-600"></i> My Upcoming Tasks <span class="text-[10px] text-slate-400 font-normal">(Next 7 Days)</span>
                         </h3>
                         <div id="dashboard-my-tasks" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-sm font-bold text-brandLight mb-4 flex items-center gap-2 border-b pb-2">
-                            <i class="fa-solid fa-chart-column text-brandDanger"></i> Program Execution
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-chart-column text-indigo-600"></i> Program Execution
                         </h3>
                         <div id="dashboard-season-progress" class="space-y-4 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </div>
         </section>
-
+            
         <!-- TAB 2: CALENDAR VIEW -->
         <section id="view-calendar" class="tab-view hidden space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
