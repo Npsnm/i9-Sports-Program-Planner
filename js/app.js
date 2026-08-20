@@ -697,7 +697,22 @@ async function signup(e) {
     }
 }
 
-async function loginWithGoogle() { try { await window.signInWithGoogle(); showToast("Success", "Verifying Google Account..."); } catch (error) { showError(error.message); } }
+async function loginWithGoogle() {
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    // Forces prompt select account to avoid silent session locks
+    provider.setCustomParameters({ prompt: 'select_account' }); 
+
+    const result = await firebase.auth().signInWithPopup(provider);
+    const user = result.user;
+
+    showToast("Success", `Verified ${user.email}`);
+    // Handle matched user and portal unlock...
+  } catch (error) {
+    console.error("Google Auth Error:", error);
+    showError(error.message);
+  }
+}
 
 async function logout() {
     try { 
