@@ -925,7 +925,7 @@ function toggleSidebar() {
 }
 
 function switchTab(tab, updateHash = true) {
-    // Update URL hash to preserve view on page reload or bookmarking
+    // Force URL hash update for browser history and deep-linking
     if (updateHash) {
         window.location.hash = tab;
     }
@@ -3362,6 +3362,7 @@ window.renderWorkloadSummary = renderWorkloadSummary;
 window.renderCalendar = renderCalendar;
 window.unlockPortal = unlockPortal;
 window.toggleSidebar = toggleSidebar;
+window.switchTab = switchTab;
 window.handleInitialRoute = handleInitialRoute;
 
 // Pricing Side Panel Assignments
