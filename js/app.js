@@ -1007,8 +1007,7 @@ window.addEventListener('hashchange', () => {
     }
 });
 
-function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
-function getAuthorizedGroups() { 
+function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; } 
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
     if (!currentUser) return [];
     const terrs = currentUser.territories || [];
