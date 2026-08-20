@@ -584,6 +584,16 @@ e.preventDefault();
 
         let matched = window.users.find(u => u && u.username && u.username.toLowerCase() === em);
 
+        // Attempt cloud fetch if local array hasn't synced yet to prevent demoting active users
+        if (!matched && window.cloudGetUser) {
+            try {
+                matched = await window.cloudGetUser(em);
+                if (matched) window.users.push(matched);
+            } catch (err) {
+                console.warn("Cloud user check failed:", err);
+            }
+        }
+
         if (!matched) {
             matched = { 
                 username: em, 
@@ -781,14 +791,15 @@ function unlockPortal() {
         const navContainer = document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6');
         if (navContainer && navContainer.parentElement) navContainer.parentElement.classList.remove('hidden');
         
+        // Force hide pending / denied lock views for active users
+        const vPending = document.getElementById('view-pending');
+        if (vPending) vPending.classList.add('hidden');
+        const vDenied = document.getElementById('view-denied');
+        if (vDenied) vDenied.classList.add('hidden');
+
         renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
         
-        if (!document.getElementById('view-pending').classList.contains('hidden') || !document.getElementById('view-denied').classList.contains('hidden')) {
-             switchTab('dashboard', false); 
-        } else {
-             // Restore route from URL hash on page reload
-             handleInitialRoute();
-        }
+        handleInitialRoute();
     }
 }
 
@@ -925,8 +936,10 @@ function toggleSidebar() {
 }
 
 function switchTab(tab, updateHash = true) {
-    // Force URL hash update for browser history and deep-linking
-    if (updateHash) {
+    if (!tab) tab = 'dashboard';
+
+    // Update browser address bar hash
+    if (updateHash && window.location.hash !== `#${tab}`) {
         window.location.hash = tab;
     }
 
@@ -960,22 +973,29 @@ function switchTab(tab, updateHash = true) {
 
 /* --- URL ROUTING & DEEP LINKING --- */
 function handleInitialRoute() {
+    if (!currentUser) return;
     const route = window.location.hash.replace('#', '').trim();
     const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
     
     if (route && validTabs.includes(route)) {
-        switchTab(route, false);
+        switchTab(route, true);
     } else {
-        switchTab('dashboard', false);
+        switchTab('dashboard', true);
     }
 }
 
-// Automatically navigate when clicking Browser Back / Forward buttons
+// Listen for browser Back / Forward actions or manual URL hash changes
 window.addEventListener('hashchange', () => {
+    if (!currentUser) return;
     const route = window.location.hash.replace('#', '').trim();
-    if (route) switchTab(route, false);
+    const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
+    if (route && validTabs.includes(route)) {
+        const targetView = document.getElementById(`view-${route}`);
+        if (targetView && targetView.classList.contains('hidden')) {
+            switchTab(route, false);
+        }
+    }
 });
-
 function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
 function getAuthorizedGroups() { 
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
