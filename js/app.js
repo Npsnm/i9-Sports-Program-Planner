@@ -743,49 +743,70 @@ function unlockPortal() {
     
     if (window.isRegistering) return;
 
-    if (currentUser.status === "Archived" || currentUser.status === "Frozen") { showError("Your account has been archived or temporarily disabled."); logout(); return; }
+    if (currentUser.status === "Archived" || currentUser.status === "Frozen") { 
+        showError("Your account has been archived or temporarily disabled."); 
+        logout(); 
+        return; 
+    }
     
     const overlay = document.getElementById('auth-overlay');
-    if (overlay) { overlay.classList.add('hidden'); overlay.style.display = 'none'; }
+    if (overlay) { 
+        overlay.classList.add('hidden'); 
+        overlay.style.display = 'none'; 
+    }
     
-    populateFilterOptions(); populateProfileForm(); applyPermissions(); 
+    populateFilterOptions(); 
+    populateProfileForm(); 
+    applyPermissions(); 
     
     const headerReportBtn = document.querySelector('button[onclick="openReportModal()"]');
     const headerExportBtn = document.querySelector('button[onclick="exportCurrentViewToCSV()"]');
     const headerUserBadge = document.getElementById('user-badge');
-
     const sidebar = document.getElementById('sidebar');
 
-        if (currentUser.role === "Pending" || currentUser.role === "Denied") {
-            if (headerReportBtn) headerReportBtn.classList.add('hidden');
-            if (headerExportBtn) headerExportBtn.classList.add('hidden');
-            if (headerUserBadge) headerUserBadge.classList.add('hidden');
-            if (sidebar) sidebar.classList.add('hidden');
+    if (currentUser.role === "Pending" || currentUser.role === "Denied") {
+        if (headerReportBtn) headerReportBtn.classList.add('hidden');
+        if (headerExportBtn) headerExportBtn.classList.add('hidden');
+        if (headerUserBadge) headerUserBadge.classList.add('hidden');
+        if (sidebar) sidebar.classList.add('hidden');
 
-            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+        document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
 
-            if (currentUser.role === "Pending") {
-                document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
-                document.getElementById('view-pending').classList.remove('hidden');
-            } else {
-                document.getElementById('denied-group-display').textContent = (currentUser.territories || []).join(', ');
-                document.getElementById('view-denied').classList.remove('hidden');
-            }
+        if (currentUser.role === "Pending") {
+            const pendDisp = document.getElementById('pending-group-display');
+            if (pendDisp) pendDisp.textContent = (currentUser.territories || []).join(', ');
+            const viewPending = document.getElementById('view-pending');
+            if (viewPending) viewPending.classList.remove('hidden');
         } else {
-            if (headerReportBtn) headerReportBtn.classList.remove('hidden');
-            if (headerExportBtn) headerExportBtn.classList.remove('hidden');
-            if (headerUserBadge) headerUserBadge.classList.remove('hidden');
-            if (sidebar) sidebar.classList.remove('hidden');
-
-            const vPending = document.getElementById('view-pending');
-            if (vPending) vPending.classList.add('hidden');
-            const vDenied = document.getElementById('view-denied');
-            if (vDenied) vDenied.classList.add('hidden');
-
-            renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
-            
-            handleInitialRoute();
+            const denDisp = document.getElementById('denied-group-display');
+            if (denDisp) denDisp.textContent = (currentUser.territories || []).join(', ');
+            const viewDenied = document.getElementById('view-denied');
+            if (viewDenied) viewDenied.classList.remove('hidden');
         }
+    } else {
+        if (headerReportBtn) headerReportBtn.classList.remove('hidden');
+        if (headerExportBtn) headerExportBtn.classList.remove('hidden');
+        if (headerUserBadge) headerUserBadge.classList.remove('hidden');
+        if (sidebar) sidebar.classList.remove('hidden');
+
+        const vPending = document.getElementById('view-pending');
+        if (vPending) vPending.classList.add('hidden');
+        const vDenied = document.getElementById('view-denied');
+        if (vDenied) vDenied.classList.add('hidden');
+
+        renderDashboard(); 
+        renderControlCenter(); 
+        renderTemplates(); 
+        renderActiveTasks(); 
+        checkPendingAlerts(); 
+        renderGroupPills(); 
+        renderUsersTable(); 
+        renderWorkloadSummary(); 
+        renderCalendar();
+        
+        handleInitialRoute();
+    }
+}
 
 function checkPendingAlerts() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
@@ -922,7 +943,7 @@ function toggleSidebar() {
 function switchTab(tab, updateHash = true) {
     if (!tab) tab = 'dashboard';
 
-    // Prevent navigation for pending or denied accounts
+    // Lock navigation completely for Pending or Denied roles
     if (currentUser && (currentUser.role === 'Pending' || currentUser.role === 'Denied')) {
         return;
     }
@@ -986,31 +1007,7 @@ window.addEventListener('hashchange', () => {
     }
 });
 
-/* --- URL ROUTING & DEEP LINKING --- */
-function handleInitialRoute() {
-    if (!currentUser) return;
-    const route = window.location.hash.replace('#', '').trim();
-    const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
-    
-    if (route && validTabs.includes(route)) {
-        switchTab(route, true);
-    } else {
-        switchTab('dashboard', true);
-    }
-}
-
-// Listen for browser Back / Forward actions or manual URL hash changes
-window.addEventListener('hashchange', () => {
-    if (!currentUser) return;
-    const route = window.location.hash.replace('#', '').trim();
-    const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
-    if (route && validTabs.includes(route)) {
-        const targetView = document.getElementById(`view-${route}`);
-        if (targetView && targetView.classList.contains('hidden')) {
-            switchTab(route, false);
-        }
-    }
-});
+function generateId(prefix) {
 function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
 function getAuthorizedGroups() { 
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
