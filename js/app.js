@@ -784,7 +784,10 @@ function unlockPortal() {
         renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
         
         if (!document.getElementById('view-pending').classList.contains('hidden') || !document.getElementById('view-denied').classList.contains('hidden')) {
-             switchTab('dashboard'); 
+             switchTab('dashboard', false); 
+        } else {
+             // Restore route from URL hash on page reload
+             handleInitialRoute();
         }
     }
 }
@@ -921,7 +924,12 @@ function toggleSidebar() {
     }
 }
 
-function switchTab(tab) {
+function switchTab(tab, updateHash = true) {
+    // Update URL hash to preserve view on page reload or bookmarking
+    if (updateHash) {
+        window.location.hash = tab;
+    }
+
     // Reset all sidebar buttons
     document.querySelectorAll('.sidebar-btn').forEach(btn => {
         btn.className = "sidebar-btn w-full px-3 py-2.5 rounded-lg font-semibold flex items-center gap-3 text-slate-400 hover:text-white hover:bg-slate-800 transition" + 
@@ -949,6 +957,24 @@ function switchTab(tab) {
     if (tab === 'settings') populateProfileForm();
     applyPermissions(); 
 }
+
+/* --- URL ROUTING & DEEP LINKING --- */
+function handleInitialRoute() {
+    const route = window.location.hash.replace('#', '').trim();
+    const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
+    
+    if (route && validTabs.includes(route)) {
+        switchTab(route, false);
+    } else {
+        switchTab('dashboard', false);
+    }
+}
+
+// Automatically navigate when clicking Browser Back / Forward buttons
+window.addEventListener('hashchange', () => {
+    const route = window.location.hash.replace('#', '').trim();
+    if (route) switchTab(route, false);
+});
 
 function generateId(prefix) { return `${prefix}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`; }
 function getAuthorizedGroups() { 
@@ -3336,6 +3362,7 @@ window.renderWorkloadSummary = renderWorkloadSummary;
 window.renderCalendar = renderCalendar;
 window.unlockPortal = unlockPortal;
 window.toggleSidebar = toggleSidebar;
+window.handleInitialRoute = handleInitialRoute;
 
 // Pricing Side Panel Assignments
 window.openPricingPane = openPricingPane;
