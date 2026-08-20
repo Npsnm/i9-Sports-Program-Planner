@@ -557,7 +557,7 @@ function toggleSignupAction() {
 }
 
 async function login(e) {
-e.preventDefault();
+    e.preventDefault();
     const em = document.getElementById('login-email').value.trim().toLowerCase();
     const pw = document.getElementById('login-password').value.trim();
     
@@ -569,7 +569,6 @@ e.preventDefault();
         const isMasterAdmin = (em === 'nick@npsnm.com');
         let authUser = null;
 
-        // Isolated Firebase Auth check so errors don't crash the function before unlocking
         if (window.auth && typeof window.signInWithEmailAndPassword === 'function') {
             try {
                 const userCredential = await window.signInWithEmailAndPassword(window.auth, em, pw);
@@ -584,7 +583,6 @@ e.preventDefault();
 
         let matched = window.users.find(u => u && u.username && u.username.toLowerCase() === em);
 
-        // Fetch directly from cloud if local cache hasn't synced yet
         if (!matched && typeof window.cloudGetUser === 'function') {
             try {
                 matched = await window.cloudGetUser(em);
@@ -594,9 +592,26 @@ e.preventDefault();
             }
         }
 
-        if (!matched) {
-            throw new Error("User record not found. Please click 'Register / Join Group' first.");
+        // Restore/create user profile if authenticated through Firebase Auth but missing from local cache
+        if (!matched && (authUser || isMasterAdmin)) {
+            matched = { 
+                username: em, 
+                name: (authUser && authUser.displayName) ? authUser.displayName : (isMasterAdmin ? "Nick Padilla" : em.split('@')[0]), 
+                firstName: isMasterAdmin ? "Nick" : em.split('@')[0], 
+                lastName: isMasterAdmin ? "Padilla" : "User", 
+                phone: "N/A", 
+                role: isMasterAdmin ? "System Admin" : "Staff", 
+                status: "Active",
+                territories: ["ALL"] 
+            };
+            if (window.cloudSaveUser) await window.cloudSaveUser(matched);
+            window.users.push(matched);
         }
+
+        if (!matched) {
+            throw new Error("Invalid credentials or user record not found. Please register first.");
+        }
+
         if (isMasterAdmin) {
             matched.role = 'System Admin';
             matched.status = 'Active';
@@ -620,6 +635,7 @@ e.preventDefault();
         showError(error.message || "Authentication failed. Check credentials or register first."); 
     }
 }
+
 async function triggerPasswordReset() {
     const em = document.getElementById('login-email').value.trim();
     if (!em) return showError("Please enter your email address first to reset your password.");
@@ -698,14 +714,50 @@ async function signup(e) {
 async function loginWithGoogle() {
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
-    // Forces prompt select account to avoid silent session locks
     provider.setCustomParameters({ prompt: 'select_account' }); 
 
     const result = await firebase.auth().signInWithPopup(provider);
-    const user = result.user;
+    const authUser = result.user;
+    const em = authUser.email.toLowerCase();
 
-    showToast("Success", `Verified ${user.email}`);
-    // Handle matched user and portal unlock...
+    if (!window.users) window.users = [];
+    let matched = window.users.find(u => u && u.username && u.username.toLowerCase() === em);
+
+    const isMasterAdmin = (em === 'nick@npsnm.com');
+
+    if (!matched) {
+        matched = { 
+            username: em, 
+            name: authUser.displayName || (isMasterAdmin ? "Nick Padilla" : em.split('@')[0]), 
+            firstName: isMasterAdmin ? "Nick" : (authUser.displayName ? authUser.displayName.split(' ')[0] : "Google"), 
+            lastName: isMasterAdmin ? "Padilla" : "User", 
+            phone: "N/A", 
+            role: isMasterAdmin ? "System Admin" : "Staff", 
+            status: "Active",
+            territories: ["ALL"] 
+        };
+        if (window.cloudSaveUser) await window.cloudSaveUser(matched);
+        window.users.push(matched);
+    }
+
+    if (isMasterAdmin) {
+        matched.role = 'System Admin';
+        matched.status = 'Active';
+        matched.territories = ['ALL'];
+        if (window.cloudSaveUser) await window.cloudSaveUser(matched);
+    }
+
+    if (!matched.territories) matched.territories = ['ALL'];
+
+    currentUser = matched; 
+    window.currentUser = matched; 
+
+    const errEl = document.getElementById('auth-error');
+    if (errEl) errEl.classList.add('hidden');
+
+    unlockPortal();
+    showToast("Welcome", `Logged in as ${matched.name}`);
+
   } catch (error) {
     console.error("Google Auth Error:", error);
     showError(error.message);
