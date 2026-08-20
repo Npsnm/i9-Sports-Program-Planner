@@ -584,31 +584,19 @@ e.preventDefault();
 
         let matched = window.users.find(u => u && u.username && u.username.toLowerCase() === em);
 
-        // Attempt cloud fetch if local array hasn't synced yet to prevent demoting active users
-        if (!matched && window.cloudGetUser) {
+        // Fetch directly from cloud if local cache hasn't synced yet
+        if (!matched && typeof window.cloudGetUser === 'function') {
             try {
                 matched = await window.cloudGetUser(em);
                 if (matched) window.users.push(matched);
             } catch (err) {
-                console.warn("Cloud user check failed:", err);
+                console.warn("Cloud user check notice:", err);
             }
         }
 
         if (!matched) {
-            matched = { 
-                username: em, 
-                name: (authUser && authUser.displayName) ? authUser.displayName : (isMasterAdmin ? "Nick Padilla" : "Portal User"), 
-                firstName: isMasterAdmin ? "Nick" : "Portal", 
-                lastName: isMasterAdmin ? "Padilla" : "User", 
-                phone: "N/A", 
-                role: isMasterAdmin ? "System Admin" : "Pending", 
-                status: "Active",
-                territories: ["ALL"] 
-            };
-            if (window.cloudSaveUser) await window.cloudSaveUser(matched);
-            window.users.push(matched);
+            throw new Error("User record not found. Please click 'Register / Join Group' first.");
         }
-
         if (isMasterAdmin) {
             matched.role = 'System Admin';
             matched.status = 'Active';
@@ -766,42 +754,38 @@ function unlockPortal() {
     const headerExportBtn = document.querySelector('button[onclick="exportCurrentViewToCSV()"]');
     const headerUserBadge = document.getElementById('user-badge');
 
-    if (currentUser.role === "Pending" || currentUser.role === "Denied") {
-        if (headerReportBtn) headerReportBtn.classList.add('hidden');
-        if (headerExportBtn) headerExportBtn.classList.add('hidden');
-        if (headerUserBadge) headerUserBadge.classList.add('hidden');
+    const sidebar = document.getElementById('sidebar');
 
-        const navContainer = document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6');
-        if (navContainer && navContainer.parentElement) navContainer.parentElement.classList.add('hidden');
-        
-        document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+        if (currentUser.role === "Pending" || currentUser.role === "Denied") {
+            if (headerReportBtn) headerReportBtn.classList.add('hidden');
+            if (headerExportBtn) headerExportBtn.classList.add('hidden');
+            if (headerUserBadge) headerUserBadge.classList.add('hidden');
+            if (sidebar) sidebar.classList.add('hidden');
 
-        if (currentUser.role === "Pending") {
-            document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
-            document.getElementById('view-pending').classList.remove('hidden');
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+
+            if (currentUser.role === "Pending") {
+                document.getElementById('pending-group-display').textContent = (currentUser.territories || []).join(', ');
+                document.getElementById('view-pending').classList.remove('hidden');
+            } else {
+                document.getElementById('denied-group-display').textContent = (currentUser.territories || []).join(', ');
+                document.getElementById('view-denied').classList.remove('hidden');
+            }
         } else {
-            document.getElementById('denied-group-display').textContent = (currentUser.territories || []).join(', ');
-            document.getElementById('view-denied').classList.remove('hidden');
+            if (headerReportBtn) headerReportBtn.classList.remove('hidden');
+            if (headerExportBtn) headerExportBtn.classList.remove('hidden');
+            if (headerUserBadge) headerUserBadge.classList.remove('hidden');
+            if (sidebar) sidebar.classList.remove('hidden');
+
+            const vPending = document.getElementById('view-pending');
+            if (vPending) vPending.classList.add('hidden');
+            const vDenied = document.getElementById('view-denied');
+            if (vDenied) vDenied.classList.add('hidden');
+
+            renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
+            
+            handleInitialRoute();
         }
-    } else {
-        if (headerReportBtn) headerReportBtn.classList.remove('hidden');
-        if (headerExportBtn) headerExportBtn.classList.remove('hidden');
-        if (headerUserBadge) headerUserBadge.classList.remove('hidden');
-
-        const navContainer = document.querySelector('.max-w-7xl.mx-auto.px-4.flex.space-x-6');
-        if (navContainer && navContainer.parentElement) navContainer.parentElement.classList.remove('hidden');
-        
-        // Force hide pending / denied lock views for active users
-        const vPending = document.getElementById('view-pending');
-        if (vPending) vPending.classList.add('hidden');
-        const vDenied = document.getElementById('view-denied');
-        if (vDenied) vDenied.classList.add('hidden');
-
-        renderDashboard(); renderControlCenter(); renderTemplates(); renderActiveTasks(); checkPendingAlerts(); renderGroupPills(); renderUsersTable(); renderWorkloadSummary(); renderCalendar();
-        
-        handleInitialRoute();
-    }
-}
 
 function checkPendingAlerts() {
     if (!currentUser && window.currentUser) currentUser = window.currentUser;
@@ -938,7 +922,12 @@ function toggleSidebar() {
 function switchTab(tab, updateHash = true) {
     if (!tab) tab = 'dashboard';
 
-    // Update browser address bar hash
+    // Prevent navigation for pending or denied accounts
+    if (currentUser && (currentUser.role === 'Pending' || currentUser.role === 'Denied')) {
+        return;
+    }
+
+    // Synchronize address bar URL hash
     if (updateHash && window.location.hash !== `#${tab}`) {
         window.location.hash = tab;
     }
@@ -970,6 +959,32 @@ function switchTab(tab, updateHash = true) {
     if (tab === 'settings') populateProfileForm();
     applyPermissions(); 
 }
+
+/* --- URL ROUTING & DEEP LINKING --- */
+function handleInitialRoute() {
+    if (!currentUser || currentUser.role === 'Pending' || currentUser.role === 'Denied') return;
+    const route = window.location.hash.replace('#', '').trim();
+    const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
+    
+    if (route && validTabs.includes(route)) {
+        switchTab(route, true);
+    } else {
+        switchTab('dashboard', true);
+    }
+}
+
+// Automatically navigate when clicking Browser Back / Forward buttons
+window.addEventListener('hashchange', () => {
+    if (!currentUser || currentUser.role === 'Pending' || currentUser.role === 'Denied') return;
+    const route = window.location.hash.replace('#', '').trim();
+    const validTabs = ['dashboard', 'calendar', 'tasks', 'control', 'templates', 'admin', 'settings'];
+    if (route && validTabs.includes(route)) {
+        const targetView = document.getElementById(`view-${route}`);
+        if (targetView && targetView.classList.contains('hidden')) {
+            switchTab(route, false);
+        }
+    }
+});
 
 /* --- URL ROUTING & DEEP LINKING --- */
 function handleInitialRoute() {
